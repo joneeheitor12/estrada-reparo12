@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Qualidade & Inspeção NVH / Liberação</title>
+    <!-- Biblioteca SheetJS para geração de planilhas do Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --whatsapp: #16a34a;
+            --whatsapp-hover: #15803d;
+            --excel: #1d6f42;
+            --excel-hover: #155231;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 20px; max-width: 1300px; margin: 0 auto; }
+        
+        .header { background: var(--primary); color: white; padding: 18px 24px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow-md); }
+        .header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+        
+        .filter-date-container { display: flex; align-items: center; gap: 8px; background: #1e293b; padding: 6px 14px; border-radius: 8px; border: 1px solid #334155; cursor: pointer; }
+        .filter-date-container label { color: #cbd5e1; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+        .filter-date-container input[type="date"] { padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; background: #0f172a; color: #ffffff; border: 1px solid #475569; width: auto; cursor: pointer; }
+        
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .nav-tabs { background: #0f172a; display: flex; padding: 8px 12px; border-radius: 0 0 12px 12px; margin-bottom: 20px; gap: 10px; overflow-x: auto; border: 1px solid var(--border); border-top: none; }
+        .tab-btn { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 10px 22px; font-size: 0.9rem; font-weight: 700; cursor: pointer; border-radius: 8px; transition: all 0.2s ease-in-out; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .tab-btn:hover { color: #ffffff; background: #334155; }
+        .tab-btn.active { color: #ffffff; background: var(--accent); border-color: var(--accent-hover); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4); }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .grid-layout { display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px; }
+        @media (max-width: 960px) { .grid-layout { grid-template-columns: 1fr; } }
+        
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+        .card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--primary); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        input, select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; background-color: #fff; color: var(--text-main); outline: none; }
+        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        
+        .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary { background-color: var(--accent); color: white; width: 100%; }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-whatsapp { background-color: var(--whatsapp); color: white; }
+        .btn-whatsapp:hover { background-color: var(--whatsapp-hover); }
+        .btn-excel { background-color: var(--excel); color: white; }
+        .btn-excel:hover { background-color: var(--excel-hover); }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+        
+        .kpi-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+        .kpi-box { background: var(--card-bg); padding: 18px 14px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
+        .kpi-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
+        
+        .ranking-list { list-style: none; }
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: white; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem; }
+        .ranking-badge { background: var(--accent); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+        .vin-tag { background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        
+        .modelo-group { margin-bottom: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+        .modelo-group-title { font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .table-container { max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: white; }
+        th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        th { background-color: var(--bg); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; position: sticky; top: 0; z-index: 10; }
+        
+        .badge-modelo { background: #e2e8f0; color: var(--primary); padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; }
+        .badge-tipo { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; }
+        .btn-action { border: none; padding: 5px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+        .btn-edit { background-color: #fef3c7; color: #d97706; }
+        .btn-delete { background-color: #fee2e2; color: #dc2626; }
+        
+        .badge-status { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-teste-chuva { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+        .badge-teste-estrada { background: #fef3c7; color: #b45309; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+        .search-box { margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>⚙️ Sistema de Controle de Qualidade</h1>
+        <div class="filter-date-container" onclick="document.getElementById('filtroDataGlobal').showPicker()">
+            <label for="filtroDataGlobal">📅 FILTRAR DIA:</label>
+            <input type="date" id="filtroDataGlobal" onclick="this.showPicker()" onchange="alterarDataFiltroGlobal(this.value)">
+        </div>
+        <div class="header-actions">
+            <button onclick="copiarRelatorioWhatsApp()" class="btn btn-whatsapp" id="btnWhatsappHeader">📲 Relatório NVH WhatsApp</button>
+            <button onclick="exportarExcel()" class="btn btn-excel" id="btnExcelHeader">📊 Exportar NVH Excel</button>
+            <button onclick="limparDadosDia()" class="btn btn-danger">🔄 Zerar Turno</button>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="alternarAba('tab-nvh', this)">🔊 Controle de Ruídos (NVH)</button>
+        <button class="tab-btn" onclick="alternarAba('tab-liberacao', this)">✅ Liberação de Veículos (VIN)</button>
+    </div>
+
+    <div id="tab-nvh" class="tab-content active">
+        <div class="kpi-container">
+            <div class="kpi-box"><div class="kpi-value" id="kpiRecebidos">0</div><div class="kpi-label">Carros Recebidos</div></div>
+            <div class="kpi-box"><div class="kpi-value" id="kpiTotalRuidos" style="color: var(--danger);">0</div><div class="kpi-label">Total Ruídos Lançados</div></div>
+            <div class="kpi-box"><div class="kpi-value" id="kpiDeixados" style="color: #64748b;">0</div><div class="kpi-label">Carros Deixados</div></div>
+        </div>
+
+        <div class="grid-layout">
+            <div>
+                <div class="card">
+                    <h2>📊 1. Fluxo do Turno (Dia Selecionado)</h2>
+                    <div style="display: flex; gap: 12px;">
+                        <div class="form-group" style="flex: 1;"><label>Recebidos:</label><input type="number" id="inputRecebidos" placeholder="0"></div>
+                        <div class="form-group" style="flex: 1;"><label>Deixados:</label><input type="number" id="inputDeixados" placeholder="0"></div>
+                    </div>
+                    <button class="btn btn-primary" onclick="salvarContagem()">Salvar Saldo do Dia</button>
+                </div>
+
+                <div class="card">
+                    <h2 id="formTitle">📝 2. Novo Registro de Ruído</h2>
+                    <form id="formRuido">
+                        <input type="hidden" id="editDocId" value="">
+                        <div style="display: flex; gap: 12px;">
+                            <div class="form-group" style="flex: 1;"><label>Data:</label><input type="date" id="dataLancamento" onclick="this.showPicker()" required></div>
+                            <div class="form-group" style="flex: 1.2;">
+                                <label>Inspetor:</label>
+                                <select id="inspetor" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Jone">Jone</option>
+                                    <option value="Kauê">Kauê</option>
+                                    <option value="Sarah">Sarah</option>
+                                    <option value="Marcus">Marcus</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <div class="form-group" style="flex: 1;"><label>VIN (Chassi):</label><input type="text" id="vin" placeholder="Ex: VK084427" required style="text-transform: uppercase;"></div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Modelo:</label>
+                                <select id="modelo" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="SA2">SA2</option>
+                                    <option value="SA6">SA6</option>
+                                    <option value="EQE">EQE</option>
+                                    <option value="HA2">HA2</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Origem do Defeito:</label>
+                            <select id="tipoDefeito" required>
+                                <option value="" disabled selected>Selecione a origem...</option>
+                                <option value="Estrada">Defeito encontrado na Estrada</option>
+                                <option value="Chassi">Defeito encontrado no Chassi</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição do Defeito:</label>
+                            <input type="text" id="descricao" placeholder="Ex: SELO DA MOLDURA DA PORTA DA FRENTE ESQUERDA" required>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="submit" class="btn btn-primary" id="btnSalvar">Lançar Defeito</button>
+                            <button type="button" class="btn btn-danger" id="btnCancelar" style="display: none; width: 35%;" onclick="cancelarEdicao()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h2>🏆 Top 3 Defeitos do Dia Selecionado</h2>
+                    <ul class="ranking-list" id="topGeralContainer"><li class="ranking-item" style="color: var(--text-muted);">Nenhum lançamento efetuado nesta data.</li></ul>
+                </div>
+                <div class="card">
+                    <h2>🚘 Defeitos Agrupados por Modelo</h2>
+                    <div id="rankingModeloContainer"><p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento efetuado nesta data.</p></div>
+                </div>
+                <div class="card">
+                    <h2>📋 Histórico do Turno (NVH)</h2>
+                    <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Filtrar por VIN, Modelo, Inspetor..." oninput="filtrarHistoricoNVH()" style="text-transform: uppercase;"></div>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Data</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Origem</th><th>Descrição</th><th>Ações</th></tr></thead>
+                            <tbody id="tabelaHistorico"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-liberacao" class="tab-content">
+        <div class="kpi-container" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="kpi-box"><div class="kpi-value" id="kpiLibTotal" style="color: var(--accent);">0</div><div class="kpi-label">Total Liberados no Dia</div></div>
+            <div class="kpi-box"><div class="kpi-value" id="kpiLibChuva" style="color: #0369a1;">0</div><div class="kpi-label">🌧️ Teste Chuva</div></div>
+            <div class="kpi-box"><div class="kpi-value" id="kpiLibEstrada" style="color: #b45309;">0</div><div class="kpi-label">🚗 Teste Estrada</div></div>
+        </div>
+
+        <div class="grid-layout">
+            <div>
+                <div class="card">
+                    <h2 id="libFormTitle">✅ Registrar Liberação de VIN</h2>
+                    <form id="formLiberacao">
+                        <input type="hidden" id="libEditDocId" value="">
+                        <div style="display: flex; gap: 12px;">
+                            <div class="form-group" style="flex: 1;"><label>Data *</label><input type="date" id="libData" onclick="this.showPicker()" required></div>
+                            <div class="form-group" style="flex: 1.2;"><label>VIN (Chassi) *</label><input type="text" id="libVin" placeholder="Ex: VK084427" required style="text-transform: uppercase;"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Status da Liberação *</label>
+                            <select id="libStatus" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                <option value="✅ Liberado">✅ Liberado</option>
+                                <option value="⏳ Pendente">⏳ Pendente</option>
+                                <option value="❌ Bloqueado">❌ Bloqueado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Teste *</label>
+                            <select id="libTipoTeste" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                <option value="Chuva">🌧️ Chuva</option>
+                                <option value="Teste de estrada">🚗 Teste de estrada</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Responsável</label><input type="text" id="libResponsavel" placeholder="Nome ou Matrícula"></div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="submit" class="btn btn-primary" id="btnSalvarLib">Salvar Liberação</button>
+                            <button type="button" class="btn btn-danger" id="btnCancelarLib" style="display: none; width: 35%;" onclick="cancelarEdicaoLib()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h2>🔍 Consultar e Visualizar Status</h2>
+                    <div class="search-box"><input type="text" id="inputBuscaVin" placeholder="🔎 Pesquisar VIN..." oninput="filtrarLiberacoes()" style="text-transform: uppercase;"></div>
+                    <div class="table-container" style="max-height: 480px;">
+                        <table>
+                            <thead><tr><th>Data / Hora</th><th>VIN</th><th>Status</th><th>Tipo de Teste</th><th>Responsável</th><th>Ações</th></tr></thead>
+                            <tbody id="tabelaLiberacoes"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIGURAÇÃO OFICIAL DO PROJETO ESTRADA-REPARO12 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Credenciais atualizadas do projeto estrada-reparo12
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4VpQ77sUWVqZyF8OD38RgHlzAw7q9BNs",
+            authDomain: "estrada-reparo12.firebaseapp.com",
+            projectId: "estrada-reparo12",
+            storageBucket: "estrada-reparo12.firebasestorage.app",
+            messagingSenderId: "86444595242",
+            appId: "1:86444595242:web:29f5ba62f9e9c7c83a8b53",
+            measurementId: "G-0Q7B53JE02"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.registros = [];
+        window.liberacoes = [];
+        window.contagemPorData = {};
+        window.dataFiltroGlobal = "";
+
+        const formNVH = document.getElementById('formRuido');
+        const formLib = document.getElementById('formLiberacao');
+        const inputData = document.getElementById('dataLancamento');
+        const libInputData = document.getElementById('libData');
+        const filtroDataGlobalInput = document.getElementById('filtroDataGlobal');
+
+        function setHoje() {
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const dataHoje = `${ano}-${mes}-${dia}`;
+            window.dataFiltroGlobal = dataHoje;
+            filtroDataGlobalInput.value = dataHoje;
+            inputData.value = dataHoje;
+            if (libInputData) libInputData.value = dataHoje;
+        }
+
+        setHoje();
+
+        onSnapshot(collection(db, "ruidos_registros"), (snapshot) => {
+            window.registros = [];
+            snapshot.forEach((doc) => { window.registros.push({ id: doc.id, ...doc.data() }); });
+            window.atualizarTudoNVH();
+        });
+
+        onSnapshot(collection(db, "vin_liberacoes"), (snapshot) => {
+            window.liberacoes = [];
+            snapshot.forEach((doc) => { window.liberacoes.push({ id: doc.id, ...doc.data() }); });
+            window.renderizarTabelaLiberacoes();
+        });
+
+        onSnapshot(collection(db, "ruidos_saldos"), (snapshot) => {
+            window.contagemPorData = {};
+            snapshot.forEach((doc) => { window.contagemPorData[doc.id] = doc.data(); });
+            window.carregarContagemDoDia();
+            window.atualizarTudoNVH();
+        });
+
+        formNVH.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editDocId = document.getElementById('editDocId').value;
+            const dadosForm = {
+                data: inputData.value,
+                inspetor: document.getElementById('inspetor').value,
+                vin: document.getElementById('vin').value.trim().toUpperCase(),
+                modelo: document.getElementById('modelo').value,
+                tipoDefeito: document.getElementById('tipoDefeito').value,
+                descricao: document.getElementById('descricao').value.trim(),
+                criadoEm: Date.now()
+            };
+
+            if (!editDocId) { await addDoc(collection(db, "ruidos_registros"), dadosForm); }
+            else { await updateDoc(doc(db, "ruidos_registros", editDocId), dadosForm); window.cancelarEdicao(); }
+
+            const vinAtual = dadosForm.vin;
+            const modeloAtual = dadosForm.modelo;
+            const ultimoInspetor = dadosForm.inspetor;
+            formNVH.reset();
+            inputData.value = window.dataFiltroGlobal;
+            document.getElementById('inspetor').value = ultimoInspetor;
+            document.getElementById('vin').value = vinAtual;
+            document.getElementById('modelo').value = modeloAtual;
+            document.getElementById('descricao').focus();
+        });
+
+        formLib.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editDocId = document.getElementById('libEditDocId').value;
+            const agora = new Date();
+            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            const dadosForm = {
+                data: libInputData.value,
+                vin: document.getElementById('libVin').value.trim().toUpperCase(),
+                status: document.getElementById('libStatus').value,
+                tipoTeste: document.getElementById('libTipoTeste').value,
+                responsavel: document.getElementById('libResponsavel').value.trim() || 'Não informado',
+                dataHora: dataHoraFormatada,
+                criadoEm: Date.now()
+            };
+
+            if (!editDocId) { await addDoc(collection(db, "vin_liberacoes"), dadosForm); }
+            else { await updateDoc(doc(db, "vin_liberacoes", editDocId), dadosForm); window.cancelarEdicaoLib(); }
+
+            formLib.reset();
+            libInputData.value = window.dataFiltroGlobal;
+            document.getElementById('libStatus').value = '✅ Liberado';
+        });
+
+        window.salvarContagem = async function() {
+            const rec = parseInt(document.getElementById('inputRecebidos').value) || 0;
+            const deix = parseInt(document.getElementById('inputDeixados').value) || 0;
+            await setDoc(doc(db, "ruidos_saldos", window.dataFiltroGlobal), { recebidos: rec, deixados: deix });
+            alert(`Saldo sincronizado com a nuvem para ${window.formatarDataBR(window.dataFiltroGlobal)}!`);
+        };
+
+        window.excluirRegistro = async function(id) {
+            if (confirm("Deseja excluir este lançamento?")) { await deleteDoc(doc(db, "ruidos_registros", id)); }
+        };
+
+        window.excluirLiberacao = async function(id) {
+            if (confirm("Deseja excluir este registro?")) { await deleteDoc(doc(db, "vin_liberacoes", id)); }
+        };
+    </script>
+
+    <script>
+        function copiarTextoUniversal(texto) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(texto).then(() => alert("✅ Relatório copiado!")).catch(() => copiarComExecCommand(texto));
+            } else { copiarComExecCommand(texto); }
+        }
+        function copiarComExecCommand(texto) {
+            const textarea = document.createElement("textarea");
+            textarea.value = texto; textarea.style.position = "fixed"; textarea.style.left = "-9999px";
+            document.body.appendChild(textarea); textarea.select();
+            try { document.execCommand('copy'); alert("✅ Relatório copiado!"); } catch (err) {}
+            document.body.removeChild(textarea);
+        }
+        function alternarAba(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+            const btnWhatsapp = document.getElementById('btnWhatsappHeader');
+            const btnExcel = document.getElementById('btnExcelHeader');
+            if (tabId === 'tab-nvh') {
+                btnWhatsapp.style.display = 'inline-flex'; btnWhatsapp.setAttribute('onclick', 'copiarRelatorioWhatsApp()'); btnWhatsapp.innerText = '📲 Relatório NVH WhatsApp';
+                btnExcel.style.display = 'inline-flex'; btnExcel.setAttribute('onclick', 'exportarExcel()'); btnExcel.innerText = '📊 Exportar NVH Excel';
+            } else {
+                btnWhatsapp.style.display = 'inline-flex'; btnWhatsapp.setAttribute('onclick', 'copiarRelatorioLiberacoesWhatsApp()'); btnWhatsapp.innerText = '📲 Relatório Liberações WhatsApp';
+                btnExcel.style.display = 'inline-flex'; btnExcel.setAttribute('onclick', 'exportarExcelLiberacoes()'); btnExcel.innerText = '📊 Exportar Liberações Excel';
+            }
+        }
+        function formatarDataBR(dataIso) {
+            if (!dataIso) return '-';
+            const partes = dataIso.split('-');
+            return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : dataIso;
+        }
+        function alterarDataFiltroGlobal(novaData) {
+            window.dataFiltroGlobal = novaData;
+            document.getElementById('dataLancamento').value = novaData;
+            if (document.getElementById('libData')) document.getElementById('libData').value = novaData;
+            carregarContagemDoDia(); atualizarTudoNVH(); renderizarTabelaLiberacoes();
+        }
+        function carregarContagemDoDia() {
+            const dadosDia = window.contagemPorData[window.dataFiltroGlobal] || { recebidos: 0, deixados: 0 };
+            document.getElementById('inputRecebidos').value = dadosDia.recebidos;
+            document.getElementById('inputDeixados').value = dadosDia.deixados;
+        }
+        function obterRegistrosDoDia() { return window.registros.filter(r => !r.data || r.data === window.dataFiltroGlobal); }
+        function editarRegistro(id) {
+            const reg = window.registros.find(r => r.id === id); if(!reg) return;
+            document.getElementById('editDocId').value = id;
+            document.getElementById('dataLancamento').value = reg.data || window.dataFiltroGlobal;
+            document.getElementById('inspetor').value = reg.inspetor;
+            document.getElementById('vin').value = reg.vin;
+            document.getElementById('modelo').value = reg.modelo;
+            document.getElementById('tipoDefeito').value = reg.tipoDefeito || 'Estrada';
+            document.getElementById('descricao').value = reg.descricao;
+            document.getElementById('formTitle').innerText = "✏️ Editar Registro de Ruído";
+            document.getElementById('btnSalvar').innerText = "Atualizar na Nuvem";
+            document.getElementById('btnCancelar').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function cancelarEdicao() {
+            document.getElementById('editDocId').value = "";
+            document.getElementById('formTitle').innerText = "📝 2. Novo Registro de Ruído";
+            document.getElementById('btnSalvar').innerText = "Lançar Defeito";
+            document.getElementById('btnCancelar').style.display = "none";
+            const ultimoInspetor = document.getElementById('inspetor').value;
+            document.getElementById('formRuido').reset();
+            document.getElementById('dataLancamento').value = window.dataFiltroGlobal;
+            document.getElementById('inspetor').value = ultimoInspetor;
+        }
+        function atualizarTudoNVH() {
+            const dadosDia = window.contagemPorData[window.dataFiltroGlobal] || { recebidos: 0, deixados: 0 };
+            const registrosDoDia = obterRegistrosDoDia();
+            document.getElementById('kpiRecebidos').innerText = dadosDia.recebidos;
+            document.getElementById('kpiDeixados').innerText = dadosDia.deixados;
+            document.getElementById('kpiTotalRuidos').innerText = registrosDoDia.length;
+            filtrarHistoricoNVH(); atualizarTopGeral(); atualizarRankingPorModelo();
+        }
+        function filtrarHistoricoNVH() {
+            const termo = document.getElementById('inputBuscaHistorico') ? document.getElementById('inputBuscaHistorico').value.trim().toUpperCase() : '';
+            const tabela = document.getElementById('tabelaHistorico');
+            tabela.innerHTML = '';
+            const registrosFiltrados = window.registros.filter(reg => {
+                const mesmaData = (!reg.data || reg.data === window.dataFiltroGlobal);
+                if (!mesmaData) return false;
+                if (!termo) return true;
+                return ((reg.vin && reg.vin.toUpperCase().includes(termo)) || (reg.modelo && reg.modelo.toUpperCase().includes(termo)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termo)) || (reg.descricao && reg.descricao.toUpperCase().includes(termo)));
+            });
+            if (registrosFiltrados.length === 0) { tabela.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Nenhum registro nesta data.</td></tr>'; return; }
+            registrosFiltrados.forEach((reg) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td style="white-space: nowrap; color: var(--text-muted);">${formatarDataBR(reg.data || window.dataFiltroGlobal)}</td><td>${reg.inspetor || '-'}</td><td><strong>${reg.vin}</strong></td><td><span class="badge-modelo">${reg.modelo}</span></td><td><span class="badge-tipo">${reg.tipoDefeito || 'N/I'}</span></td><td>${reg.descricao}</td><td style="white-space: nowrap;"><button class="btn-action btn-edit" onclick="editarRegistro('${reg.id}')">Editar</button> <button class="btn-action btn-delete" onclick="window.excluirRegistro('${reg.id}')">Excluir</button></td>`;
+                tabela.appendChild(tr);
+            });
+        }
+        function atualizarTopGeral() {
+            const registrosDoDia = obterRegistrosDoDia();
+            const topGeralContainer = document.getElementById('topGeralContainer');
+            if (registrosDoDia.length === 0) { topGeralContainer.innerHTML = '<li class="ranking-item" style="color: var(--text-muted);">Nenhum lançamento efetuado nesta data.</li>'; return; }
+            const defeitoMap = {};
+            registrosDoDia.forEach(r => { const desc = r.descricao.toUpperCase().trim(); if (!defeitoMap[desc]) { defeitoMap[desc] = []; } defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); });
+            const defeitosOrdenados = Object.entries(defeitoMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
+            topGeralContainer.innerHTML = '';
+            defeitosOrdenados.forEach(([defeito, listaCarros], index) => {
+                const li = document.createElement('li'); li.className = 'ranking-item'; li.style.flexDirection = 'column'; li.style.alignItems = 'flex-start'; li.style.gap = '6px';
+                const vinsHtml = listaCarros.map(c => `<span class="vin-tag"><strong>${c.vin}</strong> (${c.modelo})</span>`).join(' ');
+                li.innerHTML = `<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;"><span><strong>#${index + 1}</strong> ${defeito}</span><span class="ranking-badge">${listaCarros.length}x</span></div><div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;">${vinsHtml}</div>`;
+                topGeralContainer.appendChild(li);
+            });
+        }
+        function atualizarRankingPorModelo() {
+            const registrosDoDia = obterRegistrosDoDia();
+            const rankingModeloContainer = document.getElementById('rankingModeloContainer');
+            if (registrosDoDia.length === 0) { rankingModeloContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento efetuado nesta data.</p>'; return; }
+            const mapaModelos = {};
+            registrosDoDia.forEach(r => {
+                const modelo = r.modelo || 'OUTROS';
+                const desc = r.descricao.toLowerCase();
+                if (!mapaModelos[modelo]) { mapaModelos[modelo] = { total: 0, defeitos: {} }; }
+                mapaModelos[modelo].total++;
+                mapaModelos[modelo].defeitos[desc] = (mapaModelos[modelo].defeitos[desc] || 0) + 1;
+            });
+            rankingModeloContainer.innerHTML = '';
+            Object.entries(mapaModelos).forEach(([modelo, data]) => {
+                const grupoDiv = document.createElement('div'); grupoDiv.className = 'modelo-group';
+                let htmlContent = `<div class="modelo-group-title"><span>MODELO: ${modelo}</span><span>Total: ${data.total} defeito(s)</span></div><ul class="ranking-list">`;
+                const defeitosOrdenados = Object.entries(data.defeitos).sort((a, b) => b[1] - a[1]);
+                defeitosOrdenados.forEach(([defeito, qtd]) => { htmlContent += `<li class="ranking-item"><span>${defeito.toUpperCase()}</span><span class="ranking-badge">${qtd}x</span></li>`; });
+                htmlContent += '</ul>'; grupoDiv.innerHTML = htmlContent; rankingModeloContainer.appendChild(grupoDiv);
+            });
+        }
+        function renderizarTabelaLiberacoes(dadosCustom) {
+            atualizarKpisLiberacao();
+            const tabelaLib = document.getElementById('tabelaLiberacoes'); tabelaLib.innerHTML = '';
+            const listaBase = dadosCustom || window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal);
+            if (listaBase.length === 0) { tabelaLib.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registro para esta data.</td></tr>'; return; }
+            listaBase.forEach((reg) => {
+                const tr = document.createElement('tr');
+                const classeTeste = reg.tipoTeste === 'Chuva' ? 'badge-teste-chuva' : 'badge-teste-estrada';
+                const iconeTeste = reg.tipoTeste === 'Chuva' ? '🌧️' : '🚗';
+                const dataExibicao = reg.data ? `${formatarDataBR(reg.data)} ${reg.dataHora ? reg.dataHora.split(' ')[1] || '' : ''}` : reg.dataHora;
+                tr.innerHTML = `<td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${dataExibicao}</td><td><strong>${reg.vin}</strong></td><td><span class="badge-status">${reg.status}</span></td><td><span class="${classeTeste}">${iconeTeste} ${reg.tipoTeste}</span></td><td>${reg.responsavel}</td><td style="white-space: nowrap;"><button class="btn-action btn-edit" onclick="editarLiberacao('${reg.id}')">Editar</button> <button class="btn-action btn-delete" onclick="window.excluirLiberacao('${reg.id}')">Excluir</button></td>`;
+                tabelaLib.appendChild(tr);
+            });
+        }
+        function atualizarKpisLiberacao() {
+            const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal);
+            if (document.getElementById('kpiLibTotal')) document.getElementById('kpiLibTotal').innerText = liberacoesDia.length;
+            if (document.getElementById('kpiLibChuva')) document.getElementById('kpiLibChuva').innerText = liberacoesDia.filter(item => item.tipoTeste === 'Chuva').length;
+            if (document.getElementById('kpiLibEstrada')) document.getElementById('kpiLibEstrada').innerText = liberacoesDia.filter(item => item.tipoTeste === 'Teste de estrada').length;
+        }
+        function editarLiberacao(id) {
+            const reg = window.liberacoes.find(r => r.id === id); if(!reg) return;
+            document.getElementById('libEditDocId').value = id;
+            document.getElementById('libData').value = reg.data || window.dataFiltroGlobal;
+            document.getElementById('libVin').value = reg.vin;
+            document.getElementById('libStatus').value = reg.status || '✅ Liberado';
+            document.getElementById('libTipoTeste').value = reg.tipoTeste;
+            document.getElementById('libResponsavel').value = reg.responsavel === 'Não informado' ? '' : reg.responsavel;
+            document.getElementById('libFormTitle').innerText = "✏️ Editar Liberação de VIN";
+            document.getElementById('btnSalvarLib').innerText = "Atualizar Liberação";
+            document.getElementById('btnCancelarLib').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function cancelarEdicaoLib() {
+            document.getElementById('libEditDocId').value = "";
+            document.getElementById('libFormTitle').innerText = "✅ Registrar Liberação de VIN";
+            document.getElementById('btnSalvarLib').innerText = "Salvar Liberação";
+            document.getElementById('btnCancelarLib').style.display = "none";
+            document.getElementById('formLiberacao').reset();
+            document.getElementById('libData').value = window.dataFiltroGlobal;
+            document.getElementById('libStatus').value = '✅ Liberado';
+        }
+        function filtrarLiberacoes() {
+            const termo = document.getElementById('inputBuscaVin').value.trim().toUpperCase();
+            const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal);
+            if (!termo) { renderizarTabelaLiberacoes(liberacoesDia); return; }
+            renderizarTabelaLiberacoes(liberacoesDia.filter(item => item.vin.includes(termo)));
+        }
+        function exportarExcel() {
+            const registrosDoDia = obterRegistrosDoDia();
+            if (registrosDoDia.length === 0) { alert("Não há registros para exportar."); return; }
+            const dadosExcel = registrosDoDia.map(r => ({ "Data": formatarDataBR(r.data || window.dataFiltroGlobal), "Inspetor": r.inspetor, "VIN (Chassi)": r.vin, "Modelo": r.modelo, "Origem do Defeito": r.tipoDefeito || 'Não Informado', "Descrição do Defeito": r.descricao }));
+            const worksheet = XLSX.utils.json_to_sheet(dadosExcel); const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Lançamentos NVH"); XLSX.writeFile(workbook, `defeitos_nvh_${window.dataFiltroGlobal}.xlsx`);
+        }
+        function exportarExcelLiberacoes() {
+            const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal);
+            if (liberacoesDia.length === 0) { alert("Não há liberações para exportar."); return; }
+            const dadosExcel = liberacoesDia.map(r => ({ "Data / Hora": r.data ? `${formatarDataBR(r.data)} ${r.dataHora ? r.dataHora.split(' ')[1] || '' : ''}` : r.dataHora, "VIN (Chassi)": r.vin, "Status": r.status, "Tipo de Teste": r.tipoTeste, "Responsável": r.responsavel }));
+            const worksheet = XLSX.utils.json_to_sheet(dadosExcel); const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Liberações VIN"); XLSX.writeFile(workbook, `liberacoes_vin_${window.dataFiltroGlobal}.xlsx`);
+        }
+        function copiarRelatorioWhatsApp() {
+            const dataExibicao = formatarDataBR(window.dataFiltroGlobal);
+            const dadosDia = window.contagemPorData[window.dataFiltroGlobal] || { recebidos: 0, deixados: 0 };
+            const registrosDoDia = obterRegistrosDoDia();
+            let txt = `🔊 *RELATÓRIO DE DEFEITOS (NVH)* - ${dataExibicao}\n------------------------------------\n\n📊 *BALANÇO DO TURNO*\n📥 Recebidos: *${dadosDia.recebidos}*\n⚠️ Defeitos: *${registrosDoDia.length}*\n📤 Deixados: *${dadosDia.deixados}*\n\n🏆 *TOP 3 DEFEITOS GERAL*\n\n`;
+            const defeitoMap = {};
+            registrosDoDia.forEach(r => { const desc = r.descricao.toUpperCase().trim(); if (!defeitoMap[desc]) { defeitoMap[desc] = []; } defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); });
+            const defeitosOrdenados = Object.entries(defeitoMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
+            if (defeitosOrdenados.length === 0) { txt += "Sem ocorrências nesta data.\n"; } else { defeitosOrdenados.forEach(([defeito, listaCarros], index) => { txt += `${index + 1}° ${defeito} (${listaCarros.length})\n`; listaCarros.forEach(carro => { txt += `   • ${carro.vin} – ${carro.modelo}\n`; }); txt += `\n`; }); }
+            copiarTextoUniversal(txt);
+        }
+        function copiarRelatorioLiberacoesWhatsApp() {
+            const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal);
+            if (liberacoesDia.length === 0) { alert("Não há liberações nesta data."); return; }
+            let txt = `📋 *RELATÓRIO DE LIBERAÇÃO DE VEÍCULOS (VIN)* - ${formatarDataBR(window.dataFiltroGlobal)}\n------------------------------------\n\n📊 *TOTAL:* ${liberacoesDia.length}\n\n`;
+            liberacoesDia.forEach((reg, index) => { const iconeTeste = reg.tipoTeste === 'Chuva' ? '🌧️' : '🚗'; txt += `*${index + 1}. VIN:* ${reg.vin}\n   • Status: ${reg.status}\n   • Teste: ${iconeTeste} ${reg.tipoTeste}\n   • Resp: ${reg.responsavel}\n   • Horário: ${reg.dataHora}\n\n`; });
+            copiarTextoUniversal(txt);
+        }
+    </script>
+</body>
+</html>
