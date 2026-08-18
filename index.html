@@ -483,14 +483,14 @@
             const termo = document.getElementById('inputBuscaHistorico') ? document.getElementById('inputBuscaHistorico').value.trim().toUpperCase() : '';
             const tabela = document.getElementById('tabelaHistorico');
             tabela.innerHTML = '';
-            
+             
             const registrosFiltrados = obterRegistrosDoDia().filter(reg => {
                 if (!termo) return true;
                 return ((reg.vin && reg.vin.toUpperCase().includes(termo)) || (reg.modelo && reg.modelo.toUpperCase().includes(termo)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termo)) || (reg.descricao && reg.descricao.toUpperCase().includes(termo)));
             });
 
             if (registrosFiltrados.length === 0) { tabela.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Nenhum registro nesta data.</td></tr>'; return; }
-            
+             
             registrosFiltrados.forEach((reg) => {
                 const tr = document.createElement('tr');
                 const dataExibicao = reg.dataHora || (reg.data ? `${formatarDataBR(reg.data)}` : '-');
@@ -502,13 +502,26 @@
             const registrosDoDia = obterRegistrosDoDia();
             const topGeralContainer = document.getElementById('topGeralContainer');
             if (registrosDoDia.length === 0) { topGeralContainer.innerHTML = '<li class="ranking-item" style="color: var(--text-muted);">Nenhum lançamento efetuado nesta data.</li>'; return; }
+            
             const defeitoMap = {};
-            registrosDoDia.forEach(r => { const desc = r.descricao.toUpperCase().trim(); if (!defeitoMap[desc]) { defeitoMap[desc] = []; } defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); });
+            registrosDoDia.forEach(r => { 
+                const desc = r.descricao.toUpperCase().trim(); 
+                if (!defeitoMap[desc]) { defeitoMap[desc] = []; } 
+                defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); 
+            });
+            
             const defeitosOrdenados = Object.entries(defeitoMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
             topGeralContainer.innerHTML = '';
+            
             defeitosOrdenados.forEach(([defeito, listaCarros], index) => {
-                const li = document.createElement('li'); li.className = 'ranking-item'; li.style.flexDirection = 'column'; li.style.alignItems = 'flex-start'; li.style.gap = '6px';
+                const li = document.createElement('li'); 
+                li.className = 'ranking-item'; 
+                li.style.flexDirection = 'column'; 
+                li.style.alignItems = 'flex-start'; 
+                li.style.gap = '6px';
+                
                 const vinsHtml = listaCarros.map(c => `<span class="vin-tag"><strong>${c.vin}</strong> (${c.modelo})</span>`).join(' ');
+                
                 li.innerHTML = `<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;"><span><strong>#${index + 1}</strong> ${defeito}</span><span class="ranking-badge">${listaCarros.length}x</span></div><div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;">${vinsHtml}</div>`;
                 topGeralContainer.appendChild(li);
             });
@@ -540,7 +553,7 @@
             const listaBase = dadosCustom || window.liberacoes
                 .filter(item => !item.data || item.data === window.dataFiltroGlobal)
                 .sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
-                
+                 
             if (listaBase.length === 0) { tabelaLib.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registro para esta data.</td></tr>'; return; }
             listaBase.forEach((reg) => {
                 const tr = document.createElement('tr');
@@ -614,14 +627,14 @@
             const defeitoMap = {};
             registrosDoDia.forEach(r => { const desc = r.descricao.toUpperCase().trim(); if (!defeitoMap[desc]) { defeitoMap[desc] = []; } defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); });
             const defeitosOrdenados = Object.entries(defeitoMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
-            if (defeitosOrdenados.length === 0) { txt += "Sem ocorrências nesta data.\n"; } else { defeitosOrdenados.forEach(([defeito, listaCarros], index) => { txt += `${index + 1}° ${defeito} (${listaCarros.length})\n`; listaCarros.forEach(carro => { txt += `   • ${carro.vin} – ${carro.modelo}\n`; }); txt += `\n`; }); }
+            if (defeitosOrdenados.length === 0) { txt += "Sem ocorrências nesta data.\n"; } else { defeitosOrdenados.forEach(([defeito, listaCarros], index) => { txt += `${index + 1}° ${defeito} (${listaCarros.length})\n`; listaCarros.forEach(carro => { txt += `  • ${carro.vin} – ${carro.modelo}\n`; }); txt += `\n`; }); }
             copiarTextoUniversal(txt);
         }
         function copiarRelatorioLiberacoesWhatsApp() {
             const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
             if (liberacoesDia.length === 0) { alert("Não há liberações nesta data."); return; }
             let txt = `📋 *RELATÓRIO DE LIBERAÇÃO DE VEÍCULOS (VIN)* - ${formatarDataBR(window.dataFiltroGlobal)}\n------------------------------------\n\n📊 *TOTAL:* ${liberacoesDia.length}\n\n`;
-            liberacoesDia.forEach((reg, index) => { const iconeTeste = reg.tipoTeste === 'Chuva' ? '🌧️' : '🚗'; txt += `*${index + 1}. VIN:* ${reg.vin}\n   • Status: ${reg.status}\n   • Teste: ${iconeTeste} ${reg.tipoTeste}\n   • Resp: ${reg.responsavel}\n   • Horário: ${reg.dataHora}\n\n`; });
+            liberacoesDia.forEach((reg, index) => { const iconeTeste = reg.tipoTeste === 'Chuva' ? '🌧️' : '🚗'; txt += `*${index + 1}. VIN:* ${reg.vin}\n  • Status: ${reg.status}\n  • Teste: ${iconeTeste} ${reg.tipoTeste}\n  • Resp: ${reg.responsavel}\n  • Horário: ${reg.dataHora}\n\n`; });
             copiarTextoUniversal(txt);
         }
     </script>
