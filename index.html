@@ -198,7 +198,7 @@
                     <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Filtrar por VIN, Modelo, Inspetor..." oninput="filtrarHistoricoNVH()" style="text-transform: uppercase;"></div>
                     <div class="table-container">
                         <table>
-                            <thead><tr><th>Data</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Origem</th><th>Descrição</th><th>Ações</th></tr></thead>
+                            <thead><tr><th>Data / Hora</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Origem</th><th>Descrição</th><th>Ações</th></tr></thead>
                             <tbody id="tabelaHistorico"></tbody>
                         </table>
                     </div>
@@ -270,7 +270,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Credenciais atualizadas do projeto estrada-reparo12
         const firebaseConfig = {
             apiKey: "AIzaSyD4VpQ77sUWVqZyF8OD38RgHlzAw7q9BNs",
             authDomain: "estrada-reparo12.firebaseapp.com",
@@ -331,6 +330,9 @@
         formNVH.addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('editDocId').value;
+            const agora = new Date();
+            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
             const dadosForm = {
                 data: inputData.value,
                 inspetor: document.getElementById('inspetor').value,
@@ -338,6 +340,7 @@
                 modelo: document.getElementById('modelo').value,
                 tipoDefeito: document.getElementById('tipoDefeito').value,
                 descricao: document.getElementById('descricao').value.trim(),
+                dataHora: dataHoraFormatada,
                 criadoEm: Date.now()
             };
 
@@ -439,7 +442,11 @@
             document.getElementById('inputRecebidos').value = dadosDia.recebidos;
             document.getElementById('inputDeixados').value = dadosDia.deixados;
         }
-        function obterRegistrosDoDia() { return window.registros.filter(r => !r.data || r.data === window.dataFiltroGlobal); }
+        function obterRegistrosDoDia() { 
+            return window.registros
+                .filter(r => !r.data || r.data === window.dataFiltroGlobal)
+                .sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0)); 
+        }
         function editarRegistro(id) {
             const reg = window.registros.find(r => r.id === id); if(!reg) return;
             document.getElementById('editDocId').value = id;
@@ -476,16 +483,18 @@
             const termo = document.getElementById('inputBuscaHistorico') ? document.getElementById('inputBuscaHistorico').value.trim().toUpperCase() : '';
             const tabela = document.getElementById('tabelaHistorico');
             tabela.innerHTML = '';
-            const registrosFiltrados = window.registros.filter(reg => {
-                const mesmaData = (!reg.data || reg.data === window.dataFiltroGlobal);
-                if (!mesmaData) return false;
+            
+            const registrosFiltrados = obterRegistrosDoDia().filter(reg => {
                 if (!termo) return true;
                 return ((reg.vin && reg.vin.toUpperCase().includes(termo)) || (reg.modelo && reg.modelo.toUpperCase().includes(termo)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termo)) || (reg.descricao && reg.descricao.toUpperCase().includes(termo)));
             });
+
             if (registrosFiltrados.length === 0) { tabela.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Nenhum registro nesta data.</td></tr>'; return; }
+            
             registrosFiltrados.forEach((reg) => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td style="white-space: nowrap; color: var(--text-muted);">${formatarDataBR(reg.data || window.dataFiltroGlobal)}</td><td>${reg.inspetor || '-'}</td><td><strong>${reg.vin}</strong></td><td><span class="badge-modelo">${reg.modelo}</span></td><td><span class="badge-tipo">${reg.tipoDefeito || 'N/I'}</span></td><td>${reg.descricao}</td><td style="white-space: nowrap;"><button class="btn-action btn-edit" onclick="editarRegistro('${reg.id}')">Editar</button> <button class="btn-action btn-delete" onclick="window.excluirRegistro('${reg.id}')">Excluir</button></td>`;
+                const dataExibicao = reg.dataHora || (reg.data ? `${formatarDataBR(reg.data)}` : '-');
+                tr.innerHTML = `<td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${dataExibicao}</td><td>${reg.inspetor || '-'}</td><td><strong>${reg.vin}</strong></td><td><span class="badge-modelo">${reg.modelo}</span></td><td><span class="badge-tipo">${reg.tipoDefeito || 'N/I'}</span></td><td>${reg.descricao}</td><td style="white-space: nowrap;"><button class="btn-action btn-edit" onclick="editarRegistro('${reg.id}')">Editar</button> <button class="btn-action btn-delete" onclick="window.excluirRegistro('${reg.id}')">Excluir</button></td>`;
                 tabela.appendChild(tr);
             });
         }
@@ -528,13 +537,16 @@
         function renderizarTabelaLiberacoes(dadosCustom) {
             atualizarKpisLiberacao();
             const tabelaLib = document.getElementById('tabelaLiberacoes'); tabelaLib.innerHTML = '';
-            const listaBase = dadosCustom || window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal);
+            const listaBase = dadosCustom || window.liberacoes
+                .filter(item => !item.data || item.data === window.dataFiltroGlobal)
+                .sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+                
             if (listaBase.length === 0) { tabelaLib.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registro para esta data.</td></tr>'; return; }
             listaBase.forEach((reg) => {
                 const tr = document.createElement('tr');
                 const classeTeste = reg.tipoTeste === 'Chuva' ? 'badge-teste-chuva' : 'badge-teste-estrada';
                 const iconeTeste = reg.tipoTeste === 'Chuva' ? '🌧️' : '🚗';
-                const dataExibicao = reg.data ? `${formatarDataBR(reg.data)} ${reg.dataHora ? reg.dataHora.split(' ')[1] || '' : ''}` : reg.dataHora;
+                const dataExibicao = reg.dataHora || (reg.data ? `${formatarDataBR(reg.data)}` : '-');
                 tr.innerHTML = `<td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${dataExibicao}</td><td><strong>${reg.vin}</strong></td><td><span class="badge-status">${reg.status}</span></td><td><span class="${classeTeste}">${iconeTeste} ${reg.tipoTeste}</span></td><td>${reg.responsavel}</td><td style="white-space: nowrap;"><button class="btn-action btn-edit" onclick="editarLiberacao('${reg.id}')">Editar</button> <button class="btn-action btn-delete" onclick="window.excluirLiberacao('${reg.id}')">Excluir</button></td>`;
                 tabelaLib.appendChild(tr);
             });
@@ -576,14 +588,21 @@
         function exportarExcel() {
             const registrosDoDia = obterRegistrosDoDia();
             if (registrosDoDia.length === 0) { alert("Não há registros para exportar."); return; }
-            const dadosExcel = registrosDoDia.map(r => ({ "Data": formatarDataBR(r.data || window.dataFiltroGlobal), "Inspetor": r.inspetor, "VIN (Chassi)": r.vin, "Modelo": r.modelo, "Origem do Defeito": r.tipoDefeito || 'Não Informado', "Descrição do Defeito": r.descricao }));
+            const dadosExcel = registrosDoDia.map(r => ({ 
+                "Data / Hora": r.dataHora || formatarDataBR(r.data || window.dataFiltroGlobal), 
+                "Inspetor": r.inspetor, 
+                "VIN (Chassi)": r.vin, 
+                "Modelo": r.modelo, 
+                "Origem do Defeito": r.tipoDefeito || 'Não Informado', 
+                "Descrição do Defeito": r.descricao 
+            }));
             const worksheet = XLSX.utils.json_to_sheet(dadosExcel); const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Lançamentos NVH"); XLSX.writeFile(workbook, `defeitos_nvh_${window.dataFiltroGlobal}.xlsx`);
         }
         function exportarExcelLiberacoes() {
-            const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal);
+            const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
             if (liberacoesDia.length === 0) { alert("Não há liberações para exportar."); return; }
-            const dadosExcel = liberacoesDia.map(r => ({ "Data / Hora": r.data ? `${formatarDataBR(r.data)} ${r.dataHora ? r.dataHora.split(' ')[1] || '' : ''}` : r.dataHora, "VIN (Chassi)": r.vin, "Status": r.status, "Tipo de Teste": r.tipoTeste, "Responsável": r.responsavel }));
+            const dadosExcel = liberacoesDia.map(r => ({ "Data / Hora": r.dataHora || formatarDataBR(r.data || window.dataFiltroGlobal), "VIN (Chassi)": r.vin, "Status": r.status, "Tipo de Teste": r.tipoTeste, "Responsável": r.responsavel }));
             const worksheet = XLSX.utils.json_to_sheet(dadosExcel); const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Liberações VIN"); XLSX.writeFile(workbook, `liberacoes_vin_${window.dataFiltroGlobal}.xlsx`);
         }
@@ -599,7 +618,7 @@
             copiarTextoUniversal(txt);
         }
         function copiarRelatorioLiberacoesWhatsApp() {
-            const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal);
+            const liberacoesDia = window.liberacoes.filter(item => !item.data || item.data === window.dataFiltroGlobal).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
             if (liberacoesDia.length === 0) { alert("Não há liberações nesta data."); return; }
             let txt = `📋 *RELATÓRIO DE LIBERAÇÃO DE VEÍCULOS (VIN)* - ${formatarDataBR(window.dataFiltroGlobal)}\n------------------------------------\n\n📊 *TOTAL:* ${liberacoesDia.length}\n\n`;
             liberacoesDia.forEach((reg, index) => { const iconeTeste = reg.tipoTeste === 'Chuva' ? '🌧️' : '🚗'; txt += `*${index + 1}. VIN:* ${reg.vin}\n   • Status: ${reg.status}\n   • Teste: ${iconeTeste} ${reg.tipoTeste}\n   • Resp: ${reg.responsavel}\n   • Horário: ${reg.dataHora}\n\n`; });
