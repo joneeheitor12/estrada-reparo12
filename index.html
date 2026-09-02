@@ -201,10 +201,10 @@
                             </div>
                         </div>
                         <div style="display: flex; gap: 12px;">
-                            <div class="form-group" style="flex: 1;"><label>VIN (Chassi):</label><input type="text" id="vin" placeholder="Ex: VK084427" required style="text-transform: uppercase;"></div>
+                            <div class="form-group" style="flex: 1;"><label>VIN (Chassi):</label><input type="text" id="vin" placeholder="Ex: VK084427" required></div>
                             <div class="form-group" style="flex: 1;">
-                                <label>Modelo:</label>
-                                <input type="text" id="modelo" list="listaModelos" placeholder="Ex: SC3H ou Novo" required style="text-transform: uppercase;">
+                                <label>Modelo Base:</label>
+                                <input type="text" id="modelo" list="listaModelos" placeholder="Ex: SC3H" required>
                                 <datalist id="listaModelos">
                                     <option value="SC3H">
                                     <option value="SA2">
@@ -214,6 +214,25 @@
                                 </datalist>
                             </div>
                         </div>
+
+                        <!-- SELEÇÃO DE TIPO / PROCESSO (SKD1, SKD2, PBP) -->
+                        <div style="display: flex; gap: 12px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Processo / Linha:</label>
+                                <select id="subModeloProcesso" required>
+                                    <option value="SKD1">SKD1</option>
+                                    <option value="SKD2">SKD2</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Tipo de Veículo:</label>
+                                <select id="tipoVeiculoPbp" required>
+                                    <option value="PBP">PBP</option>
+                                    <option value="Não PBP">Não PBP</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label>Origem do Defeito:</label>
                             <select id="tipoDefeito" required>
@@ -225,12 +244,12 @@
 
                         <div class="form-group">
                             <label>Localização do Componente:</label>
-                            <input type="text" id="localizacao" placeholder="Ex: PORTA DIANTEIRA ESQUERDA, PAINEL..." required style="text-transform: uppercase;">
+                            <input type="text" id="localizacao" placeholder="Ex: porta dianteira esquerda, painel..." required>
                         </div>
 
                         <div class="form-group">
                             <label>Descrição do Defeito:</label>
-                            <input type="text" id="descricao" placeholder="Ex: BARULHO DE VIBRAÇÃO / FOLGA" required style="text-transform: uppercase;">
+                            <input type="text" id="descricao" placeholder="Ex: barulho de vibração / folga" required>
                         </div>
                         <div style="display: flex; gap: 8px;">
                             <button type="submit" class="btn btn-primary" id="btnSalvar">Salvar Lançamento</button>
@@ -251,7 +270,7 @@
                 </div>
                 <div class="card">
                     <h2>📋 Histórico de Lançamentos</h2>
-                    <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Filtrar por VIN, Modelo, Inspetor..." oninput="filtrarHistoricoNVH()" style="text-transform: uppercase;"></div>
+                    <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Filtrar por VIN, Modelo, Inspetor..." oninput="filtrarHistoricoNVH()"></div>
                     <div class="table-container">
                         <table>
                             <thead><tr><th>Data / Hora</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Origem</th><th>Localização</th><th>Descrição</th><th>Ações</th></tr></thead>
@@ -266,8 +285,8 @@
     <div id="tab-liberacao" class="tab-content">
         <div class="kpi-container" style="grid-template-columns: repeat(3, 1fr);">
             <div class="kpi-box"><div class="kpi-value" id="kpiLibTotal" style="color: var(--accent);">0</div><div class="kpi-label">Total Liberados (Período)</div></div>
-            <div class="kpi-box"><div class="kpi-value" id="kpiLibChuva" style="color: #0369a1;">0</div><div class="kpi-label">🌧️ Teste Chuva</div></div>
-            <div class="kpi-box"><div class="kpi-value" id="kpiLibEstrada" style="color: #b45309;">0</div><div class="kpi-label">🚗 Teste Estrada</div></div>
+            <div class="kpi-box"><div class="kpi-value" id="kpiLibChuva" style="color: #0369a1;">0</div><div class="kpi-label">🌧️ Liberados Chuva</div></div>
+            <div class="kpi-box"><div class="kpi-value" id="kpiLibEstrada" style="color: #b45309;">0</div><div class="kpi-label">🚗 Liberados Estrada</div></div>
         </div>
 
         <div class="grid-layout">
@@ -278,7 +297,7 @@
                         <input type="hidden" id="libEditDocId" value="">
                         <div style="display: flex; gap: 12px;">
                             <div class="form-group" style="flex: 1;"><label>Data *</label><input type="date" id="libData" onclick="this.showPicker()" required></div>
-                            <div class="form-group" style="flex: 1.2;"><label>VIN (Chassi) *</label><input type="text" id="libVin" placeholder="Ex: VK084427" required style="text-transform: uppercase;"></div>
+                            <div class="form-group" style="flex: 1.2;"><label>VIN (Chassi) *</label><input type="text" id="libVin" placeholder="Ex: VK084427" required></div>
                         </div>
                         <div class="form-group">
                             <label>Status da Liberação *</label>
@@ -309,7 +328,7 @@
             <div>
                 <div class="card">
                     <h2>🔍 Consultar e Visualizar Status</h2>
-                    <div class="search-box"><input type="text" id="inputBuscaVin" placeholder="🔎 Pesquisar VIN..." oninput="filtrarLiberacoes()" style="text-transform: uppercase;"></div>
+                    <div class="search-box"><input type="text" id="inputBuscaVin" placeholder="🔎 Pesquisar VIN..." oninput="filtrarLiberacoes()"></div>
                     <div class="table-container" style="max-height: 480px;">
                         <table>
                             <thead><tr><th>Data / Hora</th><th>VIN</th><th>Status</th><th>Tipo de Teste</th><th>Responsável</th><th>Ações</th></tr></thead>
@@ -430,6 +449,7 @@
             window.liberacoes = [];
             snapshot.forEach((doc) => { window.liberacoes.push({ id: doc.id, ...doc.data() }); });
             window.renderizarTabelaLiberacoes();
+            window.atualizarKPIsLiberacao();
         });
 
         onSnapshot(collection(db, "ruidos_saldos"), (snapshot) => {
@@ -445,7 +465,7 @@
             const modelosDinamicos = new Set(modelosPadrao);
             
             window.registros.forEach(r => {
-                if (r.modelo) modelosDinamicos.add(r.modelo.toUpperCase().trim());
+                if (r.modeloBase) modelosDinamicos.add(r.modeloBase.trim());
             });
 
             datalist.innerHTML = '';
@@ -462,14 +482,22 @@
             const agora = new Date();
             const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
+            const modeloBaseInput = document.getElementById('modelo').value.trim();
+            const processoInput = document.getElementById('subModeloProcesso').value;
+            const tipoVeiculoInput = document.getElementById('tipoVeiculoPbp').value;
+            const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput} (${tipoVeiculoInput})`;
+
             const dadosForm = {
                 data: inputData.value,
                 inspetor: document.getElementById('inspetor').value,
-                vin: document.getElementById('vin').value.trim().toUpperCase(),
-                modelo: document.getElementById('modelo').value.trim().toUpperCase(),
+                vin: document.getElementById('vin').value.trim(),
+                modeloBase: modeloBaseInput,
+                processo: processoInput,
+                tipoVeiculo: tipoVeiculoInput,
+                modelo: modeloCompletoFormatado,
                 tipoDefeito: document.getElementById('tipoDefeito').value,
-                localizacao: document.getElementById('localizacao').value.trim().toUpperCase(),
-                descricao: document.getElementById('descricao').value.trim().toUpperCase(),
+                localizacao: document.getElementById('localizacao').value.trim(),
+                descricao: document.getElementById('descricao').value.trim(),
                 dataHora: dataHoraFormatada,
                 criadoEm: Date.now()
             };
@@ -478,7 +506,7 @@
             else { await updateDoc(doc(db, "ruidos_registros", editDocId), dadosForm); window.cancelarEdicao(); }
 
             const vinAtual = dadosForm.vin;
-            const modeloAtual = dadosForm.modelo;
+            const modeloAtual = dadosForm.modeloBase;
             const ultimoInspetor = dadosForm.inspetor;
             
             formNVH.reset();
@@ -497,7 +525,7 @@
 
             const dadosForm = {
                 data: libInputData.value,
-                vin: document.getElementById('libVin').value.trim().toUpperCase(),
+                vin: document.getElementById('libVin').value.trim(),
                 status: document.getElementById('libStatus').value,
                 tipoTeste: document.getElementById('libTipoTeste').value,
                 responsavel: document.getElementById('libResponsavel').value.trim() || 'Não informado',
@@ -550,9 +578,7 @@
             element.classList.add('active');
             const btnWhatsapp = document.getElementById('btnWhatsappHeader');
             const btnExcel = document.getElementById('btnExcelHeader');
-            if (tabId === 'tab-nvh') {
-                btnWhatsapp.style.display = 'inline-flex'; btnExcel.style.display = 'inline-flex';
-            } else if (tabId === 'tab-liberacao') {
+            if (tabId === 'tab-nvh' || tabId === 'tab-liberacao') {
                 btnWhatsapp.style.display = 'inline-flex'; btnExcel.style.display = 'inline-flex';
             } else {
                 btnWhatsapp.style.display = 'none'; btnExcel.style.display = 'none';
@@ -589,6 +615,7 @@
             carregarContagemDoDia();
             atualizarTudoNVH();
             renderizarTabelaLiberacoes();
+            atualizarKPIsLiberacao();
         }
 
         function itemNoPeriodo(dataRegistro) {
@@ -630,13 +657,26 @@
                 .sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
         }
 
+        function atualizarKPIsLiberacao() {
+            const liberacoesPeriodo = obterLiberacoesFiltradas();
+            const totalLib = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado')).length;
+            const libChuva = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado') && l.tipoTeste === 'Chuva').length;
+            const libEstrada = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado') && l.tipoTeste === 'Teste de estrada').length;
+
+            document.getElementById('kpiLibTotal').innerText = totalLib;
+            document.getElementById('kpiLibChuva').innerText = libChuva;
+            document.getElementById('kpiLibEstrada').innerText = libEstrada;
+        }
+
         function editarRegistro(id) {
             const reg = window.registros.find(r => r.id === id); if(!reg) return;
             document.getElementById('editDocId').value = id;
             document.getElementById('dataLancamento').value = reg.data || window.filtroConfig.dataUnica;
             document.getElementById('inspetor').value = reg.inspetor;
             document.getElementById('vin').value = reg.vin;
-            document.getElementById('modelo').value = reg.modelo;
+            document.getElementById('modelo').value = reg.modeloBase || reg.modelo;
+            document.getElementById('subModeloProcesso').value = reg.processo || 'SKD1';
+            document.getElementById('tipoVeiculoPbp').value = reg.tipoVeiculo || 'PBP';
             document.getElementById('tipoDefeito').value = reg.tipoDefeito || 'Estrada';
             document.getElementById('localizacao').value = reg.localizacao || '';
             document.getElementById('descricao').value = reg.descricao;
@@ -668,6 +708,7 @@
             atualizarTopGeral(); 
             atualizarRankingPorModelo(); 
             atualizarIndicadoresPeriodo();
+            atualizarKPIsLiberacao();
         }
 
         function atualizarIndicadoresPeriodo() {
@@ -717,13 +758,14 @@
         }
 
         function filtrarHistoricoNVH() {
-            const termo = document.getElementById('inputBuscaHistorico') ? document.getElementById('inputBuscaHistorico').value.trim().toUpperCase() : '';
+            const termo = document.getElementById('inputBuscaHistorico') ? document.getElementById('inputBuscaHistorico').value.trim() : '';
             const tabela = document.getElementById('tabelaHistorico');
             tabela.innerHTML = '';
              
             const registrosFiltrados = obterRegistrosFiltrados().filter(reg => {
                 if (!termo) return true;
-                return ((reg.vin && reg.vin.toUpperCase().includes(termo)) || (reg.modelo && reg.modelo.toUpperCase().includes(termo)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termo)) || (reg.descricao && reg.descricao.toUpperCase().includes(termo)));
+                const termoUpper = termo.toUpperCase();
+                return ((reg.vin && reg.vin.toUpperCase().includes(termoUpper)) || (reg.modelo && reg.modelo.toUpperCase().includes(termoUpper)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termoUpper)) || (reg.descricao && reg.descricao.toUpperCase().includes(termoUpper)));
             });
 
             if (registrosFiltrados.length === 0) { tabela.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Nenhum registro encontrado no período.</td></tr>'; return; }
@@ -743,7 +785,7 @@
             const defeitoMap = {};
             registrosFiltrados.forEach(r => { 
                 const descCompleta = r.localizacao ? `${r.localizacao} - ${r.descricao}` : r.descricao;
-                const desc = descCompleta.toUpperCase().trim(); 
+                const desc = descCompleta.trim(); 
                 if (!defeitoMap[desc]) { defeitoMap[desc] = []; } 
                 defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); 
             });
@@ -772,7 +814,7 @@
             registrosFiltrados.forEach(r => {
                 const modelo = r.modelo || 'OUTROS';
                 const descCompleta = r.localizacao ? `${r.localizacao} - ${r.descricao}` : r.descricao;
-                const desc = descCompleta.toLowerCase();
+                const desc = descCompleta;
                 if (!mapaModelos[modelo]) { mapaModelos[modelo] = { total: 0, defeitos: {} }; }
                 mapaModelos[modelo].total++;
                 mapaModelos[modelo].defeitos[desc] = (mapaModelos[modelo].defeitos[desc] || 0) + 1;
@@ -782,7 +824,7 @@
                 const grupoDiv = document.createElement('div'); grupoDiv.className = 'modelo-group';
                 let htmlContent = `<div class="modelo-group-title"><span>MODELO: ${modelo}</span><span>Total: ${data.total} defeito(s)</span></div><ul class="ranking-list">`;
                 const defeitosOrdenados = Object.entries(data.defeitos).sort((a, b) => b[1] - a[1]);
-                defeitosOrdenados.forEach(([defeito, qtd]) => { htmlContent += `<li class="ranking-item"><span>${defeito.toUpperCase()}</span><span class="ranking-badge">${qtd}x</span></li>`; });
+                defeitosOrdenados.forEach(([defeito, qtd]) => { htmlContent += `<li class="ranking-item"><span>${defeito}</span><span class="ranking-badge">${qtd}x</span></li>`; });
                 htmlContent += '</ul>'; grupoDiv.innerHTML = htmlContent; rankingModeloContainer.appendChild(grupoDiv);
             });
         }
@@ -823,10 +865,10 @@
             document.getElementById('libStatus').value = '✅ Liberado';
         }
         function filtrarLiberacoes() {
-            const termo = document.getElementById('inputBuscaVin').value.trim().toUpperCase();
+            const termo = document.getElementById('inputBuscaVin').value.trim();
             const liberacoesPeriodo = obterLiberacoesFiltradas();
             if (!termo) { renderizarTabelaLiberacoes(liberacoesPeriodo); return; }
-            renderizarTabelaLiberacoes(liberacoesPeriodo.filter(item => item.vin.includes(termo)));
+            renderizarTabelaLiberacoes(liberacoesPeriodo.filter(item => item.vin.toUpperCase().includes(termo.toUpperCase())));
         }
 
         // CONTROLES DO MODAL DE EXPORTAÇÃO EXCEL
@@ -940,7 +982,7 @@
             const defeitoMap = {};
             registrosPeriodo.forEach(r => { 
                 const descCompleta = r.localizacao ? `${r.localizacao} - ${r.descricao}` : r.descricao;
-                const desc = descCompleta.toUpperCase().trim(); 
+                const desc = descCompleta.trim(); 
                 if (!defeitoMap[desc]) { defeitoMap[desc] = []; } 
                 defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); 
             });
