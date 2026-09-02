@@ -215,22 +215,15 @@
                             </div>
                         </div>
 
-                        <!-- SELEÇÃO DE TIPO / PROCESSO (SKD1, SKD2, PBP) -->
-                        <div style="display: flex; gap: 12px;">
-                            <div class="form-group" style="flex: 1;">
-                                <label>Processo / Linha:</label>
-                                <select id="subModeloProcesso" required>
-                                    <option value="SKD1">SKD1</option>
-                                    <option value="SKD2">SKD2</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label>Tipo de Veículo:</label>
-                                <select id="tipoVeiculoPbp" required>
-                                    <option value="PBP">PBP</option>
-                                    <option value="Não PBP">Não PBP</option>
-                                </select>
-                            </div>
+                        <!-- SELEÇÃO DE PROCESSO / LINHA ATUALIZADA (SKD1, SKD2, PBP) -->
+                        <div class="form-group">
+                            <label>Processo / Linha:</label>
+                            <select id="subModeloProcesso" required>
+                                <option value="" disabled selected>Selecione o processo...</option>
+                                <option value="SKD1">SKD1</option>
+                                <option value="SKD2">SKD2</option>
+                                <option value="PBP">PBP</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -484,8 +477,7 @@
 
             const modeloBaseInput = document.getElementById('modelo').value.trim();
             const processoInput = document.getElementById('subModeloProcesso').value;
-            const tipoVeiculoInput = document.getElementById('tipoVeiculoPbp').value;
-            const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput} (${tipoVeiculoInput})`;
+            const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput}`;
 
             const dadosForm = {
                 data: inputData.value,
@@ -493,7 +485,6 @@
                 vin: document.getElementById('vin').value.trim(),
                 modeloBase: modeloBaseInput,
                 processo: processoInput,
-                tipoVeiculo: tipoVeiculoInput,
                 modelo: modeloCompletoFormatado,
                 tipoDefeito: document.getElementById('tipoDefeito').value,
                 localizacao: document.getElementById('localizacao').value.trim(),
@@ -676,7 +667,6 @@
             document.getElementById('vin').value = reg.vin;
             document.getElementById('modelo').value = reg.modeloBase || reg.modelo;
             document.getElementById('subModeloProcesso').value = reg.processo || 'SKD1';
-            document.getElementById('tipoVeiculoPbp').value = reg.tipoVeiculo || 'PBP';
             document.getElementById('tipoDefeito').value = reg.tipoDefeito || 'Estrada';
             document.getElementById('localizacao').value = reg.localizacao || '';
             document.getElementById('descricao').value = reg.descricao;
