@@ -204,18 +204,18 @@
                             <div class="form-group" style="flex: 1;"><label>VIN (Chassi):</label><input type="text" id="vin" placeholder="Ex: VK084427" required></div>
                             <div class="form-group" style="flex: 1;">
                                 <label>Modelo Base:</label>
-                                <input type="text" id="modelo" list="listaModelos" placeholder="Ex: SC3H" required>
-                                <datalist id="listaModelos">
-                                    <option value="SC3H">
-                                    <option value="SA2">
-                                    <option value="SA6">
-                                    <option value="EQE">
-                                    <option value="HA2">
-                                </datalist>
+                                <select id="modelo" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="SC3H">SC3H</option>
+                                    <option value="SA2">SA2</option>
+                                    <option value="SA6">SA6</option>
+                                    <option value="EQE">EQE</option>
+                                    <option value="HA2">HA2</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- SELEÇÃO DE PROCESSO / LINHA ATUALIZADA (SKD1, SKD2, PBP) -->
+                        <!-- SELEÇÃO DE PROCESSO / LINHA (SKD1, SKD2, PBP) -->
                         <div class="form-group">
                             <label>Processo / Linha:</label>
                             <select id="subModeloProcesso" required>
@@ -434,7 +434,6 @@
         onSnapshot(collection(db, "ruidos_registros"), (snapshot) => {
             window.registros = [];
             snapshot.forEach((doc) => { window.registros.push({ id: doc.id, ...doc.data() }); });
-            atualizarDatalistModelos();
             window.atualizarTudoNVH();
         });
 
@@ -452,30 +451,13 @@
             window.atualizarTudoNVH();
         });
 
-        function atualizarDatalistModelos() {
-            const datalist = document.getElementById('listaModelos');
-            const modelosPadrao = ["SC3H", "SA2", "SA6", "EQE", "HA2"];
-            const modelosDinamicos = new Set(modelosPadrao);
-            
-            window.registros.forEach(r => {
-                if (r.modeloBase) modelosDinamicos.add(r.modeloBase.trim());
-            });
-
-            datalist.innerHTML = '';
-            modelosDinamicos.forEach(mod => {
-                const opt = document.createElement('option');
-                opt.value = mod;
-                datalist.appendChild(opt);
-            });
-        }
-
         formNVH.addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('editDocId').value;
             const agora = new Date();
             const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-            const modeloBaseInput = document.getElementById('modelo').value.trim();
+            const modeloBaseInput = document.getElementById('modelo').value;
             const processoInput = document.getElementById('subModeloProcesso').value;
             const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput}`;
 
@@ -498,6 +480,7 @@
 
             const vinAtual = dadosForm.vin;
             const modeloAtual = dadosForm.modeloBase;
+            const processoAtual = dadosForm.processo;
             const ultimoInspetor = dadosForm.inspetor;
             
             formNVH.reset();
@@ -505,6 +488,7 @@
             document.getElementById('inspetor').value = ultimoInspetor;
             document.getElementById('vin').value = vinAtual;
             document.getElementById('modelo').value = modeloAtual;
+            document.getElementById('subModeloProcesso').value = processoAtual;
             document.getElementById('localizacao').focus();
         });
 
@@ -665,7 +649,7 @@
             document.getElementById('dataLancamento').value = reg.data || window.filtroConfig.dataUnica;
             document.getElementById('inspetor').value = reg.inspetor;
             document.getElementById('vin').value = reg.vin;
-            document.getElementById('modelo').value = reg.modeloBase || reg.modelo;
+            document.getElementById('modelo').value = reg.modeloBase || 'SC3H';
             document.getElementById('subModeloProcesso').value = reg.processo || 'SKD1';
             document.getElementById('tipoDefeito').value = reg.tipoDefeito || 'Estrada';
             document.getElementById('localizacao').value = reg.localizacao || '';
