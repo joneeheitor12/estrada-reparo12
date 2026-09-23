@@ -204,18 +204,17 @@
                             <div class="form-group" style="flex: 1;"><label>VIN (Chassi):</label><input type="text" id="vin" placeholder="Ex: VK084427" required></div>
                             <div class="form-group" style="flex: 1;">
                                 <label>Modelo Base:</label>
-                                <select id="modelo" required>
-                                    <option value="" disabled selected>Selecione...</option>
-                                    <option value="SC3H">SC3H</option>
-                                    <option value="SA2">SA2</option>
-                                    <option value="SA6">SA6</option>
-                                    <option value="EQE">EQE</option>
-                                    <option value="HA2">HA2</option>
-                                </select>
+                                <input type="text" id="modelo" list="listaModelos" placeholder="Ex: SC3H" required>
+                                <datalist id="listaModelos">
+                                    <option value="SC3H">
+                                    <option value="SA2">
+                                    <option value="SA6">
+                                    <option value="EQE">
+                                    <option value="HA2">
+                                </datalist>
                             </div>
                         </div>
 
-                        <!-- SELEÇÃO DE PROCESSO / LINHA (SKD1, SKD2, PBP) -->
                         <div class="form-group">
                             <label>Processo / Linha:</label>
                             <select id="subModeloProcesso" required>
@@ -237,7 +236,10 @@
 
                         <div class="form-group">
                             <label>Localização do Componente:</label>
-                            <input type="text" id="localizacao" placeholder="Ex: porta dianteira esquerda, painel..." required>
+                            <input type="text" id="localizacao" list="listaLocalizacoes" placeholder="Selecione ou digite um novo componente..." required>
+                            <datalist id="listaLocalizacoes">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </datalist>
                         </div>
 
                         <div class="form-group">
@@ -253,12 +255,13 @@
             </div>
 
             <div>
+                <!-- AGRUPAMENTO CONTABILIZADO POR COMPONENTE -->
                 <div class="card">
-                    <h2>🏆 Top 3 Defeitos (Período Selecionado)</h2>
+                    <h2>🏆 Top 3 Componentes com Defeito (Período Selecionado)</h2>
                     <ul class="ranking-list" id="topGeralContainer"><li class="ranking-item" style="color: var(--text-muted);">Nenhum lançamento no período.</li></ul>
                 </div>
                 <div class="card">
-                    <h2>🚘 Defeitos Agrupados por Modelo</h2>
+                    <h2>🚘 Componentes Agrupados por Modelo</h2>
                     <div id="rankingModeloContainer"><p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p></div>
                 </div>
                 <div class="card">
@@ -397,6 +400,39 @@
         window.liberacoes = [];
         window.contagemPorData = {};
         
+        const localizacoesPadrao = [
+            "Conjunto de caixa de luxo",
+            "Selo da moldura da porta da frente esquerda",
+            "Selo da moldura da porta da frente direita",
+            "Selo da moldura da porta traseira esquerda",
+            "Selo da moldura da porta traseira direita",
+            "Encosto do assento do copiloto",
+            "Pilar B esquerdo",
+            "Pilar B direito",
+            "Montagem do corpo no painel de instrumentos",
+            "Montagem do corpo do painel de instrumentos secundário",
+            "Anel de bloqueio da porta traseira",
+            "Conjunto de proteção da porta da frente direita",
+            "Conjunto de proteção da porta da frente esquerda",
+            "Conjunto de proteção da porta traseira esquerda",
+            "Conjunto de proteção da porta traseira direita",
+            "Conjunto de proteção superior do pilar C direito",
+            "Conjunto de proteção superior do pilar C esquerdo",
+            "Conjunto de montagem de spoiler",
+            "Almofada de tapete",
+            "Conjunto de vidro da porta da frente esquerda",
+            "Conjunto de vidro da porta da frente direita",
+            "Conjunto do limitador da porta da frente",
+            "Montagem de teto solar panorâmico",
+            "Capa direita da tampa de ventilação",
+            "Conjunto de tela PAD",
+            "Antena 4G",
+            "Placa externa da tampa superior",
+            "Conjunto de luz traseira combinada esquerda",
+            "Montagem de teto",
+            "Montagem de tapete"
+        ];
+
         window.filtroConfig = {
             tipo: "dia",
             dataUnica: "",
@@ -434,6 +470,8 @@
         onSnapshot(collection(db, "ruidos_registros"), (snapshot) => {
             window.registros = [];
             snapshot.forEach((doc) => { window.registros.push({ id: doc.id, ...doc.data() }); });
+            atualizarDatalistModelos();
+            atualizarDatalistLocalizacoes();
             window.atualizarTudoNVH();
         });
 
@@ -451,13 +489,50 @@
             window.atualizarTudoNVH();
         });
 
+        function atualizarDatalistModelos() {
+            const datalist = document.getElementById('listaModelos');
+            const modelosPadrao = ["SC3H", "SA2", "SA6", "EQE", "HA2"];
+            const modelosDinamicos = new Set(modelosPadrao);
+            
+            window.registros.forEach(r => {
+                if (r.modeloBase) modelosDinamicos.add(r.modeloBase.trim());
+            });
+
+            datalist.innerHTML = '';
+            modelosDinamicos.forEach(mod => {
+                const opt = document.createElement('option');
+                opt.value = mod;
+                datalist.appendChild(opt);
+            });
+        }
+
+        function atualizarDatalistLocalizacoes() {
+            const datalist = document.getElementById('listaLocalizacoes');
+            if (!datalist) return;
+            
+            const locDinamicas = new Set(localizacoesPadrao);
+            
+            window.registros.forEach(r => {
+                if (r.localizacao && r.localizacao.trim() !== "") {
+                    locDinamicas.add(r.localizacao.trim());
+                }
+            });
+
+            datalist.innerHTML = '';
+            locDinamicas.forEach(loc => {
+                const opt = document.createElement('option');
+                opt.value = loc;
+                datalist.appendChild(opt);
+            });
+        }
+
         formNVH.addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('editDocId').value;
             const agora = new Date();
             const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-            const modeloBaseInput = document.getElementById('modelo').value;
+            const modeloBaseInput = document.getElementById('modelo').value.trim();
             const processoInput = document.getElementById('subModeloProcesso').value;
             const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput}`;
 
@@ -478,18 +553,17 @@
             if (!editDocId) { await addDoc(collection(db, "ruidos_registros"), dadosForm); }
             else { await updateDoc(doc(db, "ruidos_registros", editDocId), dadosForm); window.cancelarEdicao(); }
 
-            const vinAtual = dadosForm.vin;
             const modeloAtual = dadosForm.modeloBase;
-            const processoAtual = dadosForm.processo;
             const ultimoInspetor = dadosForm.inspetor;
             
             formNVH.reset();
             inputData.value = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
             document.getElementById('inspetor').value = ultimoInspetor;
-            document.getElementById('vin').value = vinAtual;
             document.getElementById('modelo').value = modeloAtual;
-            document.getElementById('subModeloProcesso').value = processoAtual;
-            document.getElementById('localizacao').focus();
+            
+            // Limpa o VIN para o próximo lançamento e coloca o foco nele
+            document.getElementById('vin').value = '';
+            document.getElementById('vin').focus();
         });
 
         formLib.addEventListener('submit', async (e) => {
@@ -649,7 +723,7 @@
             document.getElementById('dataLancamento').value = reg.data || window.filtroConfig.dataUnica;
             document.getElementById('inspetor').value = reg.inspetor;
             document.getElementById('vin').value = reg.vin;
-            document.getElementById('modelo').value = reg.modeloBase || 'SC3H';
+            document.getElementById('modelo').value = reg.modeloBase || reg.modelo;
             document.getElementById('subModeloProcesso').value = reg.processo || 'SKD1';
             document.getElementById('tipoDefeito').value = reg.tipoDefeito || 'Estrada';
             document.getElementById('localizacao').value = reg.localizacao || '';
@@ -668,6 +742,7 @@
             document.getElementById('formRuido').reset();
             document.getElementById('dataLancamento').value = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
             document.getElementById('inspetor').value = ultimoInspetor;
+            document.getElementById('vin').value = '';
         }
 
         function atualizarTudoNVH() {
@@ -739,7 +814,7 @@
             const registrosFiltrados = obterRegistrosFiltrados().filter(reg => {
                 if (!termo) return true;
                 const termoUpper = termo.toUpperCase();
-                return ((reg.vin && reg.vin.toUpperCase().includes(termoUpper)) || (reg.modelo && reg.modelo.toUpperCase().includes(termoUpper)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termoUpper)) || (reg.descricao && reg.descricao.toUpperCase().includes(termoUpper)));
+                return ((reg.vin && reg.vin.toUpperCase().includes(termoUpper)) || (reg.modelo && reg.modelo.toUpperCase().includes(termoUpper)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termoUpper)) || (reg.localizacao && reg.localizacao.toUpperCase().includes(termoUpper)) || (reg.descricao && reg.descricao.toUpperCase().includes(termoUpper)));
             });
 
             if (registrosFiltrados.length === 0) { tabela.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Nenhum registro encontrado no período.</td></tr>'; return; }
@@ -747,27 +822,28 @@
             registrosFiltrados.forEach((reg) => {
                 const tr = document.createElement('tr');
                 const dataExibicao = reg.dataHora || (reg.data ? `${formatarDataBR(reg.data)}` : '-');
-                tr.innerHTML = `<td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${dataExibicao}</td><td>${reg.inspetor || '-'}</td><td><strong>${reg.vin}</strong></td><td><span class="badge-modelo">${reg.modelo}</span></td><td><span class="badge-tipo">${reg.tipoDefeito || 'N/I'}</span></td><td style="font-size: 0.8rem;">${reg.localizacao || '-'}</td><td>${reg.descricao}</td><td style="white-space: nowrap;"><button class="btn-action btn-edit" onclick="editarRegistro('${reg.id}')">Editar</button> <button class="btn-action btn-delete" onclick="window.excluirRegistro('${reg.id}')">Excluir</button></td>`;
+                tr.innerHTML = `<td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${dataExibicao}</td><td>${reg.inspetor || '-'}</td><td><strong>${reg.vin}</strong></td><td><span class="badge-modelo">${reg.modelo}</span></td><td><span class="badge-tipo">${reg.tipoDefeito || 'N/I'}</span></td><td style="font-size: 0.8rem;"><strong>${reg.localizacao || '-'}</strong></td><td>${reg.descricao}</td><td style="white-space: nowrap;"><button class="btn-action btn-edit" onclick="editarRegistro('${reg.id}')">Editar</button> <button class="btn-action btn-delete" onclick="window.excluirRegistro('${reg.id}')">Excluir</button></td>`;
                 tabela.appendChild(tr);
             });
         }
+
+        // CONTABILIZAÇÃO CONTADA EXCLUSIVAMENTE PELO NOME DO COMPONENTE
         function atualizarTopGeral() {
             const registrosFiltrados = obterRegistrosFiltrados();
             const topGeralContainer = document.getElementById('topGeralContainer');
             if (registrosFiltrados.length === 0) { topGeralContainer.innerHTML = '<li class="ranking-item" style="color: var(--text-muted);">Nenhum lançamento no período.</li>'; return; }
             
-            const defeitoMap = {};
+            const componenteMap = {};
             registrosFiltrados.forEach(r => { 
-                const descCompleta = r.localizacao ? `${r.localizacao} - ${r.descricao}` : r.descricao;
-                const desc = descCompleta.trim(); 
-                if (!defeitoMap[desc]) { defeitoMap[desc] = []; } 
-                defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); 
+                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Não Especificado');
+                if (!componenteMap[comp]) { componenteMap[comp] = []; } 
+                componenteMap[comp].push({ vin: r.vin, modelo: r.modelo }); 
             });
             
-            const defeitosOrdenados = Object.entries(defeitoMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
+            const componentesOrdenados = Object.entries(componenteMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
             topGeralContainer.innerHTML = '';
             
-            defeitosOrdenados.forEach(([defeito, listaCarros], index) => {
+            componentesOrdenados.forEach(([comp, listaCarros], index) => {
                 const li = document.createElement('li'); 
                 li.className = 'ranking-item'; 
                 li.style.flexDirection = 'column'; 
@@ -776,32 +852,36 @@
                 
                 const vinsHtml = listaCarros.map(c => `<span class="vin-tag"><strong>${c.vin}</strong> (${c.modelo})</span>`).join(' ');
                 
-                li.innerHTML = `<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;"><span><strong>#${index + 1}</strong> ${defeito}</span><span class="ranking-badge">${listaCarros.length}x</span></div><div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;">${vinsHtml}</div>`;
+                li.innerHTML = `<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;"><span><strong>#${index + 1}</strong> ${comp}</span><span class="ranking-badge">${listaCarros.length}x</span></div><div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;">${vinsHtml}</div>`;
                 topGeralContainer.appendChild(li);
             });
         }
+
+        // AGRUPAMENTO DOS COMPONENTES DENTRO DE CADA MODELO
         function atualizarRankingPorModelo() {
             const registrosFiltrados = obterRegistrosFiltrados();
             const rankingModeloContainer = document.getElementById('rankingModeloContainer');
             if (registrosFiltrados.length === 0) { rankingModeloContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p>'; return; }
+            
             const mapaModelos = {};
             registrosFiltrados.forEach(r => {
                 const modelo = r.modelo || 'OUTROS';
-                const descCompleta = r.localizacao ? `${r.localizacao} - ${r.descricao}` : r.descricao;
-                const desc = descCompleta;
-                if (!mapaModelos[modelo]) { mapaModelos[modelo] = { total: 0, defeitos: {} }; }
+                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Não Especificado');
+                if (!mapaModelos[modelo]) { mapaModelos[modelo] = { total: 0, componentes: {} }; }
                 mapaModelos[modelo].total++;
-                mapaModelos[modelo].defeitos[desc] = (mapaModelos[modelo].defeitos[desc] || 0) + 1;
+                mapaModelos[modelo].componentes[comp] = (mapaModelos[modelo].componentes[comp] || 0) + 1;
             });
+            
             rankingModeloContainer.innerHTML = '';
             Object.entries(mapaModelos).forEach(([modelo, data]) => {
                 const grupoDiv = document.createElement('div'); grupoDiv.className = 'modelo-group';
-                let htmlContent = `<div class="modelo-group-title"><span>MODELO: ${modelo}</span><span>Total: ${data.total} defeito(s)</span></div><ul class="ranking-list">`;
-                const defeitosOrdenados = Object.entries(data.defeitos).sort((a, b) => b[1] - a[1]);
-                defeitosOrdenados.forEach(([defeito, qtd]) => { htmlContent += `<li class="ranking-item"><span>${defeito}</span><span class="ranking-badge">${qtd}x</span></li>`; });
+                let htmlContent = `<div class="modelo-group-title"><span>MODELO: ${modelo}</span><span>Total: ${data.total} ocorrência(s)</span></div><ul class="ranking-list">`;
+                const compOrdenados = Object.entries(data.componentes).sort((a, b) => b[1] - a[1]);
+                compOrdenados.forEach(([comp, qtd]) => { htmlContent += `<li class="ranking-item"><span>${comp}</span><span class="ranking-badge">${qtd}x</span></li>`; });
                 htmlContent += '</ul>'; grupoDiv.innerHTML = htmlContent; rankingModeloContainer.appendChild(grupoDiv);
             });
         }
+
         function renderizarTabelaLiberacoes(dadosCustom) {
             const tabelaLib = document.getElementById('tabelaLiberacoes'); tabelaLib.innerHTML = '';
             const listaBase = dadosCustom || obterLiberacoesFiltradas();
@@ -845,7 +925,6 @@
             renderizarTabelaLiberacoes(liberacoesPeriodo.filter(item => item.vin.toUpperCase().includes(termo.toUpperCase())));
         }
 
-        // CONTROLES DO MODAL DE EXPORTAÇÃO EXCEL
         function abrirModalExcel() {
             document.getElementById('modalExcel').style.display = 'flex';
             const hoje = new Date().toISOString().split('T')[0];
@@ -948,21 +1027,21 @@
             fecharModalExcel();
         }
 
+        // RELATÓRIO DO WHATSAPP CONTABILIZANDO POR COMPONENTE
         function copiarRelatorioWhatsApp() {
             const registrosPeriodo = obterRegistrosFiltrados();
             const descFiltro = window.filtroConfig.tipo.toUpperCase();
-            let txt = `🔊 *RELATÓRIO DE DEFEITOS (NVH)* - Período: ${descFiltro}\n------------------------------------\n\n⚠️ Total Defeitos: *${registrosPeriodo.length}*\n\n🏆 *TOP 3 DEFEITOS NO PERÍODO*\n\n`;
+            let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)* - Período: ${descFiltro}\n------------------------------------\n\n⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n🏆 *TOP 3 COMPONENTES COM DEFEITO*\n\n`;
             
-            const defeitoMap = {};
+            const componenteMap = {};
             registrosPeriodo.forEach(r => { 
-                const descCompleta = r.localizacao ? `${r.localizacao} - ${r.descricao}` : r.descricao;
-                const desc = descCompleta.trim(); 
-                if (!defeitoMap[desc]) { defeitoMap[desc] = []; } 
-                defeitoMap[desc].push({ vin: r.vin, modelo: r.modelo }); 
+                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Não Especificado');
+                if (!componenteMap[comp]) { componenteMap[comp] = []; } 
+                componenteMap[comp].push({ vin: r.vin, modelo: r.modelo }); 
             });
             
-            const defeitosOrdenados = Object.entries(defeitoMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
-            if (defeitosOrdenados.length === 0) { txt += "Sem ocorrências neste período.\n"; } else { defeitosOrdenados.forEach(([defeito, listaCarros], index) => { txt += `${index + 1}° ${defeito} (${listaCarros.length})\n`; listaCarros.forEach(carro => { txt += `  • ${carro.vin} – ${carro.modelo}\n`; }); txt += `\n`; }); }
+            const componentesOrdenados = Object.entries(componenteMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
+            if (componentesOrdenados.length === 0) { txt += "Sem ocorrências neste período.\n"; } else { componentesOrdenados.forEach(([comp, listaCarros], index) => { txt += `${index + 1}° ${comp} (${listaCarros.length})\n`; listaCarros.forEach(carro => { txt += `  • ${carro.vin} – ${carro.modelo}\n`; }); txt += `\n`; }); }
             copiarTextoUniversal(txt);
         }
     </script>
