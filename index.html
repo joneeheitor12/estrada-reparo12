@@ -55,11 +55,20 @@
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 20px; }
         .card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--primary); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         
-        .form-group { margin-bottom: 14px; }
+        .form-group { margin-bottom: 14px; position: relative; }
         label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        input, select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; background-color: #fff; color: var(--text-main); outline: none; }
+        input, select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; background-color: #fff; color: var(--text-main); outline: none; -webkit-appearance: none; }
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
         
+        /* Combobox / Dropdown Customizado (Compatível com iOS iPhone, Android e PC) */
+        .combobox-container { position: relative; width: 100%; }
+        .combobox-options { display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 220px; overflow-y: auto; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px; -webkit-overflow-scrolling: touch; }
+        .combobox-options.active { display: block; }
+        .combobox-item { padding: 10px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; color: var(--text-main); }
+        .combobox-item:last-child { border-bottom: none; }
+        .combobox-item:hover, .combobox-item.selected { background-color: #e2e8f0; color: var(--accent); font-weight: 600; }
+        .combobox-item.novo-item { background-color: #eff6ff; color: var(--accent); font-weight: 700; border-top: 1px solid #bfdbfe; }
+
         .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-primary { background-color: var(--accent); color: white; width: 100%; }
         .btn-primary:hover { background-color: var(--accent-hover); }
@@ -236,10 +245,10 @@
 
                         <div class="form-group">
                             <label>Localização do Componente:</label>
-                            <input type="text" id="localizacao" list="listaLocalizacoes" placeholder="Selecione ou digite um novo componente..." required>
-                            <datalist id="listaLocalizacoes">
-                                <!-- Preenchido dinamicamente via JS -->
-                            </datalist>
+                            <div class="combobox-container">
+                                <input type="text" id="localizacao" placeholder="Digite para filtrar ou selecione..." autocomplete="off" required>
+                                <div id="optionsLocalizacao" class="combobox-options"></div>
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -471,7 +480,7 @@
             window.registros = [];
             snapshot.forEach((doc) => { window.registros.push({ id: doc.id, ...doc.data() }); });
             atualizarDatalistModelos();
-            atualizarDatalistLocalizacoes();
+            window.atualizarListaLocalizacoes();
             window.atualizarTudoNVH();
         });
 
@@ -506,25 +515,74 @@
             });
         }
 
-        function atualizarDatalistLocalizacoes() {
-            const datalist = document.getElementById('listaLocalizacoes');
-            if (!datalist) return;
-            
+        /* --- IMPLEMENTAÇÃO COMBOBOX COMPATÍVEL COM IPHONE, ANDROID E COMPUTADOR --- */
+        let listaOpcoesLocalizacao = [...localizacoesPadrao];
+
+        window.atualizarListaLocalizacoes = function() {
             const locDinamicas = new Set(localizacoesPadrao);
-            
             window.registros.forEach(r => {
                 if (r.localizacao && r.localizacao.trim() !== "") {
                     locDinamicas.add(r.localizacao.trim());
                 }
             });
+            listaOpcoesLocalizacao = Array.from(locDinamicas).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        };
 
-            datalist.innerHTML = '';
-            locDinamicas.forEach(loc => {
-                const opt = document.createElement('option');
-                opt.value = loc;
-                datalist.appendChild(opt);
-            });
+        const inputLoc = document.getElementById('localizacao');
+        const containerOpcoesLoc = document.getElementById('optionsLocalizacao');
+
+        function renderizarOpcoesCombobox(filtro = '') {
+            containerOpcoesLoc.innerHTML = '';
+            const termo = filtro.trim().toLowerCase();
+            
+            const filtradas = listaOpcoesLocalizacao.filter(item => item.toLowerCase().includes(termo));
+
+            if (filtradas.length > 0) {
+                filtradas.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'combobox-item';
+                    div.textContent = item;
+                    div.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        inputLoc.value = item;
+                        containerOpcoesLoc.classList.remove('active');
+                    });
+                    containerOpcoesLoc.appendChild(div);
+                });
+            }
+
+            if (termo !== '' && !listaOpcoesLocalizacao.some(item => item.toLowerCase() === termo)) {
+                const divNovo = document.createElement('div');
+                divNovo.className = 'combobox-item novo-item';
+                divNovo.textContent = `➕ Usar "${filtro.trim()}" (Novo componente)`;
+                divNovo.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    inputLoc.value = filtro.trim();
+                    containerOpcoesLoc.classList.remove('active');
+                });
+                containerOpcoesLoc.appendChild(divNovo);
+            }
+
+            if (containerOpcoesLoc.children.length > 0) {
+                containerOpcoesLoc.classList.add('active');
+            } else {
+                containerOpcoesLoc.classList.remove('active');
+            }
         }
+
+        inputLoc.addEventListener('focus', () => {
+            renderizarOpcoesCombobox(inputLoc.value);
+        });
+
+        inputLoc.addEventListener('input', () => {
+            renderizarOpcoesCombobox(inputLoc.value);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.combobox-container')) {
+                containerOpcoesLoc.classList.remove('active');
+            }
+        });
 
         formNVH.addEventListener('submit', async (e) => {
             e.preventDefault();
