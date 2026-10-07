@@ -1004,7 +1004,6 @@
             document.getElementById('excelGroupIntervalo').style.display = (val === 'intervalo') ? 'block' : 'none';
         }
 
-        // FUNÇÃO DE EXPORTAÇÃO EXCEL FUNCIONAL USANDO SHEETJS (XLSX)
         window.executarExportacaoExcel = function() {
             const tipoPeriodoExcel = document.getElementById('excelTipoPeriodo').value;
             let regsParaExportar = [...window.registros];
@@ -1046,7 +1045,6 @@
 
             fecharModalExcel();
 
-            // Formatar dados para a Aba de NVH / Ruídos
             const dadosRuidosExcel = regsParaExportar.map(r => ({
                 "Data/Hora Registo": r.dataHora || formatarDataBR(r.data),
                 "Data": r.data || "",
@@ -1060,7 +1058,6 @@
                 "Descrição do Defeito": r.descricao || ""
             }));
 
-            // Formatar dados para a Aba de Liberações de VIN
             const dadosLiberacoesExcel = libsParaExportar.map(l => ({
                 "Data/Hora Registo": l.dataHora || formatarDataBR(l.data),
                 "Data": l.data || "",
@@ -1070,7 +1067,6 @@
                 "Responsável": l.responsavel || ""
             }));
 
-            // Criar o Livro do Excel (Workbook) com múltiplas abas
             const wb = XLSX.utils.book_new();
 
             const wsRuidos = XLSX.utils.json_to_sheet(dadosRuidosExcel);
@@ -1079,7 +1075,6 @@
             const wsLibs = XLSX.utils.json_to_sheet(dadosLiberacoesExcel);
             XLSX.utils.book_append_sheet(wb, wsLibs, "Liberação de Veículos");
 
-            // Gerar e descarregar o arquivo .xlsx
             const nomeArquivo = `Qualidade_BYD_${nomeSufixo}_${new Date().toISOString().split('T')[0]}.xlsx`;
             XLSX.writeFile(wb, nomeArquivo);
             alert("📊 Ficheiro Excel gerado e descarregado com sucesso!");
@@ -1088,9 +1083,43 @@
         function copiarRelatorioWhatsApp() {
             const registrosPeriodo = obterRegistrosFiltrados();
             const descFiltro = window.filtroConfig.tipo.toUpperCase();
-            let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)* - Período: ${descFiltro}\n------------------------------------\n\n⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n`;
+            
+            let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)* - Período: ${descFiltro}\n`;
+            txt += `------------------------------------\n\n`;
+            txt += `⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n`;
+            
+            if (registrosPeriodo.length === 0) {
+                txt += `Nenhum lançamento registrado no período.`;
+                copiarTextoUniversal(txt);
+                return;
+            }
+
+            const componenteMap = {};
+            registrosPeriodo.forEach(r => { 
+                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Não Especificado');
+                if (!componenteMap[comp]) { 
+                    componenteMap[comp] = []; 
+                } 
+                componenteMap[comp].push({ vin: r.vin, modelo: r.modelo }); 
+            });
+            
+            const componentesOrdenados = Object.entries(componenteMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
+
+            txt += `🏆 *TOP 3 COMPONENTES COM DEFEITO*\n\n`;
+
+            componentesOrdenados.forEach(([comp, listaCarros], index) => {
+                txt += `${index + 1}° ${comp} (${listaCarros.length})\n`;
+                listaCarros.forEach(c => {
+                    txt += `  • ${c.vin} – ${c.modelo}\n`;
+                });
+                txt += `\n`;
+            });
+
+            txt = txt.trimEnd();
+
             copiarTextoUniversal(txt);
         }
     </script>
 </body>
 </html>
+```[cite: 1]
