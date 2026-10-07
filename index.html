@@ -59,15 +59,18 @@
         label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         input, select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; background-color: #fff; color: var(--text-main); outline: none; -webkit-appearance: none; }
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        input:read-only { background-color: #f8fafc; color: #475569; }
         
-        /* Combobox / Dropdown Customizado (Compatível com iOS iPhone, Android e PC) */
         .combobox-container { position: relative; width: 100%; }
-        .combobox-options { display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 220px; overflow-y: auto; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px; -webkit-overflow-scrolling: touch; }
+        .combobox-options { display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 220px; overflow-y: auto; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px; }
         .combobox-options.active { display: block; }
         .combobox-item { padding: 10px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; color: var(--text-main); }
         .combobox-item:last-child { border-bottom: none; }
         .combobox-item:hover, .combobox-item.selected { background-color: #e2e8f0; color: var(--accent); font-weight: 600; }
         .combobox-item.novo-item { background-color: #eff6ff; color: var(--accent); font-weight: 700; border-top: 1px solid #bfdbfe; }
+
+        .defeito-item-bloco { background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 14px; position: relative; }
+        .defeito-item-bloco h3 { font-size: 0.85rem; color: var(--accent); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
 
         .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-primary { background-color: var(--accent); color: white; width: 100%; }
@@ -78,6 +81,8 @@
         .btn-excel:hover { background-color: var(--excel-hover); }
         .btn-danger { background-color: var(--danger); color: white; }
         .btn-danger:hover { background-color: var(--danger-hover); }
+        .btn-success { background-color: #10b981; color: white; width: 100%; margin-bottom: 14px; }
+        .btn-success:hover { background-color: #059669; }
         
         .kpi-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
         .kpi-box { background: var(--card-bg); padding: 18px 14px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
@@ -92,9 +97,9 @@
         .modelo-group { margin-bottom: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
         .modelo-group-title { font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         
-        .table-container { max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+        .table-container { max-height: 380px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: white; }
-        th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
         th { background-color: var(--bg); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; position: sticky; top: 0; z-index: 10; }
         
         .badge-modelo { background: #e2e8f0; color: var(--primary); padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; }
@@ -107,16 +112,18 @@
         .badge-teste-chuva { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
         .badge-teste-estrada { background: #fef3c7; color: #b45309; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
         .search-box { margin-bottom: 16px; }
+
+        .defeito-agrupado-linha { padding: 4px 0; border-bottom: 1px dashed #f1f5f9; display: flex; justify-content: space-between; gap: 8px; font-size: 0.82rem; }
+        .defeito-agrupado-linha:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>⚙️ Sistema de Controle de Qualidade</h1>
+        <h1>⚙️ Sistema de Controlo de Qualidade</h1>
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
             <div class="sync-status"><span class="sync-dot"></span> Sincronizado com Nuvem</div>
             
-            <!-- SELETOR DE PERÍODO GLOBAL -->
             <div class="filter-container">
                 <label for="filtroTipoPeriodo">PERÍODO:</label>
                 <select id="filtroTipoPeriodo" onchange="mudarTipoFiltroPeriodo(this.value)">
@@ -140,19 +147,18 @@
     </div>
 
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="alternarAba('tab-nvh', this)">🔊 Controle de Ruídos (NVH)</button>
+        <button class="tab-btn active" onclick="alternarAba('tab-nvh', this)">🔊 Controlo de Ruídos (NVH)</button>
         <button class="tab-btn" onclick="alternarAba('tab-liberacao', this)">✅ Liberação de Veículos (VIN)</button>
         <button class="tab-btn" onclick="alternarAba('tab-indicadores', this)">📈 Indicadores & Períodos</button>
     </div>
 
-    <!-- MODAL DE EXPORTAÇÃO EXCEL COM OPÇÕES DE PERÍODO -->
     <div id="modalExcel" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
         <div style="background: white; padding: 24px; border-radius: 12px; width: 400px; max-width: 90%; box-shadow: var(--shadow-md);">
             <h2 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">📊 Configurar Exportação Excel</h2>
             <div class="form-group">
                 <label>Selecione o Período para Exportar:</label>
                 <select id="excelTipoPeriodo" onchange="mudarTipoExcelModal(this.value)">
-                    <option value="atual">Usar Período Atualmente Selecionado na Tela</option>
+                    <option value="atual">Usar Período Atualmente Selecionado no Ecrã</option>
                     <option value="dia">Dia Específico</option>
                     <option value="mes">Mês Atual</option>
                     <option value="intervalo">Personalizado (De... Até...)</option>
@@ -193,7 +199,8 @@
                 </div>
 
                 <div class="card">
-                    <h2 id="formTitle">📝 2. Novo Registro de Ruído</h2>
+                    <h2 id="formTitle">📝 2. Novo Registo de Ruído</h2>
+                    
                     <form id="formRuido">
                         <input type="hidden" id="editDocId" value="">
                         <div style="display: flex; gap: 12px;">
@@ -234,8 +241,9 @@
                             </select>
                         </div>
 
+                        <!-- PRIMEIRO DEFEITO PADRÃO -->
                         <div class="form-group">
-                            <label>Origem do Defeito:</label>
+                            <label>Origem do Defeito (1º):</label>
                             <select id="tipoDefeito" required>
                                 <option value="" disabled selected>Selecione a origem...</option>
                                 <option value="Estrada">Defeito encontrado na Estrada</option>
@@ -244,7 +252,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Localização do Componente:</label>
+                            <label>Localização do Componente (1º):</label>
                             <div class="combobox-container">
                                 <input type="text" id="localizacao" placeholder="Digite para filtrar ou selecione..." autocomplete="off" required>
                                 <div id="optionsLocalizacao" class="combobox-options"></div>
@@ -252,9 +260,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Descrição do Defeito:</label>
+                            <label>Descrição do Defeito (1º):</label>
                             <input type="text" id="descricao" placeholder="Ex: barulho de vibração / folga" required>
                         </div>
+
+                        <!-- CONTAINER ONDE NOVOS DEFEITOS SERÃO ADICIONADOS EM CIMA DO BOTÃO -->
+                        <div id="containerDefeitosExtras"></div>
+
+                        <!-- BOTÃO POSICIONADO ABAIXO DOS CAMPOS PARA ADICIONAR NOVO BLOCO DE DEFEITO -->
+                        <button type="button" class="btn btn-success" id="btnAdicionarOutroDefeito" onclick="adicionarBlocoDefeitoExtra()">
+                            ➕ Outro Defeito neste VIN
+                        </button>
+
                         <div style="display: flex; gap: 8px;">
                             <button type="submit" class="btn btn-primary" id="btnSalvar">Salvar Lançamento</button>
                             <button type="button" class="btn btn-danger" id="btnCancelar" style="display: none; width: 35%;" onclick="cancelarEdicao()">Cancelar</button>
@@ -264,7 +281,6 @@
             </div>
 
             <div>
-                <!-- AGRUPAMENTO CONTABILIZADO POR COMPONENTE -->
                 <div class="card">
                     <h2>🏆 Top 3 Componentes com Defeito (Período Selecionado)</h2>
                     <ul class="ranking-list" id="topGeralContainer"><li class="ranking-item" style="color: var(--text-muted);">Nenhum lançamento no período.</li></ul>
@@ -274,11 +290,11 @@
                     <div id="rankingModeloContainer"><p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p></div>
                 </div>
                 <div class="card">
-                    <h2>📋 Histórico de Lançamentos</h2>
+                    <h2>📋 Histórico de Lançamentos (Por Veículo / VIN)</h2>
                     <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Filtrar por VIN, Modelo, Inspetor..." oninput="filtrarHistoricoNVH()"></div>
                     <div class="table-container">
                         <table>
-                            <thead><tr><th>Data / Hora</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Origem</th><th>Localização</th><th>Descrição</th><th>Ações</th></tr></thead>
+                            <thead><tr><th>Data / Hora</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Defeitos Lançados neste Veículo</th><th>Ações</th></tr></thead>
                             <tbody id="tabelaHistorico"></tbody>
                         </table>
                     </div>
@@ -297,7 +313,7 @@
         <div class="grid-layout">
             <div>
                 <div class="card">
-                    <h2 id="libFormTitle">✅ Registrar Liberação de VIN</h2>
+                    <h2 id="libFormTitle">✅ Registar Liberação de VIN</h2>
                     <form id="formLiberacao">
                         <input type="hidden" id="libEditDocId" value="">
                         <div style="display: flex; gap: 12px;">
@@ -345,12 +361,9 @@
         </div>
     </div>
 
-    <!-- ABA DE INDICADORES DE PERÍODO -->
     <div id="tab-indicadores" class="tab-content">
         <div class="card" style="margin-bottom: 20px;">
             <h2>📈 Monitoramento de Lançamentos por Período</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Acompanhe abaixo o volume total de ruídos e defeitos registrados com base no filtro selecionado no topo da página.</p>
-            
             <div class="kpi-container" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 0;">
                 <div class="kpi-box" style="border-left: 4px solid var(--accent);">
                     <div class="kpi-value" id="kpiPeriodoDia">0</div>
@@ -367,27 +380,8 @@
                 </div>
             </div>
         </div>
-
-        <div class="card">
-            <h2>🚗 Monitoramento de Liberações por Período</h2>
-            <div class="kpi-container" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 0;">
-                <div class="kpi-box" style="border-left: 4px solid var(--accent);">
-                    <div class="kpi-value" id="kpiLibPeriodoDia">0</div>
-                    <div class="kpi-label">📅 Liberações no Período</div>
-                </div>
-                <div class="kpi-box" style="border-left: 4px solid #10b981;">
-                    <div class="kpi-value" id="kpiLibPeriodoSemana" style="color: #10b981;">0</div>
-                    <div class="kpi-label">📆 Liberações na Semana</div>
-                </div>
-                <div class="kpi-box" style="border-left: 4px solid #f59e0b;">
-                    <div class="kpi-value" id="kpiLibPeriodoMes" style="color: #f59e0b;">0</div>
-                    <div class="kpi-label">📊 Liberações no Mês</div>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- CONFIGURAÇÃO OFICIAL DO PROJETO ESTRADA-REPARO12 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -410,44 +404,10 @@
         window.contagemPorData = {};
         
         const localizacoesPadrao = [
-            "Conjunto de caixa de luxo",
-            "Selo da moldura da porta da frente esquerda",
-            "Selo da moldura da porta da frente direita",
-            "Selo da moldura da porta traseira esquerda",
-            "Selo da moldura da porta traseira direita",
-            "Encosto do assento do copiloto",
-            "Pilar B esquerdo",
-            "Pilar B direito",
-            "Montagem do corpo no painel de instrumentos",
-            "Montagem do corpo do painel de instrumentos secundário",
-            "Anel de bloqueio da porta traseira",
-            "Conjunto de proteção da porta da frente direita",
-            "Conjunto de proteção da porta da frente esquerda",
-            "Conjunto de proteção da porta traseira esquerda",
-            "Conjunto de proteção da porta traseira direita",
-            "Conjunto de proteção superior do pilar C direito",
-            "Conjunto de proteção superior do pilar C esquerdo",
-            "Conjunto de montagem de spoiler",
-            "Almofada de tapete",
-            "Conjunto de vidro da porta da frente esquerda",
-            "Conjunto de vidro da porta da frente direita",
-            "Conjunto do limitador da porta da frente",
-            "Montagem de teto solar panorâmico",
-            "Capa direita da tampa de ventilação",
-            "Conjunto de tela PAD",
-            "Antena 4G",
-            "Placa externa da tampa superior",
-            "Conjunto de luz traseira combinada esquerda",
-            "Montagem de teto",
-            "Montagem de tapete"
+            "Conjunto de caixa de luxo", "Selo da moldura da porta da frente esquerda", "Selo da moldura da porta da frente direita", "Selo da moldura da porta traseira esquerda", "Selo da moldura da porta traseira direita", "Encosto do assento do copiloto", "Pilar B esquerdo", "Pilar B direito", "Montagem do corpo no painel de instrumentos", "Montagem do corpo do painel de instrumentos secundário", "Anel de bloqueio da porta traseira", "Conjunto de proteção da porta da frente direita", "Conjunto de proteção da porta da frente esquerda", "Conjunto de proteção porta traseira esquerda", "Conjunto de proteção porta traseira direita", "Conjunto de proteção superior do pilar C direito", "Conjunto de proteção superior do pilar C esquerdo", "Conjunto de montagem de spoiler", "Almofada de tapete", "Conjunto de vidro da porta da frente esquerda", "Conjunto de vidro da porta da frente direita", "Conjunto do limitador da porta da frente", "Montagem de teto solar panorâmico", "Capa direita da tampa de ventilação", "Conjunto de tela PAD", "Antena 4G", "Placa externa da tampa superior", "Conjunto de luz traseira combinada esquerda", "Montagem de teto", "Montagem de tapete"
         ];
 
-        window.filtroConfig = {
-            tipo: "dia",
-            dataUnica: "",
-            dataInicio: "",
-            dataFim: ""
-        };
+        window.filtroConfig = { tipo: "dia", dataUnica: "", dataInicio: "", dataFim: "" };
 
         const formNVH = document.getElementById('formRuido');
         const formLib = document.getElementById('formLiberacao');
@@ -469,7 +429,6 @@
             filtroDataGlobal.value = dataHoje;
             document.getElementById('filtroDataInicio').value = dataHoje;
             document.getElementById('filtroDataFim').value = dataHoje;
-
             inputData.value = dataHoje;
             if (libInputData) libInputData.value = dataHoje;
         }
@@ -502,126 +461,202 @@
             const datalist = document.getElementById('listaModelos');
             const modelosPadrao = ["SC3H", "SA2", "SA6", "EQE", "HA2"];
             const modelosDinamicos = new Set(modelosPadrao);
-            
-            window.registros.forEach(r => {
-                if (r.modeloBase) modelosDinamicos.add(r.modeloBase.trim());
-            });
-
+            window.registros.forEach(r => { if (r.modeloBase) modelosDinamicos.add(r.modeloBase.trim()); });
             datalist.innerHTML = '';
             modelosDinamicos.forEach(mod => {
-                const opt = document.createElement('option');
-                opt.value = mod;
-                datalist.appendChild(opt);
+                const opt = document.createElement('option'); opt.value = mod; datalist.appendChild(opt);
             });
         }
 
-        /* --- IMPLEMENTAÇÃO COMBOBOX COMPATÍVEL COM IPHONE, ANDROID E COMPUTADOR --- */
         let listaOpcoesLocalizacao = [...localizacoesPadrao];
-
         window.atualizarListaLocalizacoes = function() {
             const locDinamicas = new Set(localizacoesPadrao);
-            window.registros.forEach(r => {
-                if (r.localizacao && r.localizacao.trim() !== "") {
-                    locDinamicas.add(r.localizacao.trim());
-                }
-            });
+            window.registros.forEach(r => { if (r.localizacao && r.localizacao.trim() !== "") locDinamicas.add(r.localizacao.trim()); });
             listaOpcoesLocalizacao = Array.from(locDinamicas).sort((a, b) => a.localeCompare(b, 'pt-BR'));
         };
 
         const inputLoc = document.getElementById('localizacao');
         const containerOpcoesLoc = document.getElementById('optionsLocalizacao');
 
-        function renderizarOpcoesCombobox(filtro = '') {
-            containerOpcoesLoc.innerHTML = '';
-            const termo = filtro.trim().toLowerCase();
-            
-            const filtradas = listaOpcoesLocalizacao.filter(item => item.toLowerCase().includes(termo));
+        function configurarEventosCombobox(inputEl, optionsEl) {
+            function render(filtro = '') {
+                optionsEl.innerHTML = '';
+                const termo = filtro.trim().toLowerCase();
+                const filtradas = listaOpcoesLocalizacao.filter(item => item.toLowerCase().includes(termo));
 
-            if (filtradas.length > 0) {
-                filtradas.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'combobox-item';
-                    div.textContent = item;
-                    div.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        inputLoc.value = item;
-                        containerOpcoesLoc.classList.remove('active');
+                if (filtradas.length > 0) {
+                    filtradas.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'combobox-item';
+                        div.textContent = item;
+                        div.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            inputEl.value = item;
+                            optionsEl.classList.remove('active');
+                        });
+                        optionsEl.appendChild(div);
                     });
-                    containerOpcoesLoc.appendChild(div);
-                });
+                }
+
+                if (termo !== '' && !listaOpcoesLocalizacao.some(item => item.toLowerCase() === termo)) {
+                    const divNovo = document.createElement('div');
+                    divNovo.className = 'combobox-item novo-item';
+                    divNovo.textContent = `➕ Usar "${filtro.trim()}" (Novo componente)`;
+                    divNovo.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        inputEl.value = filtro.trim();
+                        optionsEl.classList.remove('active');
+                    });
+                    optionsEl.appendChild(divNovo);
+                }
+                optionsEl.classList.toggle('active', optionsEl.children.length > 0);
             }
 
-            if (termo !== '' && !listaOpcoesLocalizacao.some(item => item.toLowerCase() === termo)) {
-                const divNovo = document.createElement('div');
-                divNovo.className = 'combobox-item novo-item';
-                divNovo.textContent = `➕ Usar "${filtro.trim()}" (Novo componente)`;
-                divNovo.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    inputLoc.value = filtro.trim();
-                    containerOpcoesLoc.classList.remove('active');
-                });
-                containerOpcoesLoc.appendChild(divNovo);
-            }
-
-            if (containerOpcoesLoc.children.length > 0) {
-                containerOpcoesLoc.classList.add('active');
-            } else {
-                containerOpcoesLoc.classList.remove('active');
-            }
+            inputEl.addEventListener('focus', () => render(inputEl.value));
+            inputEl.addEventListener('input', () => render(inputEl.value));
         }
 
-        inputLoc.addEventListener('focus', () => {
-            renderizarOpcoesCombobox(inputLoc.value);
-        });
+        configurarEventosCombobox(inputLoc, containerOpcoesLoc);
+        document.addEventListener('click', (e) => { if (!e.target.closest('.combobox-container')) { document.querySelectorAll('.combobox-options').forEach(el => el.classList.remove('active')); } });
 
-        inputLoc.addEventListener('input', () => {
-            renderizarOpcoesCombobox(inputLoc.value);
-        });
+        let contadorBlocos = 0;
+        window.adicionarBlocoDefeitoExtra = function() {
+            contadorBlocos++;
+            const container = document.getElementById('containerDefeitosExtras');
+            const blocoId = `blocoDefeito_${contadorBlocos}`;
+            
+            const divBloco = document.createElement('div');
+            divBloco.className = 'defeito-item-bloco';
+            divBloco.id = blocoId;
+            
+            divBloco.innerHTML = `
+                <h3><span>Defeito Adicional (${contadorBlocos + 1}º)</span> <button type="button" class="btn-action btn-delete" onclick="removerBlocoDefeito('${blocoId}')">Remover</button></h3>
+                <div class="form-group">
+                    <label>Origem do Defeito:</label>
+                    <select class="extra-tipoDefeito" required>
+                        <option value="" disabled selected>Selecione a origem...</option>
+                        <option value="Estrada">Defeito encontrado na Estrada</option>
+                        <option value="Chassi">Defeito encontrado no Chassi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Localização do Componente:</label>
+                    <div class="combobox-container">
+                        <input type="text" class="extra-localizacao" placeholder="Digite para filtrar ou selecione..." autocomplete="off" required>
+                        <div class="combobox-options extra-optionsLocalizacao"></div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Descrição do Defeito:</label>
+                    <input type="text" class="extra-descricao" placeholder="Ex: barulho de vibração / folga" required>
+                </div>
+            `;
+            
+            container.appendChild(divBloco);
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.combobox-container')) {
-                containerOpcoesLoc.classList.remove('active');
-            }
-        });
+            const inputL = divBloco.querySelector('.extra-localizacao');
+            const optL = divBloco.querySelector('.extra-optionsLocalizacao');
+            configurarEventosCombobox(inputL, optL);
+        };
+
+        window.removerBlocoDefeito = function(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        };
 
         formNVH.addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('editDocId').value;
-            const agora = new Date();
-            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const btnSalvar = document.getElementById('btnSalvar');
+            const textoOriginal = btnSalvar.innerText;
 
-            const modeloBaseInput = document.getElementById('modelo').value.trim();
-            const processoInput = document.getElementById('subModeloProcesso').value;
-            const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput}`;
+            try {
+                btnSalvar.disabled = true;
+                btnSalvar.innerText = "A atualizar...";
 
-            const dadosForm = {
-                data: inputData.value,
-                inspetor: document.getElementById('inspetor').value,
-                vin: document.getElementById('vin').value.trim(),
-                modeloBase: modeloBaseInput,
-                processo: processoInput,
-                modelo: modeloCompletoFormatado,
-                tipoDefeito: document.getElementById('tipoDefeito').value,
-                localizacao: document.getElementById('localizacao').value.trim(),
-                descricao: document.getElementById('descricao').value.trim(),
-                dataHora: dataHoraFormatada,
-                criadoEm: Date.now()
-            };
+                const agora = new Date();
+                const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-            if (!editDocId) { await addDoc(collection(db, "ruidos_registros"), dadosForm); }
-            else { await updateDoc(doc(db, "ruidos_registros", editDocId), dadosForm); window.cancelarEdicao(); }
+                const dataVal = inputData.value;
+                const inspetorVal = document.getElementById('inspetor').value;
+                const vinVal = document.getElementById('vin').value.trim();
+                const modeloBaseInput = document.getElementById('modelo').value.trim();
+                const processoInput = document.getElementById('subModeloProcesso').value;
+                const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput}`;
 
-            const modeloAtual = dadosForm.modeloBase;
-            const ultimoInspetor = dadosForm.inspetor;
-            
-            formNVH.reset();
-            inputData.value = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
-            document.getElementById('inspetor').value = ultimoInspetor;
-            document.getElementById('modelo').value = modeloAtual;
-            
-            // Limpa o VIN para o próximo lançamento e coloca o foco nele
-            document.getElementById('vin').value = '';
-            document.getElementById('vin').focus();
+                if (editDocId) {
+                    const dadosForm = {
+                        data: dataVal,
+                        inspetor: inspetorVal,
+                        vin: vinVal,
+                        modeloBase: modeloBaseInput,
+                        processo: processoInput,
+                        modelo: modeloCompletoFormatado,
+                        tipoDefeito: document.getElementById('tipoDefeito').value,
+                        localizacao: document.getElementById('localizacao').value.trim(),
+                        descricao: document.getElementById('descricao').value.trim(),
+                        dataHora: dataHoraFormatada,
+                        criadoEm: Date.now()
+                    };
+                    await updateDoc(doc(db, "ruidos_registros", editDocId), dadosForm);
+                    alert("✅ Registo atualizado com sucesso na nuvem!");
+                    window.cancelarEdicao();
+                } else {
+                    const primeiroDefeito = {
+                        data: dataVal,
+                        inspetor: inspetorVal,
+                        vin: vinVal,
+                        modeloBase: modeloBaseInput,
+                        processo: processoInput,
+                        modelo: modeloCompletoFormatado,
+                        tipoDefeito: document.getElementById('tipoDefeito').value,
+                        localizacao: document.getElementById('localizacao').value.trim(),
+                        descricao: document.getElementById('descricao').value.trim(),
+                        dataHora: dataHoraFormatada,
+                        criadoEm: Date.now()
+                    };
+                    await addDoc(collection(db, "ruidos_registros"), primeiroDefeito);
+
+                    const blocosExtras = document.querySelectorAll('.defeito-item-bloco');
+                    for (let i = 0; i < blocosExtras.length; i++) {
+                        const bloco = blocosExtras[i];
+                        const defeitoExtra = {
+                            data: dataVal,
+                            inspetor: inspetorVal,
+                            vin: vinVal,
+                            modeloBase: modeloBaseInput,
+                            processo: processoInput,
+                            modelo: modeloCompletoFormatado,
+                            tipoDefeito: bloco.querySelector('.extra-tipoDefeito').value,
+                            localizacao: bloco.querySelector('.extra-localizacao').value.trim(),
+                            descricao: bloco.querySelector('.extra-descricao').value.trim(),
+                            dataHora: dataHoraFormatada,
+                            criadoEm: Date.now() + i + 1
+                        };
+                        await addDoc(collection(db, "ruidos_registros"), defeitoExtra);
+                    }
+
+                    const dataAtualMantida = inputData.value;
+                    const inspetorAtualMantido = inspetorVal;
+                    
+                    formNVH.reset();
+                    document.getElementById('containerDefeitosExtras').innerHTML = '';
+                    contadorBlocos = 0;
+                    
+                    inputData.value = dataAtualMantida;
+                    document.getElementById('inspetor').value = inspetorAtualMantido;
+                    document.getElementById('vin').value = '';
+                    document.getElementById('localizacao').value = '';
+                    document.getElementById('descricao').value = '';
+                    document.getElementById('vin').focus();
+                }
+            } catch (error) {
+                console.error("Erro ao comunicar com a nuvem:", error);
+                alert("❌ Erro ao atualizar na nuvem: " + error.message);
+            } finally {
+                btnSalvar.disabled = false;
+                btnSalvar.innerText = textoOriginal;
+            }
         });
 
         formLib.addEventListener('submit', async (e) => {
@@ -661,7 +696,7 @@
         };
 
         window.excluirLiberacao = async function(id) {
-            if (confirm("Deseja excluir este registro?")) { await deleteDoc(doc(db, "vin_liberacoes", id)); }
+            if (confirm("Deseja excluir este registo?")) { await deleteDoc(doc(db, "vin_liberacoes", id)); }
         };
     </script>
 
@@ -702,16 +737,9 @@
             const inputDia = document.getElementById('filtroDataGlobal');
             const divInterv = document.getElementById('containerIntervalo');
 
-            if (tipo === 'dia') {
-                inputDia.style.display = 'inline-block';
-                divInterv.style.display = 'none';
-            } else if (tipo === 'intervalo') {
-                inputDia.style.display = 'none';
-                divInterv.style.display = 'flex';
-            } else {
-                inputDia.style.display = 'none';
-                divInterv.style.display = 'none';
-            }
+            if (tipo === 'dia') { inputDia.style.display = 'inline-block'; divInterv.style.display = 'none'; }
+            else if (tipo === 'intervalo') { inputDia.style.display = 'none'; divInterv.style.display = 'flex'; }
+            else { inputDia.style.display = 'none'; divInterv.style.display = 'none'; }
             atualizarDadosGlobais();
         }
 
@@ -728,20 +756,15 @@
         function itemNoPeriodo(dataRegistro) {
             if (!dataRegistro) return true;
             const tipo = window.filtroConfig.tipo;
-
             if (tipo === 'todos') return true;
-            if (tipo === 'dia') {
-                return dataRegistro === window.filtroConfig.dataUnica;
-            }
+            if (tipo === 'dia') return dataRegistro === window.filtroConfig.dataUnica;
             if (tipo === 'mes') {
                 const [rAno, rMes] = dataRegistro.split('-').map(Number);
                 const baseStr = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
                 const [bAno, bMes] = baseStr.split('-').map(Number);
                 return rAno === bAno && rMes === bMes;
             }
-            if (tipo === 'intervalo') {
-                return dataRegistro >= window.filtroConfig.dataInicio && dataRegistro <= window.filtroConfig.dataFim;
-            }
+            if (tipo === 'intervalo') return dataRegistro >= window.filtroConfig.dataInicio && dataRegistro <= window.filtroConfig.dataFim;
             return true;
         }
 
@@ -753,15 +776,11 @@
         }
 
         function obterRegistrosFiltrados() { 
-            return window.registros
-                .filter(r => itemNoPeriodo(r.data))
-                .sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0)); 
+            return window.registros.filter(r => itemNoPeriodo(r.data)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0)); 
         }
 
         function obterLiberacoesFiltradas() {
-            return window.liberacoes
-                .filter(l => itemNoPeriodo(l.data))
-                .sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+            return window.liberacoes.filter(l => itemNoPeriodo(l.data)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
         }
 
         function atualizarKPIsLiberacao() {
@@ -769,7 +788,6 @@
             const totalLib = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado')).length;
             const libChuva = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado') && l.tipoTeste === 'Chuva').length;
             const libEstrada = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado') && l.tipoTeste === 'Teste de estrada').length;
-
             document.getElementById('kpiLibTotal').innerText = totalLib;
             document.getElementById('kpiLibChuva').innerText = libChuva;
             document.getElementById('kpiLibEstrada').innerText = libEstrada;
@@ -786,21 +804,23 @@
             document.getElementById('tipoDefeito').value = reg.tipoDefeito || 'Estrada';
             document.getElementById('localizacao').value = reg.localizacao || '';
             document.getElementById('descricao').value = reg.descricao;
-            document.getElementById('formTitle').innerText = "✏️ Editar Registro de Ruído";
+            document.getElementById('formTitle').innerText = "✏️ Editar Registo de Ruído";
             document.getElementById('btnSalvar').innerText = "Atualizar na Nuvem";
             document.getElementById('btnCancelar').style.display = "block";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
         function cancelarEdicao() {
             document.getElementById('editDocId').value = "";
-            document.getElementById('formTitle').innerText = "📝 2. Novo Registro de Ruído";
+            document.getElementById('formTitle').innerText = "📝 2. Novo Registo de Ruído";
             document.getElementById('btnSalvar').innerText = "Salvar Lançamento";
             document.getElementById('btnCancelar').style.display = "none";
+            document.getElementById('containerDefeitosExtras').innerHTML = '';
+            contadorBlocos = 0;
             const ultimoInspetor = document.getElementById('inspetor').value;
             document.getElementById('formRuido').reset();
             document.getElementById('dataLancamento').value = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
             document.getElementById('inspetor').value = ultimoInspetor;
-            document.getElementById('vin').value = '';
         }
 
         function atualizarTudoNVH() {
@@ -820,8 +840,6 @@
 
         function atualizarIndicadoresPeriodo() {
             const registrosFiltrados = obterRegistrosFiltrados();
-            const liberacoesFiltradas = obterLiberacoesFiltradas();
-
             document.getElementById('kpiPeriodoDia').innerText = registrosFiltrados.length;
             document.getElementById('subLabelPeriodo').innerText = `Filtro: ${window.filtroConfig.tipo.toUpperCase()}`;
 
@@ -849,19 +867,6 @@
 
             document.getElementById('kpiPeriodoSemana').innerText = countSemanaNVH;
             document.getElementById('kpiPeriodoMes').innerText = countMesNVH;
-
-            let countSemanaLib = 0, countMesLib = 0;
-            window.liberacoes.forEach(l => {
-                if (!l.data) return;
-                const [lAno, lMes, lDia] = l.data.split('-').map(Number);
-                const dReg = new Date(lAno, lMes - 1, lDia);
-                if (dReg >= inicioSemana && dReg <= fimSemana) countSemanaLib++;
-                if (dReg >= inicioMes && dReg <= fimMes) countMesLib++;
-            });
-
-            document.getElementById('kpiLibPeriodoDia').innerText = liberacoesFiltradas.length;
-            document.getElementById('kpiLibPeriodoSemana').innerText = countSemanaLib;
-            document.getElementById('kpiLibPeriodoMes').innerText = countMesLib;
         }
 
         function filtrarHistoricoNVH() {
@@ -875,17 +880,58 @@
                 return ((reg.vin && reg.vin.toUpperCase().includes(termoUpper)) || (reg.modelo && reg.modelo.toUpperCase().includes(termoUpper)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termoUpper)) || (reg.localizacao && reg.localizacao.toUpperCase().includes(termoUpper)) || (reg.descricao && reg.descricao.toUpperCase().includes(termoUpper)));
             });
 
-            if (registrosFiltrados.length === 0) { tabela.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Nenhum registro encontrado no período.</td></tr>'; return; }
-             
-            registrosFiltrados.forEach((reg) => {
+            if (registrosFiltrados.length === 0) { 
+                tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registo encontrado no período.</td></tr>'; 
+                return; 
+            }
+
+            const gruposMap = {};
+            registrosFiltrados.forEach(reg => {
+                const chave = `${reg.vin}_${reg.data || ''}`;
+                if (!gruposMap[chave]) {
+                    gruposMap[chave] = {
+                        dataHora: reg.dataHora || formatarDataBR(reg.data),
+                        inspetor: reg.inspetor,
+                        vin: reg.vin,
+                        modelo: reg.modelo,
+                        itens: []
+                    };
+                }
+                gruposMap[chave].itens.push(reg);
+            });
+
+            const gruposArray = Object.values(gruposMap);
+
+            gruposArray.forEach((grupo) => {
                 const tr = document.createElement('tr');
-                const dataExibicao = reg.dataHora || (reg.data ? `${formatarDataBR(reg.data)}` : '-');
-                tr.innerHTML = `<td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${dataExibicao}</td><td>${reg.inspetor || '-'}</td><td><strong>${reg.vin}</strong></td><td><span class="badge-modelo">${reg.modelo}</span></td><td><span class="badge-tipo">${reg.tipoDefeito || 'N/I'}</span></td><td style="font-size: 0.8rem;"><strong>${reg.localizacao || '-'}</strong></td><td>${reg.descricao}</td><td style="white-space: nowrap;"><button class="btn-action btn-edit" onclick="editarRegistro('${reg.id}')">Editar</button> <button class="btn-action btn-delete" onclick="window.excluirRegistro('${reg.id}')">Excluir</button></td>`;
+                
+                let listaDefeitosHtml = '';
+                grupo.itens.forEach(item => {
+                    listaDefeitosHtml += `
+                        <div class="defeito-agrupado-linha">
+                            <div><span class="badge-tipo">${item.tipoDefeito || 'N/I'}</span> <strong>${item.localizacao || '-'}</strong>: ${item.descricao}</div>
+                            <div style="white-space: nowrap;">
+                                <button class="btn-action btn-edit" onclick="editarRegistro('${item.id}')">Editar</button>
+                                <button class="btn-action btn-delete" onclick="window.excluirRegistro('${item.id}')">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                tr.innerHTML = `
+                    <td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${grupo.dataHora}</td>
+                    <td>${grupo.inspetor || '-'}</td>
+                    <td><strong>${grupo.vin}</strong></td>
+                    <td><span class="badge-modelo">${grupo.modelo}</span></td>
+                    <td style="padding: 6px 12px;">${listaDefeitosHtml}</td>
+                    <td style="white-space: nowrap; vertical-align: middle;">
+                        <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent);">${grupo.itens.length} defeito(s)</span>
+                    </td>
+                `;
                 tabela.appendChild(tr);
             });
         }
 
-        // CONTABILIZAÇÃO CONTADA EXCLUSIVAMENTE PELO NOME DO COMPONENTE
         function atualizarTopGeral() {
             const registrosFiltrados = obterRegistrosFiltrados();
             const topGeralContainer = document.getElementById('topGeralContainer');
@@ -907,15 +953,12 @@
                 li.style.flexDirection = 'column'; 
                 li.style.alignItems = 'flex-start'; 
                 li.style.gap = '6px';
-                
                 const vinsHtml = listaCarros.map(c => `<span class="vin-tag"><strong>${c.vin}</strong> (${c.modelo})</span>`).join(' ');
-                
                 li.innerHTML = `<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;"><span><strong>#${index + 1}</strong> ${comp}</span><span class="ranking-badge">${listaCarros.length}x</span></div><div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;">${vinsHtml}</div>`;
                 topGeralContainer.appendChild(li);
             });
         }
 
-        // AGRUPAMENTO DOS COMPONENTES DENTRO DE CADA MODELO
         function atualizarRankingPorModelo() {
             const registrosFiltrados = obterRegistrosFiltrados();
             const rankingModeloContainer = document.getElementById('rankingModeloContainer');
@@ -943,8 +986,7 @@
         function renderizarTabelaLiberacoes(dadosCustom) {
             const tabelaLib = document.getElementById('tabelaLiberacoes'); tabelaLib.innerHTML = '';
             const listaBase = dadosCustom || obterLiberacoesFiltradas();
-                 
-            if (listaBase.length === 0) { tabelaLib.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registro para este período.</td></tr>'; return; }
+            if (listaBase.length === 0) { tabelaLib.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registo para este período.</td></tr>'; return; }
             listaBase.forEach((reg) => {
                 const tr = document.createElement('tr');
                 const classeTeste = reg.tipoTeste === 'Chuva' ? 'badge-teste-chuva' : 'badge-teste-estrada';
@@ -954,152 +996,99 @@
                 tabelaLib.appendChild(tr);
             });
         }
-        function editarLiberacao(id) {
-            const reg = window.liberacoes.find(r => r.id === id); if(!reg) return;
-            document.getElementById('libEditDocId').value = id;
-            document.getElementById('libData').value = reg.data || window.filtroConfig.dataUnica;
-            document.getElementById('libVin').value = reg.vin;
-            document.getElementById('libStatus').value = reg.status || '✅ Liberado';
-            document.getElementById('libTipoTeste').value = reg.tipoTeste;
-            document.getElementById('libResponsavel').value = reg.responsavel === 'Não informado' ? '' : reg.responsavel;
-            document.getElementById('libFormTitle').innerText = "✏️ Editar Liberação de VIN";
-            document.getElementById('btnSalvarLib').innerText = "Atualizar Liberação";
-            document.getElementById('btnCancelarLib').style.display = "block";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        function cancelarEdicaoLib() {
-            document.getElementById('libEditDocId').value = "";
-            document.getElementById('libFormTitle').innerText = "✅ Registrar Liberação de VIN";
-            document.getElementById('btnSalvarLib').innerText = "Salvar Liberação";
-            document.getElementById('btnCancelarLib').style.display = "none";
-            document.getElementById('formLiberacao').reset();
-            document.getElementById('libData').value = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
-            document.getElementById('libStatus').value = '✅ Liberado';
-        }
-        function filtrarLiberacoes() {
-            const termo = document.getElementById('inputBuscaVin').value.trim();
-            const liberacoesPeriodo = obterLiberacoesFiltradas();
-            if (!termo) { renderizarTabelaLiberacoes(liberacoesPeriodo); return; }
-            renderizarTabelaLiberacoes(liberacoesPeriodo.filter(item => item.vin.toUpperCase().includes(termo.toUpperCase())));
-        }
 
-        function abrirModalExcel() {
-            document.getElementById('modalExcel').style.display = 'flex';
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('excelDataUnica').value = hoje;
-            document.getElementById('excelDataIni').value = hoje;
-            document.getElementById('excelDataFim').value = hoje;
-        }
-        function fecharModalExcel() {
-            document.getElementById('modalExcel').style.display = 'none';
-        }
+        function abrirModalExcel() { document.getElementById('modalExcel').style.display = 'flex'; }
+        function fecharModalExcel() { document.getElementById('modalExcel').style.display = 'none'; }
         function mudarTipoExcelModal(val) {
             document.getElementById('excelGroupData').style.display = (val === 'dia') ? 'block' : 'none';
             document.getElementById('excelGroupIntervalo').style.display = (val === 'intervalo') ? 'block' : 'none';
         }
 
-        function executarExportacaoExcel() {
-            const tipoExcel = document.getElementById('excelTipoPeriodo').value;
-            let registrosExportar = [];
-            let descPeriodoExcel = "";
+        // FUNÇÃO DE EXPORTAÇÃO EXCEL FUNCIONAL USANDO SHEETJS (XLSX)
+        window.executarExportacaoExcel = function() {
+            const tipoPeriodoExcel = document.getElementById('excelTipoPeriodo').value;
+            let regsParaExportar = [...window.registros];
+            let libsParaExportar = [...window.liberacoes];
+            let nomeSufixo = "Historico_Completo";
 
-            const activeTab = document.querySelector('.tab-content.active').id;
-            const isLiberacao = (activeTab === 'tab-liberacao');
-
-            if (tipoExcel === 'atual') {
-                registrosExportar = isLiberacao ? obterLiberacoesFiltradas() : obterRegistrosFiltrados();
-                descPeriodoExcel = `Período Atual da Tela (${window.filtroConfig.tipo.toUpperCase()})`;
-            } else if (tipoExcel === 'dia') {
-                const dUnica = document.getElementById('excelDataUnica').value;
-                descPeriodoExcel = `Dia: ${formatarDataBR(dUnica)}`;
-                if (isLiberacao) {
-                    registrosExportar = window.liberacoes.filter(l => l.data === dUnica);
-                } else {
-                    registrosExportar = window.registros.filter(r => r.data === dUnica);
-                }
-            } else if (tipoExcel === 'mes') {
-                const hoje = new Date();
-                const anoM = hoje.getFullYear();
-                const mesM = hoje.getMonth() + 1;
-                descPeriodoExcel = `Mês Corrente (${mesM}/${anoM})`;
-                registrosExportar = (isLiberacao ? window.liberacoes : window.registros).filter(item => {
-                    if (!item.data) return false;
-                    const [rA, rM] = item.data.split('-').map(Number);
-                    return rA === anoM && rM === mesM;
+            if (tipoPeriodoExcel === 'atual') {
+                regsParaExportar = obterRegistrosFiltrados();
+                libsParaExportar = obterLiberacoesFiltradas();
+                nomeSufixo = `Periodo_${window.filtroConfig.tipo}`;
+            } else if (tipoPeriodoExcel === 'dia') {
+                const dataUnica = document.getElementById('excelDataUnica').value;
+                if (!dataUnica) { alert("⚠️ Selecione uma data específica para exportar."); return; }
+                regsParaExportar = window.registros.filter(r => r.data === dataUnica);
+                libsParaExportar = window.liberacoes.filter(l => l.data === dataUnica);
+                nomeSufixo = `Data_${dataUnica}`;
+            } else if (tipoPeriodoExcel === 'mes') {
+                const baseStr = new Date().toISOString().split('T')[0];
+                const [bAno, bMes] = baseStr.split('-').map(Number);
+                regsParaExportar = window.registros.filter(r => {
+                    if (!r.data) return false;
+                    const [rAno, rMes] = r.data.split('-').map(Number);
+                    return rAno === bAno && rMes === bMes;
                 });
-            } else if (tipoExcel === 'intervalo') {
-                const dIni = document.getElementById('excelDataIni').value;
-                const dFim = document.getElementById('excelDataFim').value;
-                descPeriodoExcel = `De ${formatarDataBR(dIni)} até ${formatarDataBR(dFim)}`;
-                registrosExportar = (isLiberacao ? window.liberacoes : window.registros).filter(item => {
-                    if (!item.data) return false;
-                    return item.data >= dIni && item.data <= dFim;
+                libsParaExportar = window.liberacoes.filter(l => {
+                    if (!l.data) return false;
+                    const [lAno, lMes] = l.data.split('-').map(Number);
+                    return lAno === bAno && lMes === bMes;
                 });
-            } else if (tipoExcel === 'todos') {
-                registrosExportar = isLiberacao ? window.liberacoes : window.registros;
-                descPeriodoExcel = "Todo o Histórico";
-            }
-
-            if (registrosExportar.length === 0) {
-                alert("Nenhum registro encontrado para exportar no período selecionado.");
-                return;
-            }
-
-            let dadosExcel = [];
-            if (isLiberacao) {
-                dadosExcel = [
-                    { "Data / Hora": `PERÍODO DE EXPORTAÇÃO: ${descPeriodoExcel}`, "VIN (Chassi)": "", "Status": "", "Tipo de Teste": "", "Responsável": "" },
-                    { "Data / Hora": "", "VIN (Chassi)": "", "Status": "", "Tipo de Teste": "", "Responsável": "" },
-                    ...registrosExportar.map(r => ({ 
-                        "Data / Hora": r.dataHora || formatarDataBR(r.data), 
-                        "VIN (Chassi)": r.vin, 
-                        "Status": r.status, 
-                        "Tipo de Teste": r.tipoTeste, 
-                        "Responsável": r.responsavel 
-                    }))
-                ];
-                const worksheet = XLSX.utils.json_to_sheet(dadosExcel, { skipHeader: false }); 
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Liberações VIN"); 
-                XLSX.writeFile(workbook, `liberacoes_vin_periodo.xlsx`);
-            } else {
-                dadosExcel = [
-                    { "Data / Hora": `PERÍODO DE EXPORTAÇÃO: ${descPeriodoExcel}`, "Inspetor": "", "VIN (Chassi)": "", "Modelo": "", "Origem": "", "Localização": "", "Descrição": "" },
-                    { "Data / Hora": "", "Inspetor": "", "VIN (Chassi)": "", "Modelo": "", "Origem": "", "Localização": "", "Descrição": "" },
-                    ...registrosExportar.map(r => ({ 
-                        "Data / Hora": r.dataHora || formatarDataBR(r.data), 
-                        "Inspetor": r.inspetor, 
-                        "VIN (Chassi)": r.vin, 
-                        "Modelo": r.modelo, 
-                        "Origem": r.tipoDefeito || 'Não Informado', 
-                        "Localização": r.localizacao || '-',
-                        "Descrição": r.descricao 
-                    }))
-                ];
-                const worksheet = XLSX.utils.json_to_sheet(dadosExcel, { skipHeader: false }); 
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Lançamentos NVH"); 
-                XLSX.writeFile(workbook, `defeitos_nvh_periodo.xlsx`);
+                nomeSufixo = `Mes_Atual`;
+            } else if (tipoPeriodoExcel === 'intervalo') {
+                const dataIni = document.getElementById('excelDataIni').value;
+                const dataFim = document.getElementById('excelDataFim').value;
+                if (!dataIni || !dataFim) { alert("⚠️ Selecione a data de início e fim."); return; }
+                regsParaExportar = window.registros.filter(r => r.data && r.data >= dataIni && r.data <= dataFim);
+                libsParaExportar = window.liberacoes.filter(l => l.data && l.data >= dataIni && l.data <= dataFim);
+                nomeSufixo = `De_${dataIni}_ate_${dataFim}`;
             }
 
             fecharModalExcel();
-        }
 
-        // RELATÓRIO DO WHATSAPP CONTABILIZANDO POR COMPONENTE
+            // Formatar dados para a Aba de NVH / Ruídos
+            const dadosRuidosExcel = regsParaExportar.map(r => ({
+                "Data/Hora Registo": r.dataHora || formatarDataBR(r.data),
+                "Data": r.data || "",
+                "Inspetor": r.inspetor || "",
+                "VIN (Chassi)": r.vin || "",
+                "Modelo Base": r.modeloBase || "",
+                "Processo/Linha": r.processo || "",
+                "Modelo Completo": r.modelo || "",
+                "Origem do Defeito": r.tipoDefeito || "",
+                "Localização / Componente": r.localizacao || "",
+                "Descrição do Defeito": r.descricao || ""
+            }));
+
+            // Formatar dados para a Aba de Liberações de VIN
+            const dadosLiberacoesExcel = libsParaExportar.map(l => ({
+                "Data/Hora Registo": l.dataHora || formatarDataBR(l.data),
+                "Data": l.data || "",
+                "VIN (Chassi)": l.vin || "",
+                "Status": l.status || "",
+                "Tipo de Teste": l.tipoTeste || "",
+                "Responsável": l.responsavel || ""
+            }));
+
+            // Criar o Livro do Excel (Workbook) com múltiplas abas
+            const wb = XLSX.utils.book_new();
+
+            const wsRuidos = XLSX.utils.json_to_sheet(dadosRuidosExcel);
+            XLSX.utils.book_append_sheet(wb, wsRuidos, "Controlo de Ruídos (NVH)");
+
+            const wsLibs = XLSX.utils.json_to_sheet(dadosLiberacoesExcel);
+            XLSX.utils.book_append_sheet(wb, wsLibs, "Liberação de Veículos");
+
+            // Gerar e descarregar o arquivo .xlsx
+            const nomeArquivo = `Qualidade_BYD_${nomeSufixo}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, nomeArquivo);
+            alert("📊 Ficheiro Excel gerado e descarregado com sucesso!");
+        };
+
         function copiarRelatorioWhatsApp() {
             const registrosPeriodo = obterRegistrosFiltrados();
             const descFiltro = window.filtroConfig.tipo.toUpperCase();
-            let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)* - Período: ${descFiltro}\n------------------------------------\n\n⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n🏆 *TOP 3 COMPONENTES COM DEFEITO*\n\n`;
-            
-            const componenteMap = {};
-            registrosPeriodo.forEach(r => { 
-                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Não Especificado');
-                if (!componenteMap[comp]) { componenteMap[comp] = []; } 
-                componenteMap[comp].push({ vin: r.vin, modelo: r.modelo }); 
-            });
-            
-            const componentesOrdenados = Object.entries(componenteMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
-            if (componentesOrdenados.length === 0) { txt += "Sem ocorrências neste período.\n"; } else { componentesOrdenados.forEach(([comp, listaCarros], index) => { txt += `${index + 1}° ${comp} (${listaCarros.length})\n`; listaCarros.forEach(carro => { txt += `  • ${carro.vin} – ${carro.modelo}\n`; }); txt += `\n`; }); }
+            let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)* - Período: ${descFiltro}\n------------------------------------\n\n⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n`;
             copiarTextoUniversal(txt);
         }
     </script>
