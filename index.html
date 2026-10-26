@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Qualidade & Inspeção NVH / Liberação / Suporte</title>
+    <title>Sistema de Controlo de Qualidade & Treinamento</title>
     <!-- Biblioteca SheetJS para geração de planilhas do Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -88,7 +88,6 @@
         .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
         .kpi-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
 
-        /* Estilos de Cartões */
         .top3-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .top3-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .top3-title { font-size: 0.95rem; font-weight: 700; color: #1e293b; }
@@ -243,6 +242,7 @@
                         <div class="form-group">
                             <label>Processo / Linha:</label>
                             <select id="subModeloProcesso" required>
+                                <option value="" disabled selected>Selecione...</option>
                                 <option value="SKD1">SKD1</option>
                                 <option value="SKD2">SKD2</option>
                                 <option value="PBP">PBP</option>
@@ -252,6 +252,7 @@
                         <div class="form-group">
                             <label>Origem do Defeito:</label>
                             <select id="tipoDefeito" required>
+                                <option value="" disabled selected>Selecione...</option>
                                 <option value="Estrada">Defeito encontrado na Estrada</option>
                                 <option value="Chassi">Defeito encontrado no Chassi</option>
                             </select>
@@ -446,7 +447,7 @@
         <div class="grid-layout">
             <div>
                 <div class="card">
-                    <h2>✅ Registar Liberação de VIN</h2>
+                    <h2 id="libFormTitle">✅ Registo de Liberação de VIN</h2>
                     <form id="formLiberacao">
                         <input type="hidden" id="libEditDocId" value="">
                         <div style="display: flex; gap: 12px;">
@@ -456,6 +457,7 @@
                         <div class="form-group">
                             <label>Status da Liberação *</label>
                             <select id="libStatus" required>
+                                <option value="" disabled selected>Selecione...</option>
                                 <option value="✅ Liberado">✅ Liberado</option>
                                 <option value="⏳ Pendente">⏳ Pendente</option>
                                 <option value="❌ Bloqueado">❌ Bloqueado</option>
@@ -464,6 +466,7 @@
                         <div class="form-group">
                             <label>Tipo de Teste *</label>
                             <select id="libTipoTeste" required>
+                                <option value="" disabled selected>Selecione...</option>
                                 <option value="Chuva">🌧️ Chuva</option>
                                 <option value="Teste de estrada">🚗 Teste de estrada</option>
                             </select>
@@ -471,7 +474,7 @@
                         <div class="form-group"><label>Responsável</label><input type="text" id="libResponsavel" placeholder="Nome ou Matrícula"></div>
                         <div style="display: flex; gap: 8px;">
                             <button type="submit" class="btn btn-primary" id="btnSalvarLib">Salvar Liberação</button>
-                            <button type="button" class="btn btn-danger" id="btnCancelarLib" style="display: none;" onclick="cancelarEdicaoLib()">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="btnCancelarLib" style="display: none; width: 35%;" onclick="cancelarEdicaoLib()">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -557,6 +560,7 @@
             document.getElementById('filtroDataGlobal').value = dataHoje;
             document.getElementById('filtroDataInicio').value = dataHoje;
             document.getElementById('filtroDataFim').value = dataHoje;
+            
             document.getElementById('dataLancamento').value = dataHoje;
             document.getElementById('duvidaData').value = dataHoje;
             if (document.getElementById('libData')) document.getElementById('libData').value = dataHoje;
@@ -657,6 +661,7 @@
                 <div class="form-group">
                     <label>Origem do Defeito:</label>
                     <select class="extra-tipoDefeito" required>
+                        <option value="" disabled selected>Selecione...</option>
                         <option value="Estrada">Defeito encontrado na Estrada</option>
                         <option value="Chassi">Defeito encontrado no Chassi</option>
                     </select>
@@ -752,11 +757,18 @@
                     await addDoc(collection(db, "ruidos_registros"), defeitoExtra);
                 }
 
+                // Limpar campos e voltar seletores para branco
                 document.getElementById('formRuido').reset();
                 document.getElementById('containerDefeitosExtras').innerHTML = '';
                 contadorBlocos = 0;
                 setHoje();
-                document.getElementById('inspetor').value = inspetorVal;
+                document.getElementById('vin').value = '';
+                document.getElementById('modelo').value = '';
+                document.getElementById('subModeloProcesso').selectedIndex = 0;
+                document.getElementById('tipoDefeito').selectedIndex = 0;
+                document.getElementById('localizacao').value = '';
+                document.getElementById('descricao').value = '';
+                alert("✅ Lançamento guardado com sucesso! Os campos foram limpos para um novo registo.");
             }
         });
 
@@ -786,11 +798,17 @@
                 alert("✅ Dúvida atualizada com sucesso!");
             } else {
                 await addDoc(collection(db, "duvidas_atendimentos"), dados);
-                alert("✅ Dúvida / Atendimento registado com sucesso!");
+                document.getElementById('formDuvida').reset();
+                setHoje();
+                document.getElementById('duvidaNome').value = '';
+                document.getElementById('duvidaModelo').value = '';
+                document.getElementById('duvidaVin').value = '';
+                document.getElementById('duvidaRuido').value = '';
+                document.getElementById('duvidaPista').value = '';
+                document.getElementById('duvidaResultado').value = '';
+                document.getElementById('duvidaResultadoFinal').selectedIndex = 0;
+                alert("✅ Atendimento registado com sucesso! Os campos foram limpos.");
             }
-
-            document.getElementById('formDuvida').reset();
-            setHoje();
         });
 
         // Submissão do Formulário de Liberação
@@ -810,11 +828,20 @@
                 criadoEm: Date.now()
             };
 
-            if (!editDocId) { await addDoc(collection(db, "vin_liberacoes"), dados); }
-            else { await updateDoc(doc(db, "vin_liberacoes", editDocId), dados); window.cancelarEdicaoLib(); }
-
-            document.getElementById('formLiberacao').reset();
-            setHoje();
+            if (!editDocId) { 
+                await addDoc(collection(db, "vin_liberacoes"), dados); 
+                document.getElementById('formLiberacao').reset();
+                setHoje();
+                document.getElementById('libVin').value = '';
+                document.getElementById('libStatus').selectedIndex = 0;
+                document.getElementById('libTipoTeste').selectedIndex = 0;
+                document.getElementById('libResponsavel').value = '';
+                alert("✅ Liberação registada com sucesso! Os campos foram limpos.");
+            } else { 
+                await updateDoc(doc(db, "vin_liberacoes", editDocId), dados); 
+                window.cancelarEdicaoLib(); 
+                alert("✅ Liberação atualizada com sucesso!");
+            }
         });
 
         window.salvarContagem = async function() {
@@ -933,12 +960,11 @@
             document.getElementById('inspetor').value = reg.inspetor || '';
             document.getElementById('vin').value = reg.vin || '';
             document.getElementById('modelo').value = reg.modeloBase || '';
-            document.getElementById('subModeloProcesso').value = reg.processo || 'SKD1';
-            document.getElementById('tipoDefeito').value = reg.tipoDefeito || 'Estrada';
+            document.getElementById('subModeloProcesso').value = reg.processo || '';
+            document.getElementById('tipoDefeito').value = reg.tipoDefeito || '';
             document.getElementById('localizacao').value = reg.localizacao || '';
             document.getElementById('descricao').value = reg.descricao || '';
 
-            // Oculta botão de extras e ajusta títulos
             document.getElementById('btnAdicionarOutroDefeito').style.display = 'none';
             document.getElementById('containerDefeitosExtras').innerHTML = '';
             document.getElementById('formTitle').innerText = "✏️ Editar Registo de Ruído";
@@ -955,6 +981,12 @@
             document.getElementById('btnSalvar').innerText = "Salvar Lançamento";
             document.getElementById('btnCancelar').style.display = "none";
             setHoje();
+            document.getElementById('vin').value = '';
+            document.getElementById('modelo').value = '';
+            document.getElementById('subModeloProcesso').selectedIndex = 0;
+            document.getElementById('tipoDefeito').selectedIndex = 0;
+            document.getElementById('localizacao').value = '';
+            document.getElementById('descricao').value = '';
         };
 
         // --- FUNÇÕES DE EDIÇÃO DE DÚVIDAS ---
@@ -970,7 +1002,7 @@
             document.getElementById('duvidaRuido').value = d.ruido || '';
             document.getElementById('duvidaPista').value = d.pista || '';
             document.getElementById('duvidaResultado').value = d.resultado || '';
-            document.getElementById('duvidaResultadoFinal').value = d.resultadoFinal || 'Reproduzido';
+            document.getElementById('duvidaResultadoFinal').value = d.resultadoFinal || '';
 
             document.getElementById('duvidaFormTitle').innerText = "✏️ Editar Dúvida / Suporte";
             document.getElementById('btnSalvarDuvida').innerText = "Atualizar Atendimento";
@@ -985,6 +1017,44 @@
             document.getElementById('btnSalvarDuvida').innerText = "Salvar Atendimento";
             document.getElementById('btnCancelarDuvida').style.display = "none";
             setHoje();
+            document.getElementById('duvidaNome').value = '';
+            document.getElementById('duvidaModelo').value = '';
+            document.getElementById('duvidaVin').value = '';
+            document.getElementById('duvidaRuido').value = '';
+            document.getElementById('duvidaPista').value = '';
+            document.getElementById('duvidaResultado').value = '';
+            document.getElementById('duvidaResultadoFinal').selectedIndex = 0;
+        };
+
+        // --- FUNÇÕES DE EDIÇÃO DE LIBERAÇÃO (VIN) ---
+        window.editarLiberacao = function(id) {
+            const l = window.liberacoes.find(item => item.id === id);
+            if (!l) return;
+
+            document.getElementById('libEditDocId').value = l.id;
+            document.getElementById('libData').value = l.data || window.filtroConfig.dataUnica;
+            document.getElementById('libVin').value = l.vin || '';
+            document.getElementById('libStatus').value = l.status || '';
+            document.getElementById('libTipoTeste').value = l.tipoTeste || '';
+            document.getElementById('libResponsavel').value = l.responsavel || '';
+
+            document.getElementById('libFormTitle').innerText = "✏️ Editar Registo de Liberação";
+            document.getElementById('btnSalvarLib').innerText = "Atualizar Liberação";
+            document.getElementById('btnCancelarLib').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.cancelarEdicaoLib = function() {
+            document.getElementById('libEditDocId').value = '';
+            document.getElementById('formLiberacao').reset();
+            document.getElementById('libFormTitle').innerText = "✅ Registo de Liberação de VIN";
+            document.getElementById('btnSalvarLib').innerText = "Salvar Liberação";
+            document.getElementById('btnCancelarLib').style.display = "none";
+            setHoje();
+            document.getElementById('libVin').value = '';
+            document.getElementById('libStatus').selectedIndex = 0;
+            document.getElementById('libTipoTeste').selectedIndex = 0;
+            document.getElementById('libResponsavel').value = '';
         };
 
         function atualizarTudoNVH() {
@@ -1351,7 +1421,10 @@
                     <td>${reg.status}</td>
                     <td>${reg.tipoTeste}</td>
                     <td>${reg.responsavel}</td>
-                    <td><button class="btn-action btn-delete" onclick="window.excluirLiberacao('${reg.id}')">🗑️ Excluir</button></td>
+                    <td style="white-space:nowrap; display: flex; gap: 4px;">
+                        <button class="btn-action btn-edit" onclick="editarLiberacao('${reg.id}')">✏️ Editar</button>
+                        <button class="btn-action btn-delete" onclick="window.excluirLiberacao('${reg.id}')">🗑️ Excluir</button>
+                    </td>
                 `;
                 tabelaLib.appendChild(tr);
             });
