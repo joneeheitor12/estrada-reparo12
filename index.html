@@ -16,14 +16,14 @@
             --whatsapp-hover: #15803d;
             --excel: #1d6f42;
             --excel-hover: #155231;
-            --bg: #f1f5f9;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border: #e2e8f0;
             --danger: #ef4444;
             --danger-hover: #dc2626;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
 
@@ -60,6 +60,17 @@
         input, select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; background-color: #fff; color: var(--text-main); outline: none; -webkit-appearance: none; }
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
         
+        .combobox-container { position: relative; width: 100%; }
+        .combobox-options { display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 220px; overflow-y: auto; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px; }
+        .combobox-options.active { display: block; }
+        .combobox-item { padding: 10px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; color: var(--text-main); }
+        .combobox-item:last-child { border-bottom: none; }
+        .combobox-item:hover, .combobox-item.selected { background-color: #e2e8f0; color: var(--accent); font-weight: 600; }
+        .combobox-item.novo-item { background-color: #eff6ff; color: var(--accent); font-weight: 700; border-top: 1px solid #bfdbfe; }
+
+        .defeito-item-bloco { background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 14px; position: relative; }
+        .defeito-item-bloco h3 { font-size: 0.85rem; color: var(--accent); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
+
         .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-primary { background-color: var(--accent); color: white; width: 100%; }
         .btn-primary:hover { background-color: var(--accent-hover); }
@@ -69,28 +80,45 @@
         .btn-excel:hover { background-color: var(--excel-hover); }
         .btn-danger { background-color: var(--danger); color: white; }
         .btn-danger:hover { background-color: var(--danger-hover); }
+        .btn-success { background-color: #10b981; color: white; width: 100%; margin-bottom: 14px; }
+        .btn-success:hover { background-color: #059669; }
         
         .kpi-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
         .kpi-box { background: var(--card-bg); padding: 18px 14px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
         .kpi-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
+
+        /* Estilos de Cartões */
+        .top3-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .top3-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .top3-title { font-size: 0.95rem; font-weight: 700; color: #1e293b; }
+        .count-badge { background: #2563eb; color: #ffffff; font-weight: 800; font-size: 0.8rem; padding: 4px 12px; border-radius: 14px; }
+        .vin-tag-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .vin-pill { background: #f1f5f9; border: 1px solid #cbd5e1; color: #0f172a; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
+        .vin-pill span { font-weight: 500; color: #475569; }
+
+        .modelo-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .modelo-group-header .title { font-size: 0.85rem; font-weight: 800; color: #2563eb; text-transform: uppercase; }
+        .modelo-group-header .total { font-size: 0.85rem; font-weight: 800; color: #2563eb; text-transform: uppercase; }
         
-        .ranking-list { list-style: none; }
-        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem; }
-        .ranking-badge { background: var(--accent); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
-        .badge-reproduzido { background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
-        .badge-nao-reproduzido { background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+        .comp-item-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #1e293b; font-weight: 600; }
 
         .table-container { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: white; }
         th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
         th { background-color: var(--bg); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; position: sticky; top: 0; z-index: 10; }
         
-        .btn-action { border: none; padding: 5px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+        .btn-action { border: none; padding: 5px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; }
         .btn-edit { background-color: #fef3c7; color: #d97706; }
         .btn-delete { background-color: #fee2e2; color: #dc2626; }
         .search-box { margin-bottom: 16px; }
 
+        .defeito-agrupado-linha { padding: 6px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; align-items: center; }
+        .defeito-agrupado-linha:last-child { border-bottom: none; }
+        .badge-tipo { background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.7rem; }
+        
+        .badge-reproduzido { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+        .badge-nao-reproduzido { background: #fee2e2; color: #b91c1c; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
         .btn-sm-whatsapp { padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; background-color: var(--whatsapp); color: white; border: none; cursor: pointer; font-weight: 600; }
         .btn-sm-whatsapp:hover { background-color: var(--whatsapp-hover); }
     </style>
@@ -181,22 +209,37 @@
 
                 <div class="card">
                     <h2 id="formTitle">📝 2. Novo Registo de Ruído</h2>
+                    
                     <form id="formRuido">
                         <input type="hidden" id="editDocId" value="">
                         <div style="display: flex; gap: 12px;">
                             <div class="form-group" style="flex: 1;"><label>Data:</label><input type="date" id="dataLancamento" required></div>
                             <div class="form-group" style="flex: 1.2;">
                                 <label>Inspetor:</label>
-                                <input type="text" id="inspetor" placeholder="Nome do inspetor" required>
+                                <input type="text" id="inspetor" list="listaInspetores" placeholder="Selecione ou digite..." required>
+                                <datalist id="listaInspetores">
+                                    <option value="Jone">
+                                    <option value="Kauê">
+                                    <option value="Sarah">
+                                    <option value="Marcus">
+                                </datalist>
                             </div>
                         </div>
                         <div style="display: flex; gap: 12px;">
                             <div class="form-group" style="flex: 1;"><label>VIN (Chassi):</label><input type="text" id="vin" placeholder="Ex: VK084427" required></div>
                             <div class="form-group" style="flex: 1;">
                                 <label>Modelo Base:</label>
-                                <input type="text" id="modelo" placeholder="Ex: SC3H" required>
+                                <input type="text" id="modelo" list="listaModelos" placeholder="Ex: SC3H" required>
+                                <datalist id="listaModelos">
+                                    <option value="SC3H">
+                                    <option value="SA2">
+                                    <option value="SA6">
+                                    <option value="EQE">
+                                    <option value="HA2">
+                                </datalist>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label>Processo / Linha:</label>
                             <select id="subModeloProcesso" required>
@@ -205,6 +248,7 @@
                                 <option value="PBP">PBP</option>
                             </select>
                         </div>
+
                         <div class="form-group">
                             <label>Origem do Defeito:</label>
                             <select id="tipoDefeito" required>
@@ -212,17 +256,29 @@
                                 <option value="Chassi">Defeito encontrado no Chassi</option>
                             </select>
                         </div>
+
                         <div class="form-group">
                             <label>Localização do Componente:</label>
-                            <input type="text" id="localizacao" placeholder="Ex: Pilar B esquerdo" required>
+                            <div class="combobox-container">
+                                <input type="text" id="localizacao" placeholder="Digite para filtrar ou selecione..." autocomplete="off" required>
+                                <div id="optionsLocalizacao" class="combobox-options"></div>
+                            </div>
                         </div>
+
                         <div class="form-group">
                             <label>Descrição do Defeito:</label>
                             <input type="text" id="descricao" placeholder="Ex: barulho de vibração / folga" required>
                         </div>
+
+                        <div id="containerDefeitosExtras"></div>
+
+                        <button type="button" class="btn btn-success" id="btnAdicionarOutroDefeito" onclick="adicionarBlocoDefeitoExtra()">
+                            ➕ Outro Defeito neste VIN
+                        </button>
+
                         <div style="display: flex; gap: 8px;">
                             <button type="submit" class="btn btn-primary" id="btnSalvar">Salvar Lançamento</button>
-                            <button type="button" class="btn btn-danger" id="btnCancelar" style="display: none;" onclick="cancelarEdicao()">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="btnCancelar" style="display: none; width: 35%;" onclick="cancelarEdicao()">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -230,15 +286,25 @@
 
             <div>
                 <div class="card">
-                    <h2>🏆 Top Componentes com Defeito</h2>
-                    <ul class="ranking-list" id="topGeralContainer"><li class="ranking-item">Nenhum lançamento no período.</li></ul>
+                    <h2>🏆 Top 3 Componentes com Defeito (Período Selecionado)</h2>
+                    <div id="topGeralContainer">
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p>
+                    </div>
                 </div>
+
                 <div class="card">
-                    <h2>📋 Histórico de NVH</h2>
-                    <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Pesquisar VIN, Modelo..." oninput="filtrarHistoricoNVH()"></div>
+                    <h2>🚘 Componentes Agrupados por Modelo</h2>
+                    <div id="rankingModeloContainer">
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📋 Histórico de Lançamentos (Por Veículo / VIN)</h2>
+                    <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Filtrar por VIN, Modelo, Inspetor..." oninput="filtrarHistoricoNVH()"></div>
                     <div class="table-container">
                         <table>
-                            <thead><tr><th>Data/Hora</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Defeito</th><th>Ações</th></tr></thead>
+                            <thead><tr><th>Data / Hora</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Defeitos Lançados neste Veículo</th></tr></thead>
                             <tbody id="tabelaHistorico"></tbody>
                         </table>
                     </div>
@@ -326,7 +392,6 @@
             </div>
 
             <div>
-                <!-- CARD TOP 5 NECESSIDADE DE TREINAMENTO -->
                 <div class="card" style="border-left: 4px solid var(--danger);">
                     <h2>
                         <span>🎯 Top 5 - Necessidade de Treinamento</span>
@@ -339,12 +404,11 @@
                     <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">
                         Pessoas que mais solicitaram dúvidas com maior taxa de <strong>Não Reproduzido (Erros)</strong> no período selecionado:
                     </p>
-                    <ul class="ranking-list" id="rankingTreinamentoContainer">
-                        <li class="ranking-item" style="color: var(--text-muted);">Nenhum atendimento no período.</li>
-                    </ul>
+                    <div id="rankingTreinamentoContainer">
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum atendimento no período.</p>
+                    </div>
                 </div>
 
-                <!-- TABELA HISTÓRICO DE DÚVIDAS -->
                 <div class="card">
                     <h2>📋 Histórico de Dúvidas & Validações</h2>
                     <div class="search-box">
@@ -473,6 +537,10 @@
         window.duvidas = [];
         window.contagemPorData = {};
 
+        const localizacoesPadrao = [
+            "Conjunto de caixa de luxo", "Selo da moldura da porta da frente esquerda", "Selo da moldura da porta da frente direita", "Selo da moldura da porta traseira esquerda", "Selo da moldura da porta traseira direita", "Encosto do assento do copiloto", "Pilar B esquerdo", "Pilar B direito", "Montagem do corpo no painel de instrumentos", "Montagem do corpo do painel de instrumentos secundário", "Anel de bloqueio da porta traseira", "Conjunto de proteção da porta da frente direita", "Conjunto de proteção da porta da frente esquerda", "Conjunto de proteção porta traseira esquerda", "Conjunto de proteção porta traseira direita", "Conjunto de proteção superior do pilar C direito", "Conjunto de proteção superior do pilar C esquerdo", "Conjunto de montagem de spoiler", "Almofada de tapete", "Conjunto de vidro da porta da frente esquerda", "Conjunto de vidro da porta da frente direita", "Conjunto do limitador da porta da frente", "Montagem de teto solar panorâmico", "Capa direita da tampa de ventilação", "Conjunto de tela PAD", "Antena 4G", "Placa externa da tampa superior", "Conjunto de luz traseira combinada esquerda", "Montagem de teto", "Montagem de tapete", "Porta luvas"
+        ];
+
         window.filtroConfig = { tipo: "dia", dataUnica: "", dataInicio: "", dataFim: "" };
 
         function setHoje() {
@@ -496,10 +564,11 @@
 
         setHoje();
 
-        // Listeners Firestore
+        // Listeners Firestore em tempo real
         onSnapshot(collection(db, "ruidos_registros"), (snapshot) => {
             window.registros = [];
             snapshot.forEach((doc) => { window.registros.push({ id: doc.id, ...doc.data() }); });
+            window.atualizarListaLocalizacoes();
             window.atualizarTudoNVH();
         });
 
@@ -523,6 +592,100 @@
             window.atualizarTudoNVH();
         });
 
+        let listaOpcoesLocalizacao = [...localizacoesPadrao];
+        window.atualizarListaLocalizacoes = function() {
+            const locDinamicas = new Set(localizacoesPadrao);
+            window.registros.forEach(r => { if (r.localizacao && r.localizacao.trim() !== "") locDinamicas.add(r.localizacao.trim()); });
+            listaOpcoesLocalizacao = Array.from(locDinamicas).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        };
+
+        function configurarEventosCombobox(inputEl, optionsEl) {
+            function render(filtro = '') {
+                optionsEl.innerHTML = '';
+                const termo = filtro.trim().toLowerCase();
+                const filtradas = listaOpcoesLocalizacao.filter(item => item.toLowerCase().includes(termo));
+
+                if (filtradas.length > 0) {
+                    filtradas.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'combobox-item';
+                        div.textContent = item;
+                        div.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            inputEl.value = item;
+                            optionsEl.classList.remove('active');
+                        });
+                        optionsEl.appendChild(div);
+                    });
+                }
+
+                if (termo !== '' && !listaOpcoesLocalizacao.some(item => item.toLowerCase() === termo)) {
+                    const divNovo = document.createElement('div');
+                    divNovo.className = 'combobox-item novo-item';
+                    divNovo.textContent = `➕ Usar "${filtro.trim()}" (Novo componente)`;
+                    divNovo.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        inputEl.value = filtro.trim();
+                        optionsEl.classList.remove('active');
+                    });
+                    optionsEl.appendChild(divNovo);
+                }
+                optionsEl.classList.toggle('active', optionsEl.children.length > 0);
+            }
+
+            inputEl.addEventListener('focus', () => render(inputEl.value));
+            inputEl.addEventListener('input', () => render(inputEl.value));
+        }
+
+        const inputLoc = document.getElementById('localizacao');
+        const containerOpcoesLoc = document.getElementById('optionsLocalizacao');
+        configurarEventosCombobox(inputLoc, containerOpcoesLoc);
+        document.addEventListener('click', (e) => { if (!e.target.closest('.combobox-container')) { document.querySelectorAll('.combobox-options').forEach(el => el.classList.remove('active')); } });
+
+        let contadorBlocos = 0;
+        window.adicionarBlocoDefeitoExtra = function() {
+            contadorBlocos++;
+            const container = document.getElementById('containerDefeitosExtras');
+            const blocoId = `blocoDefeito_${contadorBlocos}`;
+            
+            const divBloco = document.createElement('div');
+            divBloco.className = 'defeito-item-bloco';
+            divBloco.id = blocoId;
+            
+            divBloco.innerHTML = `
+                <h3><span>Defeito Adicional (${contadorBlocos + 1}º)</span> <button type="button" class="btn-action btn-delete" onclick="removerBlocoDefeito('${blocoId}')">Remover</button></h3>
+                <div class="form-group">
+                    <label>Origem do Defeito:</label>
+                    <select class="extra-tipoDefeito" required>
+                        <option value="Estrada">Defeito encontrado na Estrada</option>
+                        <option value="Chassi">Defeito encontrado no Chassi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Localização do Componente:</label>
+                    <div class="combobox-container">
+                        <input type="text" class="extra-localizacao" placeholder="Digite para filtrar ou selecione..." autocomplete="off" required>
+                        <div class="combobox-options extra-optionsLocalizacao"></div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Descrição do Defeito:</label>
+                    <input type="text" class="extra-descricao" placeholder="Ex: barulho de vibração / folga" required>
+                </div>
+            `;
+            
+            container.appendChild(divBloco);
+
+            const inputL = divBloco.querySelector('.extra-localizacao');
+            const optL = divBloco.querySelector('.extra-optionsLocalizacao');
+            configurarEventosCombobox(inputL, optL);
+        };
+
+        window.removerBlocoDefeito = function(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        };
+
         // Submissão do Formulário de Ruído
         document.getElementById('formRuido').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -530,28 +693,71 @@
             const agora = new Date();
             const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-            const dados = {
-                data: document.getElementById('dataLancamento').value,
-                inspetor: document.getElementById('inspetor').value.trim(),
-                vin: document.getElementById('vin').value.trim(),
-                modeloBase: document.getElementById('modelo').value.trim(),
-                processo: document.getElementById('subModeloProcesso').value,
-                modelo: `${document.getElementById('modelo').value.trim()} - ${document.getElementById('subModeloProcesso').value}`,
-                tipoDefeito: document.getElementById('tipoDefeito').value,
-                localizacao: document.getElementById('localizacao').value.trim(),
-                descricao: document.getElementById('descricao').value.trim(),
-                dataHora: dataHoraFormatada,
-                criadoEm: Date.now()
-            };
+            const dataVal = document.getElementById('dataLancamento').value;
+            const inspetorVal = document.getElementById('inspetor').value.trim();
+            const vinVal = document.getElementById('vin').value.trim();
+            const modeloBaseInput = document.getElementById('modelo').value.trim();
+            const processoInput = document.getElementById('subModeloProcesso').value;
+            const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput}`;
 
             if (editDocId) {
-                await updateDoc(doc(db, "ruidos_registros", editDocId), dados);
+                const dadosForm = {
+                    data: dataVal,
+                    inspetor: inspetorVal,
+                    vin: vinVal,
+                    modeloBase: modeloBaseInput,
+                    processo: processoInput,
+                    modelo: modeloCompletoFormatado,
+                    tipoDefeito: document.getElementById('tipoDefeito').value,
+                    localizacao: document.getElementById('localizacao').value.trim(),
+                    descricao: document.getElementById('descricao').value.trim(),
+                    dataHora: dataHoraFormatada,
+                    criadoEm: Date.now()
+                };
+                await updateDoc(doc(db, "ruidos_registros", editDocId), dadosForm);
                 window.cancelarEdicao();
+                alert("✅ Registo atualizado com sucesso!");
             } else {
-                await addDoc(collection(db, "ruidos_registros"), dados);
+                const primeiroDefeito = {
+                    data: dataVal,
+                    inspetor: inspetorVal,
+                    vin: vinVal,
+                    modeloBase: modeloBaseInput,
+                    processo: processoInput,
+                    modelo: modeloCompletoFormatado,
+                    tipoDefeito: document.getElementById('tipoDefeito').value,
+                    localizacao: document.getElementById('localizacao').value.trim(),
+                    descricao: document.getElementById('descricao').value.trim(),
+                    dataHora: dataHoraFormatada,
+                    criadoEm: Date.now()
+                };
+                await addDoc(collection(db, "ruidos_registros"), primeiroDefeito);
+
+                const blocosExtras = document.querySelectorAll('.defeito-item-bloco');
+                for (let i = 0; i < blocosExtras.length; i++) {
+                    const bloco = blocosExtras[i];
+                    const defeitoExtra = {
+                        data: dataVal,
+                        inspetor: inspetorVal,
+                        vin: vinVal,
+                        modeloBase: modeloBaseInput,
+                        processo: processoInput,
+                        modelo: modeloCompletoFormatado,
+                        tipoDefeito: bloco.querySelector('.extra-tipoDefeito').value,
+                        localizacao: bloco.querySelector('.extra-localizacao').value.trim(),
+                        descricao: bloco.querySelector('.extra-descricao').value.trim(),
+                        dataHora: dataHoraFormatada,
+                        criadoEm: Date.now() + i + 1
+                    };
+                    await addDoc(collection(db, "ruidos_registros"), defeitoExtra);
+                }
+
+                document.getElementById('formRuido').reset();
+                document.getElementById('containerDefeitosExtras').innerHTML = '';
+                contadorBlocos = 0;
+                setHoje();
+                document.getElementById('inspetor').value = inspetorVal;
             }
-            document.getElementById('formRuido').reset();
-            setHoje();
         });
 
         // Submissão do Formulário de Dúvidas
@@ -577,13 +783,14 @@
             if (editDocId) {
                 await updateDoc(doc(db, "duvidas_atendimentos", editDocId), dados);
                 window.cancelarEdicaoDuvida();
+                alert("✅ Dúvida atualizada com sucesso!");
             } else {
                 await addDoc(collection(db, "duvidas_atendimentos"), dados);
+                alert("✅ Dúvida / Atendimento registado com sucesso!");
             }
 
             document.getElementById('formDuvida').reset();
             setHoje();
-            alert("✅ Dúvida / Atendimento registado com sucesso!");
         });
 
         // Submissão do Formulário de Liberação
@@ -716,6 +923,70 @@
             return window.liberacoes.filter(l => itemNoPeriodo(l.data)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
         }
 
+        // --- FUNÇÕES DE EDIÇÃO DE REGISTOS NVH ---
+        window.editarRegistroNVH = function(id) {
+            const reg = window.registros.find(r => r.id === id);
+            if (!reg) return;
+
+            document.getElementById('editDocId').value = reg.id;
+            document.getElementById('dataLancamento').value = reg.data || window.filtroConfig.dataUnica;
+            document.getElementById('inspetor').value = reg.inspetor || '';
+            document.getElementById('vin').value = reg.vin || '';
+            document.getElementById('modelo').value = reg.modeloBase || '';
+            document.getElementById('subModeloProcesso').value = reg.processo || 'SKD1';
+            document.getElementById('tipoDefeito').value = reg.tipoDefeito || 'Estrada';
+            document.getElementById('localizacao').value = reg.localizacao || '';
+            document.getElementById('descricao').value = reg.descricao || '';
+
+            // Oculta botão de extras e ajusta títulos
+            document.getElementById('btnAdicionarOutroDefeito').style.display = 'none';
+            document.getElementById('containerDefeitosExtras').innerHTML = '';
+            document.getElementById('formTitle').innerText = "✏️ Editar Registo de Ruído";
+            document.getElementById('btnSalvar').innerText = "Atualizar Registo";
+            document.getElementById('btnCancelar').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.cancelarEdicao = function() {
+            document.getElementById('editDocId').value = '';
+            document.getElementById('formRuido').reset();
+            document.getElementById('btnAdicionarOutroDefeito').style.display = 'block';
+            document.getElementById('formTitle').innerText = "📝 2. Novo Registo de Ruído";
+            document.getElementById('btnSalvar').innerText = "Salvar Lançamento";
+            document.getElementById('btnCancelar').style.display = "none";
+            setHoje();
+        };
+
+        // --- FUNÇÕES DE EDIÇÃO DE DÚVIDAS ---
+        window.editarDuvida = function(id) {
+            const d = window.duvidas.find(item => item.id === id);
+            if (!d) return;
+
+            document.getElementById('duvidaEditDocId').value = d.id;
+            document.getElementById('duvidaData').value = d.data || window.filtroConfig.dataUnica;
+            document.getElementById('duvidaNome').value = d.nome || '';
+            document.getElementById('duvidaModelo').value = d.modelo || '';
+            document.getElementById('duvidaVin').value = d.vin || '';
+            document.getElementById('duvidaRuido').value = d.ruido || '';
+            document.getElementById('duvidaPista').value = d.pista || '';
+            document.getElementById('duvidaResultado').value = d.resultado || '';
+            document.getElementById('duvidaResultadoFinal').value = d.resultadoFinal || 'Reproduzido';
+
+            document.getElementById('duvidaFormTitle').innerText = "✏️ Editar Dúvida / Suporte";
+            document.getElementById('btnSalvarDuvida').innerText = "Atualizar Atendimento";
+            document.getElementById('btnCancelarDuvida').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.cancelarEdicaoDuvida = function() {
+            document.getElementById('duvidaEditDocId').value = '';
+            document.getElementById('formDuvida').reset();
+            document.getElementById('duvidaFormTitle').innerText = "❓ Registo de Dúvida / Suporte Prestado";
+            document.getElementById('btnSalvarDuvida').innerText = "Salvar Atendimento";
+            document.getElementById('btnCancelarDuvida').style.display = "none";
+            setHoje();
+        };
+
         function atualizarTudoNVH() {
             const registrosFiltrados = obterRegistrosFiltrados();
             const dadosDia = window.contagemPorData[window.filtroConfig.dataUnica] || { recebidos: 0, deixados: 0 };
@@ -726,6 +997,7 @@
             
             filtrarHistoricoNVH(); 
             atualizarTopGeral(); 
+            atualizarRankingPorModelo();
             atualizarIndicadoresPeriodo();
         }
 
@@ -740,25 +1012,52 @@
             const tabela = document.getElementById('tabelaHistorico');
             tabela.innerHTML = '';
              
-            const filtrados = obterRegistrosFiltrados().filter(r => {
+            const registrosFiltrados = obterRegistrosFiltrados().filter(reg => {
                 if (!termo) return true;
-                return (r.vin && r.vin.toUpperCase().includes(termo)) || (r.modelo && r.modelo.toUpperCase().includes(termo)) || (r.inspetor && r.inspetor.toUpperCase().includes(termo));
+                return ((reg.vin && reg.vin.toUpperCase().includes(termo)) || (reg.modelo && reg.modelo.toUpperCase().includes(termo)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termo)) || (reg.localizacao && reg.localizacao.toUpperCase().includes(termo)) || (reg.descricao && reg.descricao.toUpperCase().includes(termo)));
             });
 
-            if (filtrados.length === 0) { 
-                tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registo encontrado.</td></tr>'; 
+            if (registrosFiltrados.length === 0) { 
+                tabela.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Nenhum registo encontrado.</td></tr>'; 
                 return; 
             }
 
-            filtrados.forEach(item => {
+            const gruposMap = {};
+            registrosFiltrados.forEach(reg => {
+                const chave = `${reg.vin}_${reg.data || ''}`;
+                if (!gruposMap[chave]) {
+                    gruposMap[chave] = {
+                        dataHora: reg.dataHora || formatarDataBR(reg.data),
+                        inspetor: reg.inspetor,
+                        vin: reg.vin,
+                        modelo: reg.modelo,
+                        itens: []
+                    };
+                }
+                gruposMap[chave].itens.push(reg);
+            });
+
+            Object.values(gruposMap).forEach((grupo) => {
                 const tr = document.createElement('tr');
+                let listaDefeitosHtml = '';
+                grupo.itens.forEach(item => {
+                    listaDefeitosHtml += `
+                        <div class="defeito-agrupado-linha">
+                            <div><span class="badge-tipo">${item.tipoDefeito || 'N/I'}</span> <strong>${item.localizacao || '-'}</strong>: ${item.descricao}</div>
+                            <div style="display: flex; gap: 4px;">
+                                <button class="btn-action btn-edit" onclick="editarRegistroNVH('${item.id}')">✏️ Editar</button>
+                                <button class="btn-action btn-delete" onclick="window.excluirRegistro('${item.id}')">🗑️ Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
                 tr.innerHTML = `
-                    <td>${item.dataHora || formatarDataBR(item.data)}</td>
-                    <td>${item.inspetor || '-'}</td>
-                    <td><strong>${item.vin}</strong></td>
-                    <td>${item.modelo}</td>
-                    <td><strong>${item.localizacao || ''}</strong>: ${item.descricao}</td>
-                    <td><button class="btn-action btn-delete" onclick="window.excluirRegistro('${item.id}')">Excluir</button></td>
+                    <td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${grupo.dataHora}</td>
+                    <td>${grupo.inspetor || '-'}</td>
+                    <td><strong>${grupo.vin}</strong></td>
+                    <td>${grupo.modelo}</td>
+                    <td>${listaDefeitosHtml}</td>
                 `;
                 tabela.appendChild(tr);
             });
@@ -767,25 +1066,80 @@
         function atualizarTopGeral() {
             const registrosFiltrados = obterRegistrosFiltrados();
             const container = document.getElementById('topGeralContainer');
-            if (registrosFiltrados.length === 0) { container.innerHTML = '<li class="ranking-item">Nenhum lançamento no período.</li>'; return; }
+            if (registrosFiltrados.length === 0) { container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p>'; return; }
             
-            const map = {};
+            const mapaComps = {};
             registrosFiltrados.forEach(r => {
-                const key = r.localizacao || r.descricao || 'Outros';
-                map[key] = (map[key] || 0) + 1;
+                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Outros');
+                if (!mapaComps[comp]) mapaComps[comp] = [];
+                mapaComps[comp].push({ vin: r.vin, modelo: r.modelo });
             });
 
-            const sorted = Object.entries(map).sort((a,b) => b[1] - a[1]).slice(0, 5);
+            const ordenados = Object.entries(mapaComps).sort((a,b) => b[1].length - a[1].length).slice(0, 3);
             container.innerHTML = '';
-            sorted.forEach(([comp, total]) => {
-                const li = document.createElement('li');
-                li.className = 'ranking-item';
-                li.innerHTML = `<span>${comp}</span><span class="ranking-badge">${total}x</span>`;
-                container.appendChild(li);
+
+            ordenados.forEach(([comp, listaVins], idx) => {
+                const card = document.createElement('div');
+                card.className = 'top3-card';
+
+                let vinsHtml = '';
+                listaVins.forEach(item => {
+                    vinsHtml += `<div class="vin-pill">${item.vin} <span>(${item.modelo})</span></div>`;
+                });
+
+                card.innerHTML = `
+                    <div class="top3-header">
+                        <div class="top3-title">#${idx + 1} ${comp}</div>
+                        <div class="count-badge">${listaVins.length}x</div>
+                    </div>
+                    <div class="vin-tag-container">${vinsHtml}</div>
+                `;
+                container.appendChild(card);
             });
         }
 
-        // --- LÓGICA DE DÚVIDAS & TREINAMENTO ---
+        function atualizarRankingPorModelo() {
+            const registrosFiltrados = obterRegistrosFiltrados();
+            const container = document.getElementById('rankingModeloContainer');
+            if (registrosFiltrados.length === 0) { container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p>'; return; }
+
+            const mapaModelos = {};
+            registrosFiltrados.forEach(r => {
+                const modelo = r.modelo || 'OUTROS';
+                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Outros');
+                if (!mapaModelos[modelo]) mapaModelos[modelo] = { total: 0, componentes: {} };
+                mapaModelos[modelo].total++;
+                mapaModelos[modelo].componentes[comp] = (mapaModelos[modelo].componentes[comp] || 0) + 1;
+            });
+
+            container.innerHTML = '';
+
+            Object.entries(mapaModelos).forEach(([modelo, data]) => {
+                const bloco = document.createElement('div');
+                bloco.style.marginBottom = '20px';
+
+                let html = `
+                    <div class="modelo-group-header">
+                        <div class="title">MODELO: ${modelo}</div>
+                        <div class="total">TOTAL: ${data.total} OCORRÊNCIA(S)</div>
+                    </div>
+                `;
+
+                const compOrdenados = Object.entries(data.componentes).sort((a,b) => b[1] - a[1]);
+                compOrdenados.forEach(([comp, qtd]) => {
+                    html += `
+                        <div class="comp-item-card">
+                            <span>${comp}</span>
+                            <span class="count-badge">${qtd}x</span>
+                        </div>
+                    `;
+                });
+
+                bloco.innerHTML = html;
+                container.appendChild(bloco);
+            });
+        }
+
         function atualizarTudoDuvidas() {
             atualizarKPIsDuvidas();
             filtrarDuvidas();
@@ -797,11 +1151,9 @@
             const [anoB, mesB, diaB] = dataBaseStr.split('-').map(Number);
             const refDate = new Date(anoB, mesB - 1, diaB);
 
-            // Início/Fim Mês
             const anoRef = refDate.getFullYear();
             const mesRef = refDate.getMonth();
             
-            // Início/Fim Semana (Segunda a Domingo)
             const diaSemana = refDate.getDay();
             const diffToMonday = refDate.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
             const inicioSemana = new Date(anoRef, mesRef, diffToMonday);
@@ -856,9 +1208,9 @@
                     <td><strong>${d.ruido}</strong><br><small style="color:var(--text-muted);">Pista: ${d.pista}</small></td>
                     <td>${d.resultado}</td>
                     <td>${badgeFinal}</td>
-                    <td style="white-space:nowrap;">
-                        <button class="btn-action btn-edit" onclick="editarDuvida('${d.id}')">Editar</button>
-                        <button class="btn-action btn-delete" onclick="window.excluirDuvida('${d.id}')">Excluir</button>
+                    <td style="white-space:nowrap; display: flex; gap: 4px;">
+                        <button class="btn-action btn-edit" onclick="editarDuvida('${d.id}')">✏️ Editar</button>
+                        <button class="btn-action btn-delete" onclick="window.excluirDuvida('${d.id}')">🗑️ Excluir</button>
                     </td>
                 `;
                 tabela.appendChild(tr);
@@ -892,13 +1244,11 @@
             const container = document.getElementById('rankingTreinamentoContainer');
 
             if (duvidasPeriodo.length === 0) {
-                container.innerHTML = '<li class="ranking-item" style="color: var(--text-muted);">Nenhum atendimento no período.</li>';
+                container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum atendimento no período.</p>';
                 return;
             }
 
             const statsPessoas = obterEstatisticasPessoas(duvidasPeriodo);
-
-            // Ordena prioritariamente quem tem mais ERROS / Não Reproduzido e depois maior total de dúvidas
             statsPessoas.sort((a, b) => {
                 if (b.erros !== a.erros) return b.erros - a.erros;
                 return b.total - a.total;
@@ -908,16 +1258,12 @@
             container.innerHTML = '';
 
             top5.forEach((p, idx) => {
-                const li = document.createElement('li');
-                li.className = 'ranking-item';
-                li.style.flexDirection = 'column';
-                li.style.alignItems = 'flex-start';
-                li.style.gap = '6px';
-
-                li.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                        <span><strong>#${idx + 1} ${p.nome}</strong></span>
-                        <span class="ranking-badge" style="background:var(--danger);">${p.total} dúvida(s)</span>
+                const card = document.createElement('div');
+                card.className = 'top3-card';
+                card.innerHTML = `
+                    <div class="top3-header">
+                        <div class="top3-title">#${idx + 1} ${p.nome}</div>
+                        <div class="count-badge" style="background:var(--danger);">${p.total} dúvida(s)</div>
                     </div>
                     <div style="font-size:0.8rem; color:var(--text-muted); display:flex; gap:12px; flex-wrap:wrap;">
                         <span>❌ Não Reproduzido (Erros): <strong style="color:var(--danger);">${p.naoReproduzido}</strong></span>
@@ -925,39 +1271,10 @@
                         <span>🎯 Assertividade: <strong>${p.assertividade}%</strong></span>
                     </div>
                 `;
-                container.appendChild(li);
+                container.appendChild(card);
             });
         }
 
-        function editarDuvida(id) {
-            const d = window.duvidas.find(item => item.id === id);
-            if (!d) return;
-            document.getElementById('duvidaEditDocId').value = id;
-            document.getElementById('duvidaData').value = d.data;
-            document.getElementById('duvidaNome').value = d.nome;
-            document.getElementById('duvidaModelo').value = d.modelo;
-            document.getElementById('duvidaVin').value = d.vin;
-            document.getElementById('duvidaRuido').value = d.ruido;
-            document.getElementById('duvidaPista').value = d.pista;
-            document.getElementById('duvidaResultado').value = d.resultado;
-            document.getElementById('duvidaResultadoFinal').value = d.resultadoFinal || 'Reproduzido';
-
-            document.getElementById('duvidaFormTitle').innerText = "✏️ Editar Dúvida / Suporte";
-            document.getElementById('btnSalvarDuvida').innerText = "Atualizar Atendimento";
-            document.getElementById('btnCancelarDuvida').style.display = "block";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function cancelarEdicaoDuvida() {
-            document.getElementById('duvidaEditDocId').value = "";
-            document.getElementById('duvidaFormTitle').innerText = "❓ Registo de Dúvida / Suporte Prestado";
-            document.getElementById('btnSalvarDuvida').innerText = "Salvar Atendimento";
-            document.getElementById('btnCancelarDuvida').style.display = "none";
-            document.getElementById('formDuvida').reset();
-            setHoje();
-        }
-
-        // --- RELATÓRIOS SEPARADOS VIA WHATSAPP ---
         function copiarRelatorioTreinamento(modo) {
             const dataBaseStr = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
             const [anoB, mesB, diaB] = dataBaseStr.split('-').map(Number);
@@ -1021,7 +1338,7 @@
             copiarTextoUniversal(txt.trimEnd());
         }
 
-        // --- LIBERAÇÃO DE VEÍCULOS ---
+        // LIBERAÇÃO DE VEÍCULOS
         function renderizarTabelaLiberacoes() {
             const tabelaLib = document.getElementById('tabelaLiberacoes'); tabelaLib.innerHTML = '';
             const listaBase = obterLiberacoesFiltradas();
@@ -1034,7 +1351,7 @@
                     <td>${reg.status}</td>
                     <td>${reg.tipoTeste}</td>
                     <td>${reg.responsavel}</td>
-                    <td><button class="btn-action btn-delete" onclick="window.excluirLiberacao('${reg.id}')">Excluir</button></td>
+                    <td><button class="btn-action btn-delete" onclick="window.excluirLiberacao('${reg.id}')">🗑️ Excluir</button></td>
                 `;
                 tabelaLib.appendChild(tr);
             });
@@ -1050,7 +1367,7 @@
             document.getElementById('kpiLibEstrada').innerText = libEstrada;
         }
 
-        // --- EXPORTAÇÃO EXCEL COMPLETA ---
+        // EXPORTAÇÃO EXCEL
         function abrirModalExcel() { document.getElementById('modalExcel').style.display = 'flex'; }
         function fecharModalExcel() { document.getElementById('modalExcel').style.display = 'none'; }
         function mudarTipoExcelModal(val) {
@@ -1115,8 +1432,32 @@
             let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)* - Período: ${descFiltro}\n`;
             txt += `------------------------------------\n\n`;
             txt += `⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n`;
+
+            if (registrosPeriodo.length === 0) {
+                txt += `Nenhum lançamento registrado no período.`;
+                copiarTextoUniversal(txt);
+                return;
+            }
+
+            const componenteMap = {};
+            registrosPeriodo.forEach(r => { 
+                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Não Especificado');
+                if (!componenteMap[comp]) componenteMap[comp] = []; 
+                componenteMap[comp].push({ vin: r.vin, modelo: r.modelo }); 
+            });
             
-            copiarTextoUniversal(txt);
+            const componentesOrdenados = Object.entries(componenteMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
+
+            txt += `🏆 *TOP 3 COMPONENTES COM DEFEITO*\n\n`;
+            componentesOrdenados.forEach(([comp, listaCarros], index) => {
+                txt += `${index + 1}° ${comp} (${listaCarros.length})\n`;
+                listaCarros.forEach(c => {
+                    txt += `  • ${c.vin} – ${c.modelo}\n`;
+                });
+                txt += `\n`;
+            });
+
+            copiarTextoUniversal(txt.trimEnd());
         }
     </script>
 </body>
