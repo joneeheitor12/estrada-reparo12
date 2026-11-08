@@ -115,6 +115,7 @@
         .defeito-agrupado-linha { padding: 6px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; align-items: center; }
         .defeito-agrupado-linha:last-child { border-bottom: none; }
         .badge-tipo { background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.7rem; }
+        .badge-turno { background: #f3e8ff; color: #6b21a8; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.7rem; }
         
         .badge-reproduzido { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
         .badge-nao-reproduzido { background: #fee2e2; color: #b91c1c; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
@@ -213,6 +214,15 @@
                         <input type="hidden" id="editDocId" value="">
                         <div style="display: flex; gap: 12px;">
                             <div class="form-group" style="flex: 1;"><label>Data:</label><input type="date" id="dataLancamento" required></div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Turno *</label>
+                                <select id="turno" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Turno A">Turno A</option>
+                                    <option value="Turno B">Turno B</option>
+                                    <option value="Turno C">Turno C</option>
+                                </select>
+                            </div>
                             <div class="form-group" style="flex: 1.2;">
                                 <label>Inspetor:</label>
                                 <input type="text" id="inspetor" list="listaInspetores" placeholder="Selecione ou digite..." required>
@@ -302,10 +312,10 @@
 
                 <div class="card">
                     <h2>📋 Histórico de Lançamentos (Por Veículo / VIN)</h2>
-                    <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Filtrar por VIN, Modelo, Inspetor..." oninput="filtrarHistoricoNVH()"></div>
+                    <div class="search-box"><input type="text" id="inputBuscaHistorico" placeholder="🔎 Filtrar por VIN, Modelo, Turno, Inspetor..." oninput="filtrarHistoricoNVH()"></div>
                     <div class="table-container">
                         <table>
-                            <thead><tr><th>Data / Hora</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Defeitos Lançados neste Veículo</th></tr></thead>
+                            <thead><tr><th>Data / Hora</th><th>Turno</th><th>Inspetor</th><th>VIN</th><th>Modelo</th><th>Defeitos Lançados neste Veículo</th></tr></thead>
                             <tbody id="tabelaHistorico"></tbody>
                         </table>
                     </div>
@@ -342,6 +352,15 @@
                             <div class="form-group" style="flex: 1;">
                                 <label>Data *</label>
                                 <input type="date" id="duvidaData" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Turno *</label>
+                                <select id="duvidaTurno" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Turno A">Turno A</option>
+                                    <option value="Turno B">Turno B</option>
+                                    <option value="Turno C">Turno C</option>
+                                </select>
                             </div>
                             <div class="form-group" style="flex: 1.2;">
                                 <label>Nome da Pessoa *</label>
@@ -413,13 +432,14 @@
                 <div class="card">
                     <h2>📋 Histórico de Dúvidas & Validações</h2>
                     <div class="search-box">
-                        <input type="text" id="inputBuscaDuvida" placeholder="🔎 Pesquisar Nome, VIN, Ruído, Resultado..." oninput="filtrarDuvidas()">
+                        <input type="text" id="inputBuscaDuvida" placeholder="🔎 Pesquisar Nome, Turno, VIN, Ruído, Resultado..." oninput="filtrarDuvidas()">
                     </div>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Data</th>
+                                    <th>Turno</th>
                                     <th>Nome</th>
                                     <th>Modelo / VIN</th>
                                     <th>Ruído & Pista</th>
@@ -452,6 +472,15 @@
                         <input type="hidden" id="libEditDocId" value="">
                         <div style="display: flex; gap: 12px;">
                             <div class="form-group" style="flex: 1;"><label>Data *</label><input type="date" id="libData" required></div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Turno *</label>
+                                <select id="libTurno" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Turno A">Turno A</option>
+                                    <option value="Turno B">Turno B</option>
+                                    <option value="Turno C">Turno C</option>
+                                </select>
+                            </div>
                             <div class="form-group" style="flex: 1.2;"><label>VIN (Chassi) *</label><input type="text" id="libVin" placeholder="Ex: VK084427" required></div>
                         </div>
                         <div class="form-group">
@@ -483,10 +512,10 @@
             <div>
                 <div class="card">
                     <h2>🔍 Status de Liberação</h2>
-                    <div class="search-box"><input type="text" id="inputBuscaVin" placeholder="🔎 Pesquisar VIN..." oninput="filtrarLiberacoes()"></div>
+                    <div class="search-box"><input type="text" id="inputBuscaVin" placeholder="🔎 Pesquisar VIN, Turno..." oninput="filtrarLiberacoes()"></div>
                     <div class="table-container">
                         <table>
-                            <thead><tr><th>Data/Hora</th><th>VIN</th><th>Status</th><th>Tipo Teste</th><th>Responsável</th><th>Ações</th></tr></thead>
+                            <thead><tr><th>Data/Hora</th><th>Turno</th><th>VIN</th><th>Status</th><th>Tipo Teste</th><th>Responsável</th><th>Ações</th></tr></thead>
                             <tbody id="tabelaLiberacoes"></tbody>
                         </table>
                     </div>
@@ -699,6 +728,7 @@
             const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
             const dataVal = document.getElementById('dataLancamento').value;
+            const turnoVal = document.getElementById('turno').value;
             const inspetorVal = document.getElementById('inspetor').value.trim();
             const vinVal = document.getElementById('vin').value.trim();
             const modeloBaseInput = document.getElementById('modelo').value.trim();
@@ -708,6 +738,7 @@
             if (editDocId) {
                 const dadosForm = {
                     data: dataVal,
+                    turno: turnoVal,
                     inspetor: inspetorVal,
                     vin: vinVal,
                     modeloBase: modeloBaseInput,
@@ -725,6 +756,7 @@
             } else {
                 const primeiroDefeito = {
                     data: dataVal,
+                    turno: turnoVal,
                     inspetor: inspetorVal,
                     vin: vinVal,
                     modeloBase: modeloBaseInput,
@@ -743,6 +775,7 @@
                     const bloco = blocosExtras[i];
                     const defeitoExtra = {
                         data: dataVal,
+                        turno: turnoVal,
                         inspetor: inspetorVal,
                         vin: vinVal,
                         modeloBase: modeloBaseInput,
@@ -762,6 +795,7 @@
                 document.getElementById('containerDefeitosExtras').innerHTML = '';
                 contadorBlocos = 0;
                 setHoje();
+                document.getElementById('turno').selectedIndex = 0;
                 document.getElementById('vin').value = '';
                 document.getElementById('modelo').value = '';
                 document.getElementById('subModeloProcesso').selectedIndex = 0;
@@ -781,6 +815,7 @@
 
             const dados = {
                 data: document.getElementById('duvidaData').value,
+                turno: document.getElementById('duvidaTurno').value,
                 nome: document.getElementById('duvidaNome').value.trim(),
                 modelo: document.getElementById('duvidaModelo').value.trim(),
                 vin: document.getElementById('duvidaVin').value.trim(),
@@ -800,6 +835,7 @@
                 await addDoc(collection(db, "duvidas_atendimentos"), dados);
                 document.getElementById('formDuvida').reset();
                 setHoje();
+                document.getElementById('duvidaTurno').selectedIndex = 0;
                 document.getElementById('duvidaNome').value = '';
                 document.getElementById('duvidaModelo').value = '';
                 document.getElementById('duvidaVin').value = '';
@@ -820,6 +856,7 @@
 
             const dados = {
                 data: document.getElementById('libData').value,
+                turno: document.getElementById('libTurno').value,
                 vin: document.getElementById('libVin').value.trim(),
                 status: document.getElementById('libStatus').value,
                 tipoTeste: document.getElementById('libTipoTeste').value,
@@ -832,6 +869,7 @@
                 await addDoc(collection(db, "vin_liberacoes"), dados); 
                 document.getElementById('formLiberacao').reset();
                 setHoje();
+                document.getElementById('libTurno').selectedIndex = 0;
                 document.getElementById('libVin').value = '';
                 document.getElementById('libStatus').selectedIndex = 0;
                 document.getElementById('libTipoTeste').selectedIndex = 0;
@@ -957,6 +995,7 @@
 
             document.getElementById('editDocId').value = reg.id;
             document.getElementById('dataLancamento').value = reg.data || window.filtroConfig.dataUnica;
+            document.getElementById('turno').value = reg.turno || '';
             document.getElementById('inspetor').value = reg.inspetor || '';
             document.getElementById('vin').value = reg.vin || '';
             document.getElementById('modelo').value = reg.modeloBase || '';
@@ -981,6 +1020,7 @@
             document.getElementById('btnSalvar').innerText = "Salvar Lançamento";
             document.getElementById('btnCancelar').style.display = "none";
             setHoje();
+            document.getElementById('turno').selectedIndex = 0;
             document.getElementById('vin').value = '';
             document.getElementById('modelo').value = '';
             document.getElementById('subModeloProcesso').selectedIndex = 0;
@@ -996,6 +1036,7 @@
 
             document.getElementById('duvidaEditDocId').value = d.id;
             document.getElementById('duvidaData').value = d.data || window.filtroConfig.dataUnica;
+            document.getElementById('duvidaTurno').value = d.turno || '';
             document.getElementById('duvidaNome').value = d.nome || '';
             document.getElementById('duvidaModelo').value = d.modelo || '';
             document.getElementById('duvidaVin').value = d.vin || '';
@@ -1017,6 +1058,7 @@
             document.getElementById('btnSalvarDuvida').innerText = "Salvar Atendimento";
             document.getElementById('btnCancelarDuvida').style.display = "none";
             setHoje();
+            document.getElementById('duvidaTurno').selectedIndex = 0;
             document.getElementById('duvidaNome').value = '';
             document.getElementById('duvidaModelo').value = '';
             document.getElementById('duvidaVin').value = '';
@@ -1033,6 +1075,7 @@
 
             document.getElementById('libEditDocId').value = l.id;
             document.getElementById('libData').value = l.data || window.filtroConfig.dataUnica;
+            document.getElementById('libTurno').value = l.turno || '';
             document.getElementById('libVin').value = l.vin || '';
             document.getElementById('libStatus').value = l.status || '';
             document.getElementById('libTipoTeste').value = l.tipoTeste || '';
@@ -1051,6 +1094,7 @@
             document.getElementById('btnSalvarLib').innerText = "Salvar Liberação";
             document.getElementById('btnCancelarLib').style.display = "none";
             setHoje();
+            document.getElementById('libTurno').selectedIndex = 0;
             document.getElementById('libVin').value = '';
             document.getElementById('libStatus').selectedIndex = 0;
             document.getElementById('libTipoTeste').selectedIndex = 0;
@@ -1084,11 +1128,11 @@
              
             const registrosFiltrados = obterRegistrosFiltrados().filter(reg => {
                 if (!termo) return true;
-                return ((reg.vin && reg.vin.toUpperCase().includes(termo)) || (reg.modelo && reg.modelo.toUpperCase().includes(termo)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termo)) || (reg.localizacao && reg.localizacao.toUpperCase().includes(termo)) || (reg.descricao && reg.descricao.toUpperCase().includes(termo)));
+                return ((reg.vin && reg.vin.toUpperCase().includes(termo)) || (reg.modelo && reg.modelo.toUpperCase().includes(termo)) || (reg.inspetor && reg.inspetor.toUpperCase().includes(termo)) || (reg.turno && reg.turno.toUpperCase().includes(termo)) || (reg.localizacao && reg.localizacao.toUpperCase().includes(termo)) || (reg.descricao && reg.descricao.toUpperCase().includes(termo)));
             });
 
             if (registrosFiltrados.length === 0) { 
-                tabela.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Nenhum registo encontrado.</td></tr>'; 
+                tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registo encontrado.</td></tr>'; 
                 return; 
             }
 
@@ -1098,6 +1142,7 @@
                 if (!gruposMap[chave]) {
                     gruposMap[chave] = {
                         dataHora: reg.dataHora || formatarDataBR(reg.data),
+                        turno: reg.turno || '-',
                         inspetor: reg.inspetor,
                         vin: reg.vin,
                         modelo: reg.modelo,
@@ -1124,6 +1169,7 @@
 
                 tr.innerHTML = `
                     <td style="white-space: nowrap; font-size: 0.8rem; color: var(--text-muted);">${grupo.dataHora}</td>
+                    <td><span class="badge-turno">${grupo.turno}</span></td>
                     <td>${grupo.inspetor || '-'}</td>
                     <td><strong>${grupo.vin}</strong></td>
                     <td>${grupo.modelo}</td>
@@ -1142,7 +1188,7 @@
             registrosFiltrados.forEach(r => {
                 const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Outros');
                 if (!mapaComps[comp]) mapaComps[comp] = [];
-                mapaComps[comp].push({ vin: r.vin, modelo: r.modelo });
+                mapaComps[comp].push({ vin: r.vin, modelo: r.modelo, turno: r.turno });
             });
 
             const ordenados = Object.entries(mapaComps).sort((a,b) => b[1].length - a[1].length).slice(0, 3);
@@ -1154,7 +1200,7 @@
 
                 let vinsHtml = '';
                 listaVins.forEach(item => {
-                    vinsHtml += `<div class="vin-pill">${item.vin} <span>(${item.modelo})</span></div>`;
+                    vinsHtml += `<div class="vin-pill">${item.vin} <span>(${item.modelo} - ${item.turno || 'N/I'})</span></div>`;
                 });
 
                 card.innerHTML = `
@@ -1254,6 +1300,7 @@
             const filtradas = obterDuvidasFiltradas().filter(d => {
                 if (!termo) return true;
                 return (d.nome && d.nome.toUpperCase().includes(termo)) || 
+                       (d.turno && d.turno.toUpperCase().includes(termo)) || 
                        (d.vin && d.vin.toUpperCase().includes(termo)) || 
                        (d.modelo && d.modelo.toUpperCase().includes(termo)) || 
                        (d.ruido && d.ruido.toUpperCase().includes(termo)) || 
@@ -1261,7 +1308,7 @@
             });
 
             if (filtradas.length === 0) {
-                tabela.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Nenhum registo de dúvida no período.</td></tr>';
+                tabela.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Nenhum registo de dúvida no período.</td></tr>';
                 return;
             }
 
@@ -1273,6 +1320,7 @@
 
                 tr.innerHTML = `
                     <td>${formatarDataBR(d.data)}</td>
+                    <td><span class="badge-turno">${d.turno || '-'}</span></td>
                     <td><strong>${d.nome}</strong></td>
                     <td>${d.modelo} <br><small style="color:var(--text-muted);">${d.vin}</small></td>
                     <td><strong>${d.ruido}</strong><br><small style="color:var(--text-muted);">Pista: ${d.pista}</small></td>
@@ -1412,11 +1460,12 @@
         function renderizarTabelaLiberacoes() {
             const tabelaLib = document.getElementById('tabelaLiberacoes'); tabelaLib.innerHTML = '';
             const listaBase = obterLiberacoesFiltradas();
-            if (listaBase.length === 0) { tabelaLib.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Nenhum registo de liberação.</td></tr>'; return; }
+            if (listaBase.length === 0) { tabelaLib.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Nenhum registo de liberação.</td></tr>'; return; }
             listaBase.forEach((reg) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${reg.dataHora || formatarDataBR(reg.data)}</td>
+                    <td><span class="badge-turno">${reg.turno || '-'}</span></td>
                     <td><strong>${reg.vin}</strong></td>
                     <td>${reg.status}</td>
                     <td>${reg.tipoTeste}</td>
@@ -1466,6 +1515,7 @@
 
             const dadosRuidosExcel = regsParaExportar.map(r => ({
                 "Data/Hora": r.dataHora || formatarDataBR(r.data),
+                "Turno": r.turno || "",
                 "Inspetor": r.inspetor || "",
                 "VIN": r.vin || "",
                 "Modelo": r.modelo || "",
@@ -1476,6 +1526,7 @@
 
             const dadosDuvidasExcel = duvsParaExportar.map(d => ({
                 "Data": formatarDataBR(d.data),
+                "Turno": d.turno || "",
                 "Nome": d.nome || "",
                 "Modelo": d.modelo || "",
                 "VIN": d.vin || "",
@@ -1485,6 +1536,15 @@
                 "Resultado Final": d.resultadoFinal || ""
             }));
 
+            const dadosLiberacaoExcel = libsParaExportar.map(l => ({
+                "Data/Hora": l.dataHora || formatarDataBR(l.data),
+                "Turno": l.turno || "",
+                "VIN": l.vin || "",
+                "Status": l.status || "",
+                "Tipo de Teste": l.tipoTeste || "",
+                "Responsável": l.responsavel || ""
+            }));
+
             const wb = XLSX.utils.book_new();
 
             const wsRuidos = XLSX.utils.json_to_sheet(dadosRuidosExcel);
@@ -1492,6 +1552,9 @@
 
             const wsDuvidas = XLSX.utils.json_to_sheet(dadosDuvidasExcel);
             XLSX.utils.book_append_sheet(wb, wsDuvidas, "Dúvidas e Suporte");
+
+            const wsLiberacoes = XLSX.utils.json_to_sheet(dadosLiberacaoExcel);
+            XLSX.utils.book_append_sheet(wb, wsLiberacoes, "Liberação de VIN");
 
             const nomeArquivo = `Relatorio_Qualidade_${nomeSufixo}_${new Date().toISOString().split('T')[0]}.xlsx`;
             XLSX.writeFile(wb, nomeArquivo);
@@ -1516,7 +1579,7 @@
             registrosPeriodo.forEach(r => { 
                 const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Não Especificado');
                 if (!componenteMap[comp]) componenteMap[comp] = []; 
-                componenteMap[comp].push({ vin: r.vin, modelo: r.modelo }); 
+                componenteMap[comp].push({ vin: r.vin, modelo: r.modelo, turno: r.turno }); 
             });
             
             const componentesOrdenados = Object.entries(componenteMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
@@ -1525,7 +1588,7 @@
             componentesOrdenados.forEach(([comp, listaCarros], index) => {
                 txt += `${index + 1}° ${comp} (${listaCarros.length})\n`;
                 listaCarros.forEach(c => {
-                    txt += `  • ${c.vin} – ${c.modelo}\n`;
+                    txt += `  • ${c.vin} – ${c.modelo} [${c.turno || 'Sem Turno'}]\n`;
                 });
                 txt += `\n`;
             });
