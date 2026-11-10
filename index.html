@@ -39,7 +39,7 @@
 
         .filter-container { display: flex; align-items: center; gap: 10px; background: #1e293b; padding: 8px 14px; border-radius: 8px; border: 1px solid #334155; flex-wrap: wrap; }
         .filter-container label { color: #cbd5e1; font-size: 0.75rem; font-weight: 700; }
-        .filter-container select, .filter-container input[type="date"] { padding: 5px 8px; border-radius: 6px; font-size: 0.8rem; background: #0f172a; color: #ffffff; border: 1px solid #475569; outline: none; }
+        .filter-container select, .filter-container input[type="date"], .filter-container input[type="time"] { padding: 5px 8px; border-radius: 6px; font-size: 0.8rem; background: #0f172a; color: #ffffff; border: 1px solid #475569; outline: none; }
         
         .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .nav-tabs { background: #0f172a; display: flex; padding: 8px 12px; border-radius: 0 0 12px 12px; margin-bottom: 20px; gap: 10px; overflow-x: auto; border: 1px solid var(--border); border-top: none; }
@@ -143,6 +143,13 @@
                     <input type="date" id="filtroDataInicio" onchange="atualizarDadosGlobais()">
                     <span style="font-size: 0.75rem; color: #cbd5e1;">até</span>
                     <input type="date" id="filtroDataFim" onchange="atualizarDadosGlobais()">
+                </div>
+                <!-- NOVO FILTRO DE HORÁRIO -->
+                <div style="display: flex; align-items: center; gap: 4px; border-left: 1px solid #475569; padding-left: 8px;">
+                    <label>HORA:</label>
+                    <input type="time" id="filtroHoraInicio" value="00:00" onchange="atualizarDadosGlobais()" title="Hora Inicial">
+                    <span style="font-size: 0.75rem; color: #cbd5e1;">às</span>
+                    <input type="time" id="filtroHoraFim" value="23:59" onchange="atualizarDadosGlobais()" title="Hora Final">
                 </div>
             </div>
         </div>
@@ -573,7 +580,7 @@
             "Conjunto de caixa de luxo", "Selo da moldura da porta da frente esquerda", "Selo da moldura da porta da frente direita", "Selo da moldura da porta traseira esquerda", "Selo da moldura da porta traseira direita", "Encosto do assento do copiloto", "Pilar B esquerdo", "Pilar B direito", "Montagem do corpo no painel de instrumentos", "Montagem do corpo do painel de instrumentos secundário", "Anel de bloqueio da porta traseira", "Conjunto de proteção da porta da frente direita", "Conjunto de proteção da porta da frente esquerda", "Conjunto de proteção porta traseira esquerda", "Conjunto de proteção porta traseira direita", "Conjunto de proteção superior do pilar C direito", "Conjunto de proteção superior do pilar C esquerdo", "Conjunto de montagem de spoiler", "Almofada de tapete", "Conjunto de vidro da porta da frente esquerda", "Conjunto de vidro da porta da frente direita", "Conjunto do limitador da porta da frente", "Montagem de teto solar panorâmico", "Capa direita da tampa de ventilação", "Conjunto de tela PAD", "Antena 4G", "Placa externa da tampa superior", "Conjunto de luz traseira combinada esquerda", "Montagem de teto", "Montagem de tapete", "Porta luvas"
         ];
 
-        window.filtroConfig = { tipo: "dia", dataUnica: "", dataInicio: "", dataFim: "" };
+        window.filtroConfig = { tipo: "dia", dataUnica: "", dataInicio: "", dataFim: "", horaInicio: "00:00", horaFim: "23:59" };
 
         function setHoje() {
             const hoje = new Date();
@@ -725,7 +732,8 @@
             e.preventDefault();
             const editDocId = document.getElementById('editDocId').value;
             const agora = new Date();
-            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const horaStr = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
+            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + horaStr;
 
             const dataVal = document.getElementById('dataLancamento').value;
             const turnoVal = document.getElementById('turno').value;
@@ -747,6 +755,7 @@
                     tipoDefeito: document.getElementById('tipoDefeito').value,
                     localizacao: document.getElementById('localizacao').value.trim(),
                     descricao: document.getElementById('descricao').value.trim(),
+                    hora: horaStr,
                     dataHora: dataHoraFormatada,
                     criadoEm: Date.now()
                 };
@@ -765,6 +774,7 @@
                     tipoDefeito: document.getElementById('tipoDefeito').value,
                     localizacao: document.getElementById('localizacao').value.trim(),
                     descricao: document.getElementById('descricao').value.trim(),
+                    hora: horaStr,
                     dataHora: dataHoraFormatada,
                     criadoEm: Date.now()
                 };
@@ -784,6 +794,7 @@
                         tipoDefeito: bloco.querySelector('.extra-tipoDefeito').value,
                         localizacao: bloco.querySelector('.extra-localizacao').value.trim(),
                         descricao: bloco.querySelector('.extra-descricao').value.trim(),
+                        hora: horaStr,
                         dataHora: dataHoraFormatada,
                         criadoEm: Date.now() + i + 1
                     };
@@ -811,7 +822,8 @@
             e.preventDefault();
             const editDocId = document.getElementById('duvidaEditDocId').value;
             const agora = new Date();
-            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const horaStr = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
+            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + horaStr;
 
             const dados = {
                 data: document.getElementById('duvidaData').value,
@@ -823,6 +835,7 @@
                 pista: document.getElementById('duvidaPista').value.trim(),
                 resultado: document.getElementById('duvidaResultado').value.trim(),
                 resultadoFinal: document.getElementById('duvidaResultadoFinal').value,
+                hora: horaStr,
                 dataHora: dataHoraFormatada,
                 criadoEm: Date.now()
             };
@@ -852,7 +865,8 @@
             e.preventDefault();
             const editDocId = document.getElementById('libEditDocId').value;
             const agora = new Date();
-            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const horaStr = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
+            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + horaStr;
 
             const dados = {
                 data: document.getElementById('libData').value,
@@ -861,6 +875,7 @@
                 status: document.getElementById('libStatus').value,
                 tipoTeste: document.getElementById('libTipoTeste').value,
                 responsavel: document.getElementById('libResponsavel').value.trim() || 'Não informado',
+                hora: horaStr,
                 dataHora: dataHoraFormatada,
                 criadoEm: Date.now()
             };
@@ -947,6 +962,9 @@
             window.filtroConfig.dataUnica = document.getElementById('filtroDataGlobal').value;
             window.filtroConfig.dataInicio = document.getElementById('filtroDataInicio').value;
             window.filtroConfig.dataFim = document.getElementById('filtroDataFim').value;
+            window.filtroConfig.horaInicio = document.getElementById('filtroHoraInicio').value || "00:00";
+            window.filtroConfig.horaFim = document.getElementById('filtroHoraFim').value || "23:59";
+            
             carregarContagemDoDia();
             atualizarTudoNVH();
             atualizarTudoDuvidas();
@@ -954,18 +972,31 @@
             atualizarKPIsLiberacao();
         }
 
-        function itemNoPeriodo(dataRegistro) {
-            if (!dataRegistro) return true;
-            const tipo = window.filtroConfig.tipo;
-            if (tipo === 'todos') return true;
-            if (tipo === 'dia') return dataRegistro === window.filtroConfig.dataUnica;
-            if (tipo === 'mes') {
-                const [rAno, rMes] = dataRegistro.split('-').map(Number);
-                const baseStr = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
-                const [bAno, bMes] = baseStr.split('-').map(Number);
-                return rAno === bAno && rMes === bMes;
+        function itemNoPeriodo(itemData, itemHora) {
+            // Validação de Data
+            if (itemData) {
+                const tipo = window.filtroConfig.tipo;
+                if (tipo === 'dia') {
+                    if (itemData !== window.filtroConfig.dataUnica) return false;
+                } else if (tipo === 'mes') {
+                    const [rAno, rMes] = itemData.split('-').map(Number);
+                    const baseStr = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
+                    const [bAno, bMes] = baseStr.split('-').map(Number);
+                    if (rAno !== bAno || rMes !== bMes) return false;
+                } else if (tipo === 'intervalo') {
+                    if (itemData < window.filtroConfig.dataInicio || itemData > window.filtroConfig.dataFim) return false;
+                }
             }
-            if (tipo === 'intervalo') return dataRegistro >= window.filtroConfig.dataInicio && dataRegistro <= window.filtroConfig.dataFim;
+
+            // Validação de Horário (se houver hora registrada)
+            if (itemHora) {
+                const hInicio = window.filtroConfig.horaInicio;
+                const hFim = window.filtroConfig.horaFim;
+                if (hInicio && hFim) {
+                    if (itemHora < hInicio || itemHora > hFim) return false;
+                }
+            }
+
             return true;
         }
 
@@ -977,15 +1008,15 @@
         }
 
         function obterRegistrosFiltrados() { 
-            return window.registros.filter(r => itemNoPeriodo(r.data)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0)); 
+            return window.registros.filter(r => itemNoPeriodo(r.data, r.hora)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0)); 
         }
 
         function obterDuvidasFiltradas() {
-            return window.duvidas.filter(d => itemNoPeriodo(d.data)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+            return window.duvidas.filter(d => itemNoPeriodo(d.data, d.hora)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
         }
 
         function obterLiberacoesFiltradas() {
-            return window.liberacoes.filter(l => itemNoPeriodo(l.data)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+            return window.liberacoes.filter(l => itemNoPeriodo(l.data, l.hora)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
         }
 
         // --- FUNÇÕES DE EDIÇÃO DE REGISTOS NVH ---
@@ -1118,7 +1149,7 @@
         function atualizarIndicadoresPeriodo() {
             const registrosFiltrados = obterRegistrosFiltrados();
             document.getElementById('kpiPeriodoDia').innerText = registrosFiltrados.length;
-            document.getElementById('subLabelPeriodo').innerText = `Filtro: ${window.filtroConfig.tipo.toUpperCase()}`;
+            document.getElementById('subLabelPeriodo').innerText = `Filtro: ${window.filtroConfig.tipo.toUpperCase()} (${window.filtroConfig.horaInicio} às ${window.filtroConfig.horaFim})`;
         }
 
         function filtrarHistoricoNVH() {
@@ -1564,13 +1595,15 @@
         function copiarRelatorioWhatsApp() {
             const registrosPeriodo = obterRegistrosFiltrados();
             const descFiltro = window.filtroConfig.tipo.toUpperCase();
+            const descHora = `(Horário: ${window.filtroConfig.horaInicio} às ${window.filtroConfig.horaFim})`;
             
-            let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)* - Período: ${descFiltro}\n`;
+            let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)*\n`;
+            txt += `Período: ${descFiltro} ${descHora}\n`;
             txt += `------------------------------------\n\n`;
             txt += `⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n`;
 
             if (registrosPeriodo.length === 0) {
-                txt += `Nenhum lançamento registrado no período.`;
+                txt += `Nenhum lançamento registrado no intervalo de horário selecionado.`;
                 copiarTextoUniversal(txt);
                 return;
             }
