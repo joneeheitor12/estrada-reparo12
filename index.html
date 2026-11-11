@@ -130,26 +130,34 @@
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
             <div class="sync-status"><span class="sync-dot"></span> Sincronizado com Nuvem</div>
             
+            <!-- SELETOR DE PERÍODO FLEXÍVEL -->
             <div class="filter-container">
                 <label for="filtroTipoPeriodo">PERÍODO:</label>
                 <select id="filtroTipoPeriodo" onchange="mudarTipoFiltroPeriodo(this.value)">
-                    <option value="dia">Dia Específico</option>
+                    <option value="dia">Dia Específico (Com Horas)</option>
+                    <option value="intervalo">De... Até... (Data e Hora Completas)</option>
                     <option value="mes">Mês Atual</option>
-                    <option value="intervalo">De... Até...</option>
                     <option value="todos">Todos (Histórico)</option>
                 </select>
-                <input type="date" id="filtroDataGlobal" onchange="atualizarDadosGlobais()">
-                <div id="containerIntervalo" style="display: none; align-items: center; gap: 4px;">
+
+                <!-- 1. MODO DIA ESPECÍFICO (Data + Hora Início/Fim) -->
+                <div id="containerDia" style="display: flex; align-items: center; gap: 4px;">
+                    <input type="date" id="filtroDataUnica" onchange="atualizarDadosGlobais()">
+                    <div style="display: flex; align-items: center; gap: 4px; border-left: 1px solid #475569; padding-left: 6px;">
+                        <label>HORA:</label>
+                        <input type="time" id="filtroHoraInicioDia" value="06:00" onchange="atualizarDadosGlobais()">
+                        <span style="font-size: 0.75rem; color: #cbd5e1;">às</span>
+                        <input type="time" id="filtroHoraFimDia" value="14:55" onchange="atualizarDadosGlobais()">
+                    </div>
+                </div>
+
+                <!-- 2. MODO INTERVALO (De... Até... com Data e Hora completas) -->
+                <div id="containerIntervalo" style="display: none; align-items: center; gap: 4px; flex-wrap: wrap;">
                     <input type="date" id="filtroDataInicio" onchange="atualizarDadosGlobais()">
+                    <input type="time" id="filtroHoraInicioInt" value="06:00" onchange="atualizarDadosGlobais()">
                     <span style="font-size: 0.75rem; color: #cbd5e1;">até</span>
                     <input type="date" id="filtroDataFim" onchange="atualizarDadosGlobais()">
-                </div>
-                <!-- NOVO FILTRO DE HORÁRIO -->
-                <div style="display: flex; align-items: center; gap: 4px; border-left: 1px solid #475569; padding-left: 8px;">
-                    <label>HORA:</label>
-                    <input type="time" id="filtroHoraInicio" value="00:00" onchange="atualizarDadosGlobais()" title="Hora Inicial">
-                    <span style="font-size: 0.75rem; color: #cbd5e1;">às</span>
-                    <input type="time" id="filtroHoraFim" value="23:59" onchange="atualizarDadosGlobais()" title="Hora Final">
+                    <input type="time" id="filtroHoraFimInt" value="06:00" onchange="atualizarDadosGlobais()">
                 </div>
             </div>
         </div>
@@ -172,21 +180,10 @@
             <h2 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">📊 Configurar Exportação Excel</h2>
             <div class="form-group">
                 <label>Selecione o Período para Exportar:</label>
-                <select id="excelTipoPeriodo" onchange="mudarTipoExcelModal(this.value)">
+                <select id="excelTipoPeriodo">
                     <option value="atual">Usar Período Atualmente Selecionado no Ecrã</option>
-                    <option value="dia">Dia Específico</option>
-                    <option value="mes">Mês Atual</option>
-                    <option value="intervalo">Personalizado (De... Até...)</option>
                     <option value="todos">Todo o Histórico</option>
                 </select>
-            </div>
-            <div class="form-group" id="excelGroupData" style="display: none;">
-                <label>Data Específica:</label>
-                <input type="date" id="excelDataUnica">
-            </div>
-            <div id="excelGroupIntervalo" style="display: none;">
-                <div class="form-group"><label>Data Início:</label><input type="date" id="excelDataIni"></div>
-                <div class="form-group"><label>Data Fim:</label><input type="date" id="excelDataFim"></div>
             </div>
             <div style="display: flex; gap: 8px; margin-top: 18px;">
                 <button class="btn btn-excel" style="flex: 1;" onclick="executarExportacaoExcel()">Gerar Planilha</button>
@@ -221,6 +218,9 @@
                         <input type="hidden" id="editDocId" value="">
                         <div style="display: flex; gap: 12px;">
                             <div class="form-group" style="flex: 1;"><label>Data:</label><input type="date" id="dataLancamento" required></div>
+                            <div class="form-group" style="flex: 1;"><label>Hora do Lançamento *</label><input type="time" id="horaLancamento" required></div>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
                             <div class="form-group" style="flex: 1;">
                                 <label>Turno *</label>
                                 <select id="turno" required>
@@ -356,10 +356,8 @@
                         <input type="hidden" id="duvidaEditDocId" value="">
                         
                         <div style="display: flex; gap: 12px;">
-                            <div class="form-group" style="flex: 1;">
-                                <label>Data *</label>
-                                <input type="date" id="duvidaData" required>
-                            </div>
+                            <div class="form-group" style="flex: 1;"><label>Data *</label><input type="date" id="duvidaData" required></div>
+                            <div class="form-group" style="flex: 1;"><label>Hora *</label><input type="time" id="duvidaHora" required></div>
                             <div class="form-group" style="flex: 1;">
                                 <label>Turno *</label>
                                 <select id="duvidaTurno" required>
@@ -369,38 +367,15 @@
                                     <option value="Turno C">Turno C</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="flex: 1.2;">
-                                <label>Nome da Pessoa *</label>
-                                <input type="text" id="duvidaNome" placeholder="Quem solicitou ajuda?" required>
-                            </div>
                         </div>
-
+                        <div class="form-group"><label>Nome da Pessoa *</label><input type="text" id="duvidaNome" placeholder="Quem solicitou ajuda?" required></div>
                         <div style="display: flex; gap: 12px;">
-                            <div class="form-group" style="flex: 1;">
-                                <label>Modelo *</label>
-                                <input type="text" id="duvidaModelo" placeholder="Ex: SC3H" required>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label>VIN (Chassi) *</label>
-                                <input type="text" id="duvidaVin" placeholder="Ex: VK084427" required>
-                            </div>
+                            <div class="form-group" style="flex: 1;"><label>Modelo *</label><input type="text" id="duvidaModelo" placeholder="Ex: SC3H" required></div>
+                            <div class="form-group" style="flex: 1;"><label>VIN (Chassi) *</label><input type="text" id="duvidaVin" placeholder="Ex: VK084427" required></div>
                         </div>
-
-                        <div class="form-group">
-                            <label>Ruído Identificado / Dúvida Relatada *</label>
-                            <input type="text" id="duvidaRuido" placeholder="Ex: Barulho na porta dianteira direita" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Pista *</label>
-                            <input type="text" id="duvidaPista" placeholder="Ex: Pista de Paralelepípedo / Obstáculo" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Resultado da Validação *</label>
-                            <input type="text" id="duvidaResultado" placeholder="Ex: Folga no acabamento interno / Ajustado" required>
-                        </div>
-
+                        <div class="form-group"><label>Ruído Identificado / Dúvida Relatada *</label><input type="text" id="duvidaRuido" placeholder="Ex: Barulho na porta dianteira direita" required></div>
+                        <div class="form-group"><label>Pista *</label><input type="text" id="duvidaPista" placeholder="Ex: Pista de Paralelepípedo / Obstáculo" required></div>
+                        <div class="form-group"><label>Resultado da Validação *</label><input type="text" id="duvidaResultado" placeholder="Ex: Folga no acabamento interno / Ajustado" required></div>
                         <div class="form-group">
                             <label>Resultado Final *</label>
                             <select id="duvidaResultadoFinal" required>
@@ -409,7 +384,6 @@
                                 <option value="Não Reproduzido">❌ Não Reproduzido (Improcedente / Erro)</option>
                             </select>
                         </div>
-
                         <div style="display: flex; gap: 8px;">
                             <button type="submit" class="btn btn-primary" id="btnSalvarDuvida">Salvar Atendimento</button>
                             <button type="button" class="btn btn-danger" id="btnCancelarDuvida" style="display: none; width: 35%;" onclick="cancelarEdicaoDuvida()">Cancelar</button>
@@ -428,33 +402,16 @@
                             <button onclick="copiarRelatorioTreinamento('mes')" class="btn-sm-whatsapp" title="Enviar Relatório Mensal">📲 Zap Mês</button>
                         </div>
                     </h2>
-                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">
-                        Pessoas que mais solicitaram dúvidas com maior taxa de <strong>Não Reproduzido (Erros)</strong> no período selecionado:
-                    </p>
-                    <div id="rankingTreinamentoContainer">
-                        <p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum atendimento no período.</p>
-                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Pessoas que mais solicitaram dúvidas com maior taxa de <strong>Não Reproduzido (Erros)</strong> no período selecionado:</p>
+                    <div id="rankingTreinamentoContainer"><p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum atendimento no período.</p></div>
                 </div>
 
                 <div class="card">
                     <h2>📋 Histórico de Dúvidas & Validações</h2>
-                    <div class="search-box">
-                        <input type="text" id="inputBuscaDuvida" placeholder="🔎 Pesquisar Nome, Turno, VIN, Ruído, Resultado..." oninput="filtrarDuvidas()">
-                    </div>
+                    <div class="search-box"><input type="text" id="inputBuscaDuvida" placeholder="🔎 Pesquisar Nome, Turno, VIN, Ruído, Resultado..." oninput="filtrarDuvidas()"></div>
                     <div class="table-container">
                         <table>
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Turno</th>
-                                    <th>Nome</th>
-                                    <th>Modelo / VIN</th>
-                                    <th>Ruído & Pista</th>
-                                    <th>Resultado Validação</th>
-                                    <th>Final</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Data/Hora</th><th>Turno</th><th>Nome</th><th>Modelo / VIN</th><th>Ruído & Pista</th><th>Resultado Validação</th><th>Final</th><th>Ações</th></tr></thead>
                             <tbody id="tabelaDuvidas"></tbody>
                         </table>
                     </div>
@@ -479,6 +436,7 @@
                         <input type="hidden" id="libEditDocId" value="">
                         <div style="display: flex; gap: 12px;">
                             <div class="form-group" style="flex: 1;"><label>Data *</label><input type="date" id="libData" required></div>
+                            <div class="form-group" style="flex: 1;"><label>Hora *</label><input type="time" id="libHora" required></div>
                             <div class="form-group" style="flex: 1;">
                                 <label>Turno *</label>
                                 <select id="libTurno" required>
@@ -488,8 +446,8 @@
                                     <option value="Turno C">Turno C</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="flex: 1.2;"><label>VIN (Chassi) *</label><input type="text" id="libVin" placeholder="Ex: VK084427" required></div>
                         </div>
+                        <div class="form-group"><label>VIN (Chassi) *</label><input type="text" id="libVin" placeholder="Ex: VK084427" required></div>
                         <div class="form-group">
                             <label>Status da Liberação *</label>
                             <select id="libStatus" required>
@@ -577,32 +535,61 @@
         window.contagemPorData = {};
 
         const localizacoesPadrao = [
-            "Conjunto de caixa de luxo", "Selo da moldura da porta da frente esquerda", "Selo da moldura da porta da frente direita", "Selo da moldura da porta traseira esquerda", "Selo da moldura da porta traseira direita", "Encosto do assento do copiloto", "Pilar B esquerdo", "Pilar B direito", "Montagem do corpo no painel de instrumentos", "Montagem do corpo do painel de instrumentos secundário", "Anel de bloqueio da porta traseira", "Conjunto de proteção da porta da frente direita", "Conjunto de proteção da porta da frente esquerda", "Conjunto de proteção porta traseira esquerda", "Conjunto de proteção porta traseira direita", "Conjunto de proteção superior do pilar C direito", "Conjunto de proteção superior do pilar C esquerdo", "Conjunto de montagem de spoiler", "Almofada de tapete", "Conjunto de vidro da porta da frente esquerda", "Conjunto de vidro da porta da frente direita", "Conjunto do limitador da porta da frente", "Montagem de teto solar panorâmico", "Capa direita da tampa de ventilação", "Conjunto de tela PAD", "Antena 4G", "Placa externa da tampa superior", "Conjunto de luz traseira combinada esquerda", "Montagem de teto", "Montagem de tapete", "Porta luvas"
+            "Conjunto de caixa de luxo", "Selo da moldura da porta da frente esquerda", "Selo da moldura da porta da frente direita", "Selo da moldura da porta traseira esquerda", "Selo da moldura da porta traseira direita", "Encosto do assento do copiloto", "Pilar B esquerdo", "Pilar B direito", "Montagem do corpo no painel de instrumentos", "Montagem do corpo do painel de instrumentos secundário", "Anel de bloqueio da porta traseira", "Conjunto de proteção porta da frente direita", "Conjunto de proteção porta da frente esquerda", "Conjunto de proteção porta traseira esquerda", "Conjunto de proteção porta traseira direita", "Conjunto de proteção superior do pilar C direito", "Conjunto de proteção superior do pilar C esquerdo", "Conjunto de montagem de spoiler", "Almofada de tapete", "Conjunto de vidro da porta da frente esquerda", "Conjunto de vidro da porta da frente direita", "Conjunto do limitador da porta da frente", "Montagem de teto solar panorâmico", "Capa direita da tampa de ventilação", "Conjunto de tela PAD", "Antena 4G", "Placa externa da tampa superior", "Conjunto de luz traseira combinada esquerda", "Montagem de teto", "Montagem de tapete", "Porta luvas"
         ];
 
-        window.filtroConfig = { tipo: "dia", dataUnica: "", dataInicio: "", dataFim: "", horaInicio: "00:00", horaFim: "23:59" };
+        window.filtroConfig = { 
+            tipo: "dia", 
+            dataUnica: "", 
+            horaInicioDia: "06:00", 
+            horaFimDia: "14:55", 
+            dataInicio: "", 
+            horaInicioInt: "06:00", 
+            dataFim: "", 
+            horaFimInt: "06:00" 
+        };
 
-        function setHoje() {
+        function setHojeInicial() {
             const hoje = new Date();
             const ano = hoje.getFullYear();
             const mes = String(hoje.getMonth() + 1).padStart(2, '0');
             const dia = String(hoje.getDate()).padStart(2, '0');
+            const horaStr = String(hoje.getHours()).padStart(2, '0') + ':' + String(hoje.getMinutes()).padStart(2, '0');
             const dataHoje = `${ano}-${mes}-${dia}`;
             
+            const ontemObj = new Date(hoje);
+            ontemObj.setDate(hoje.getDate() - 1);
+            const dataOntem = `${ontemObj.getFullYear()}-${String(ontemObj.getMonth() + 1).padStart(2, '0')}-${String(ontemObj.getDate()).padStart(2, '0')}`;
+
+            window.filtroConfig.tipo = "dia";
             window.filtroConfig.dataUnica = dataHoje;
-            window.filtroConfig.dataInicio = dataHoje;
+            window.filtroConfig.dataInicio = dataOntem;
             window.filtroConfig.dataFim = dataHoje;
 
-            document.getElementById('filtroDataGlobal').value = dataHoje;
-            document.getElementById('filtroDataInicio').value = dataHoje;
+            document.getElementById('filtroTipoPeriodo').value = 'dia';
+            document.getElementById('containerDia').style.display = 'flex';
+            document.getElementById('containerIntervalo').style.display = 'none';
+
+            document.getElementById('filtroDataUnica').value = dataHoje;
+            document.getElementById('filtroHoraInicioDia').value = "06:00";
+            document.getElementById('filtroHoraFimDia').value = "14:55";
+
+            document.getElementById('filtroDataInicio').value = dataOntem;
+            document.getElementById('filtroHoraInicioInt').value = "06:00";
             document.getElementById('filtroDataFim').value = dataHoje;
-            
+            document.getElementById('filtroHoraFimInt').value = "06:00";
+
             document.getElementById('dataLancamento').value = dataHoje;
+            document.getElementById('horaLancamento').value = horaStr;
             document.getElementById('duvidaData').value = dataHoje;
-            if (document.getElementById('libData')) document.getElementById('libData').value = dataHoje;
+            document.getElementById('duvidaHora').value = horaStr;
+            if (document.getElementById('libData')) {
+                document.getElementById('libData').value = dataHoje;
+                document.getElementById('libHora').value = horaStr;
+            }
         }
 
-        setHoje();
+        setHojeInicial();
 
         // Listeners Firestore em tempo real
         onSnapshot(collection(db, "ruidos_registros"), (snapshot) => {
@@ -716,10 +703,7 @@
             `;
             
             container.appendChild(divBloco);
-
-            const inputL = divBloco.querySelector('.extra-localizacao');
-            const optL = divBloco.querySelector('.extra-optionsLocalizacao');
-            configurarEventosCombobox(inputL, optL);
+            configurarEventosCombobox(divBloco.querySelector('.extra-localizacao'), divBloco.querySelector('.extra-optionsLocalizacao'));
         };
 
         window.removerBlocoDefeito = function(id) {
@@ -731,89 +715,57 @@
         document.getElementById('formRuido').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('editDocId').value;
-            const agora = new Date();
-            const horaStr = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
-            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + horaStr;
-
             const dataVal = document.getElementById('dataLancamento').value;
-            const turnoVal = document.getElementById('turno').value;
-            const inspetorVal = document.getElementById('inspetor').value.trim();
-            const vinVal = document.getElementById('vin').value.trim();
-            const modeloBaseInput = document.getElementById('modelo').value.trim();
-            const processoInput = document.getElementById('subModeloProcesso').value;
-            const modeloCompletoFormatado = `${modeloBaseInput} - ${processoInput}`;
+            const horaVal = document.getElementById('horaLancamento').value || "00:00";
+            const dataHoraFormatada = formatarDataBR(dataVal) + ' ' + horaVal;
+
+            const dadosComuns = {
+                data: dataVal,
+                hora: horaVal,
+                turno: document.getElementById('turno').value,
+                inspetor: document.getElementById('inspetor').value.trim(),
+                vin: document.getElementById('vin').value.trim(),
+                modeloBase: document.getElementById('modelo').value.trim(),
+                processo: document.getElementById('subModeloProcesso').value,
+                modelo: `${document.getElementById('modelo').value.trim()} - ${document.getElementById('subModeloProcesso').value}`,
+                dataHora: dataHoraFormatada,
+                criadoEm: Date.now()
+            };
 
             if (editDocId) {
-                const dadosForm = {
-                    data: dataVal,
-                    turno: turnoVal,
-                    inspetor: inspetorVal,
-                    vin: vinVal,
-                    modeloBase: modeloBaseInput,
-                    processo: processoInput,
-                    modelo: modeloCompletoFormatado,
+                await updateDoc(doc(db, "ruidos_registros", editDocId), {
+                    ...dadosComuns,
                     tipoDefeito: document.getElementById('tipoDefeito').value,
                     localizacao: document.getElementById('localizacao').value.trim(),
-                    descricao: document.getElementById('descricao').value.trim(),
-                    hora: horaStr,
-                    dataHora: dataHoraFormatada,
-                    criadoEm: Date.now()
-                };
-                await updateDoc(doc(db, "ruidos_registros", editDocId), dadosForm);
+                    descricao: document.getElementById('descricao').value.trim()
+                });
                 window.cancelarEdicao();
                 alert("✅ Registo atualizado com sucesso!");
             } else {
-                const primeiroDefeito = {
-                    data: dataVal,
-                    turno: turnoVal,
-                    inspetor: inspetorVal,
-                    vin: vinVal,
-                    modeloBase: modeloBaseInput,
-                    processo: processoInput,
-                    modelo: modeloCompletoFormatado,
+                await addDoc(collection(db, "ruidos_registros"), {
+                    ...dadosComuns,
                     tipoDefeito: document.getElementById('tipoDefeito').value,
                     localizacao: document.getElementById('localizacao').value.trim(),
-                    descricao: document.getElementById('descricao').value.trim(),
-                    hora: horaStr,
-                    dataHora: dataHoraFormatada,
-                    criadoEm: Date.now()
-                };
-                await addDoc(collection(db, "ruidos_registros"), primeiroDefeito);
+                    descricao: document.getElementById('descricao').value.trim()
+                });
 
                 const blocosExtras = document.querySelectorAll('.defeito-item-bloco');
                 for (let i = 0; i < blocosExtras.length; i++) {
                     const bloco = blocosExtras[i];
-                    const defeitoExtra = {
-                        data: dataVal,
-                        turno: turnoVal,
-                        inspetor: inspetorVal,
-                        vin: vinVal,
-                        modeloBase: modeloBaseInput,
-                        processo: processoInput,
-                        modelo: modeloCompletoFormatado,
+                    await addDoc(collection(db, "ruidos_registros"), {
+                        ...dadosComuns,
                         tipoDefeito: bloco.querySelector('.extra-tipoDefeito').value,
                         localizacao: bloco.querySelector('.extra-localizacao').value.trim(),
                         descricao: bloco.querySelector('.extra-descricao').value.trim(),
-                        hora: horaStr,
-                        dataHora: dataHoraFormatada,
                         criadoEm: Date.now() + i + 1
-                    };
-                    await addDoc(collection(db, "ruidos_registros"), defeitoExtra);
+                    });
                 }
 
-                // Limpar campos e voltar seletores para branco
                 document.getElementById('formRuido').reset();
                 document.getElementById('containerDefeitosExtras').innerHTML = '';
                 contadorBlocos = 0;
-                setHoje();
-                document.getElementById('turno').selectedIndex = 0;
-                document.getElementById('vin').value = '';
-                document.getElementById('modelo').value = '';
-                document.getElementById('subModeloProcesso').selectedIndex = 0;
-                document.getElementById('tipoDefeito').selectedIndex = 0;
-                document.getElementById('localizacao').value = '';
-                document.getElementById('descricao').value = '';
-                alert("✅ Lançamento guardado com sucesso! Os campos foram limpos para um novo registo.");
+                setHojeInicial();
+                alert("✅ Lançamento guardado com sucesso!");
             }
         });
 
@@ -821,12 +773,12 @@
         document.getElementById('formDuvida').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('duvidaEditDocId').value;
-            const agora = new Date();
-            const horaStr = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
-            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + horaStr;
-
+            const dataVal = document.getElementById('duvidaData').value;
+            const horaVal = document.getElementById('duvidaHora').value || "00:00";
+            
             const dados = {
-                data: document.getElementById('duvidaData').value,
+                data: dataVal,
+                hora: horaVal,
                 turno: document.getElementById('duvidaTurno').value,
                 nome: document.getElementById('duvidaNome').value.trim(),
                 modelo: document.getElementById('duvidaModelo').value.trim(),
@@ -835,8 +787,7 @@
                 pista: document.getElementById('duvidaPista').value.trim(),
                 resultado: document.getElementById('duvidaResultado').value.trim(),
                 resultadoFinal: document.getElementById('duvidaResultadoFinal').value,
-                hora: horaStr,
-                dataHora: dataHoraFormatada,
+                dataHora: `${formatarDataBR(dataVal)} ${horaVal}`,
                 criadoEm: Date.now()
             };
 
@@ -847,16 +798,8 @@
             } else {
                 await addDoc(collection(db, "duvidas_atendimentos"), dados);
                 document.getElementById('formDuvida').reset();
-                setHoje();
-                document.getElementById('duvidaTurno').selectedIndex = 0;
-                document.getElementById('duvidaNome').value = '';
-                document.getElementById('duvidaModelo').value = '';
-                document.getElementById('duvidaVin').value = '';
-                document.getElementById('duvidaRuido').value = '';
-                document.getElementById('duvidaPista').value = '';
-                document.getElementById('duvidaResultado').value = '';
-                document.getElementById('duvidaResultadoFinal').selectedIndex = 0;
-                alert("✅ Atendimento registado com sucesso! Os campos foram limpos.");
+                setHojeInicial();
+                alert("✅ Atendimento registado com sucesso!");
             }
         });
 
@@ -864,32 +807,26 @@
         document.getElementById('formLiberacao').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('libEditDocId').value;
-            const agora = new Date();
-            const horaStr = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
-            const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' ' + horaStr;
+            const dataVal = document.getElementById('libData').value;
+            const horaVal = document.getElementById('libHora').value || "00:00";
 
             const dados = {
-                data: document.getElementById('libData').value,
+                data: dataVal,
+                hora: horaVal,
                 turno: document.getElementById('libTurno').value,
                 vin: document.getElementById('libVin').value.trim(),
                 status: document.getElementById('libStatus').value,
                 tipoTeste: document.getElementById('libTipoTeste').value,
                 responsavel: document.getElementById('libResponsavel').value.trim() || 'Não informado',
-                hora: horaStr,
-                dataHora: dataHoraFormatada,
+                dataHora: `${formatarDataBR(dataVal)} ${horaVal}`,
                 criadoEm: Date.now()
             };
 
             if (!editDocId) { 
                 await addDoc(collection(db, "vin_liberacoes"), dados); 
-                document.getElementById('formLiberacao').reset();
-                setHoje();
-                document.getElementById('libTurno').selectedIndex = 0;
-                document.getElementById('libVin').value = '';
-                document.getElementById('libStatus').selectedIndex = 0;
-                document.getElementById('libTipoTeste').selectedIndex = 0;
-                document.getElementById('libResponsavel').value = '';
-                alert("✅ Liberação registada com sucesso! Os campos foram limpos.");
+                document.getElementById('libLiberacao').reset();
+                setHojeInicial();
+                alert("✅ Liberação registada com sucesso!");
             } else { 
                 await updateDoc(doc(db, "vin_liberacoes", editDocId), dados); 
                 window.cancelarEdicaoLib(); 
@@ -898,11 +835,11 @@
         });
 
         window.salvarContagem = async function() {
-            const dataRef = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
+            const dataRef = window.filtroConfig.tipo === 'intervalo' ? window.filtroConfig.dataFim : window.filtroConfig.dataUnica;
             const rec = parseInt(document.getElementById('inputRecebidos').value) || 0;
             const deix = parseInt(document.getElementById('inputDeixados').value) || 0;
-            await setDoc(doc(db, "ruidos_saldos", dataRef), { recebidos: rec, deixados: deix });
-            alert(`Saldo sincronizado para ${window.formatarDataBR(dataRef)}!`);
+            await setDoc(doc(db, "ruidos_saldos", dataRef || 'geral'), { recebidos: rec, deixados: deix });
+            alert(`Saldo sincronizado!`);
         };
 
         window.excluirRegistro = async function(id) {
@@ -949,21 +886,32 @@
 
         function mudarTipoFiltroPeriodo(tipo) {
             window.filtroConfig.tipo = tipo;
-            const inputDia = document.getElementById('filtroDataGlobal');
+            const divDia = document.getElementById('containerDia');
             const divInterv = document.getElementById('containerIntervalo');
 
-            if (tipo === 'dia') { inputDia.style.display = 'inline-block'; divInterv.style.display = 'none'; }
-            else if (tipo === 'intervalo') { inputDia.style.display = 'none'; divInterv.style.display = 'flex'; }
-            else { inputDia.style.display = 'none'; divInterv.style.display = 'none'; }
+            if (tipo === 'dia') {
+                divDia.style.display = 'flex';
+                divInterv.style.display = 'none';
+            } else if (tipo === 'intervalo') {
+                divDia.style.display = 'none';
+                divInterv.style.display = 'flex';
+            } else {
+                divDia.style.display = 'none';
+                divInterv.style.display = 'none';
+            }
             atualizarDadosGlobais();
         }
 
         function atualizarDadosGlobais() {
-            window.filtroConfig.dataUnica = document.getElementById('filtroDataGlobal').value;
+            window.filtroConfig.tipo = document.getElementById('filtroTipoPeriodo').value;
+            window.filtroConfig.dataUnica = document.getElementById('filtroDataUnica').value;
+            window.filtroConfig.horaInicioDia = document.getElementById('filtroHoraInicioDia').value || "00:00";
+            window.filtroConfig.horaFimDia = document.getElementById('filtroHoraFimDia').value || "23:59";
+
             window.filtroConfig.dataInicio = document.getElementById('filtroDataInicio').value;
+            window.filtroConfig.horaInicioInt = document.getElementById('filtroHoraInicioInt').value || "00:00";
             window.filtroConfig.dataFim = document.getElementById('filtroDataFim').value;
-            window.filtroConfig.horaInicio = document.getElementById('filtroHoraInicio').value || "00:00";
-            window.filtroConfig.horaFim = document.getElementById('filtroHoraFim').value || "23:59";
+            window.filtroConfig.horaFimInt = document.getElementById('filtroHoraFimInt').value || "23:59";
             
             carregarContagemDoDia();
             atualizarTudoNVH();
@@ -972,37 +920,51 @@
             atualizarKPIsLiberacao();
         }
 
+        // MOTO-CONTROLO DE PERÍODO FLEXÍVEL
         function itemNoPeriodo(itemData, itemHora) {
-            // Validação de Data
-            if (itemData) {
-                const tipo = window.filtroConfig.tipo;
-                if (tipo === 'dia') {
-                    if (itemData !== window.filtroConfig.dataUnica) return false;
-                } else if (tipo === 'mes') {
-                    const [rAno, rMes] = itemData.split('-').map(Number);
-                    const baseStr = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
-                    const [bAno, bMes] = baseStr.split('-').map(Number);
-                    if (rAno !== bAno || rMes !== bMes) return false;
-                } else if (tipo === 'intervalo') {
-                    if (itemData < window.filtroConfig.dataInicio || itemData > window.filtroConfig.dataFim) return false;
-                }
+            if (!itemData) return false;
+            let dVal = itemData;
+            let hVal = itemHora || "00:00";
+
+            if (!itemHora && dVal.includes(' ')) {
+                hVal = dVal.split(' ')[1];
+                dVal = dVal.split(' ')[0];
             }
 
-            // Validação de Horário (se houver hora registrada)
-            if (itemHora) {
-                const hInicio = window.filtroConfig.horaInicio;
-                const hFim = window.filtroConfig.horaFim;
-                if (hInicio && hFim) {
-                    if (itemHora < hInicio || itemHora > hFim) return false;
+            const tipo = window.filtroConfig.tipo;
+
+            if (tipo === 'dia') {
+                if (dVal !== window.filtroConfig.dataUnica) return false;
+                const dtItem = hVal;
+                const hIni = window.filtroConfig.horaInicioDia;
+                const hFim = window.filtroConfig.horaFimDia;
+
+                if (hIni <= hFim) {
+                    return dtItem >= hIni && dtItem <= hFim;
+                } else {
+                    return dtItem >= hIni || dtItem <= hFim;
                 }
+            } 
+            else if (tipo === 'intervalo') {
+                const dtItemStr = `${dVal}T${hVal}`;
+                const dtInicioStr = `${window.filtroConfig.dataInicio}T${window.filtroConfig.horaInicioInt}`;
+                const dtFimStr = `${window.filtroConfig.dataFim}T${window.filtroConfig.horaFimInt}`;
+                return dtItemStr >= dtInicioStr && dtItemStr <= dtFimStr;
+            } 
+            else if (tipo === 'mes') {
+                if (!dVal) return false;
+                const [rAno, rMes] = dVal.split('-').map(Number);
+                const baseStr = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
+                const [bAno, bMes] = baseStr.split('-').map(Number);
+                return rAno === bAno && rMes === bMes;
             }
 
-            return true;
+            return true; // Todos
         }
 
         function carregarContagemDoDia() {
-            const dataRef = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
-            const dadosDia = window.contagemPorData[dataRef] || { recebidos: 0, deixados: 0 };
+            const dataRef = window.filtroConfig.tipo === 'intervalo' ? window.filtroConfig.dataFim : window.filtroConfig.dataUnica;
+            const dadosDia = window.contagemPorData[dataRef || 'geral'] || { recebidos: 0, deixados: 0 };
             document.getElementById('inputRecebidos').value = dadosDia.recebidos;
             document.getElementById('inputDeixados').value = dadosDia.deixados;
         }
@@ -1025,7 +987,8 @@
             if (!reg) return;
 
             document.getElementById('editDocId').value = reg.id;
-            document.getElementById('dataLancamento').value = reg.data || window.filtroConfig.dataUnica;
+            document.getElementById('dataLancamento').value = reg.data || '';
+            document.getElementById('horaLancamento').value = reg.hora || "00:00";
             document.getElementById('turno').value = reg.turno || '';
             document.getElementById('inspetor').value = reg.inspetor || '';
             document.getElementById('vin').value = reg.vin || '';
@@ -1050,14 +1013,7 @@
             document.getElementById('formTitle').innerText = "📝 2. Novo Registo de Ruído";
             document.getElementById('btnSalvar').innerText = "Salvar Lançamento";
             document.getElementById('btnCancelar').style.display = "none";
-            setHoje();
-            document.getElementById('turno').selectedIndex = 0;
-            document.getElementById('vin').value = '';
-            document.getElementById('modelo').value = '';
-            document.getElementById('subModeloProcesso').selectedIndex = 0;
-            document.getElementById('tipoDefeito').selectedIndex = 0;
-            document.getElementById('localizacao').value = '';
-            document.getElementById('descricao').value = '';
+            setHojeInicial();
         };
 
         // --- FUNÇÕES DE EDIÇÃO DE DÚVIDAS ---
@@ -1066,7 +1022,8 @@
             if (!d) return;
 
             document.getElementById('duvidaEditDocId').value = d.id;
-            document.getElementById('duvidaData').value = d.data || window.filtroConfig.dataUnica;
+            document.getElementById('duvidaData').value = d.data || '';
+            document.getElementById('duvidaHora').value = d.hora || "00:00";
             document.getElementById('duvidaTurno').value = d.turno || '';
             document.getElementById('duvidaNome').value = d.nome || '';
             document.getElementById('duvidaModelo').value = d.modelo || '';
@@ -1088,24 +1045,17 @@
             document.getElementById('duvidaFormTitle').innerText = "❓ Registo de Dúvida / Suporte Prestado";
             document.getElementById('btnSalvarDuvida').innerText = "Salvar Atendimento";
             document.getElementById('btnCancelarDuvida').style.display = "none";
-            setHoje();
-            document.getElementById('duvidaTurno').selectedIndex = 0;
-            document.getElementById('duvidaNome').value = '';
-            document.getElementById('duvidaModelo').value = '';
-            document.getElementById('duvidaVin').value = '';
-            document.getElementById('duvidaRuido').value = '';
-            document.getElementById('duvidaPista').value = '';
-            document.getElementById('duvidaResultado').value = '';
-            document.getElementById('duvidaResultadoFinal').selectedIndex = 0;
+            setHojeInicial();
         };
 
-        // --- FUNÇÕES DE EDIÇÃO DE LIBERAÇÃO (VIN) ---
+        // --- FUNÇÕES DE EDIÇÃO DE LIBERAÇÃO ---
         window.editarLiberacao = function(id) {
             const l = window.liberacoes.find(item => item.id === id);
             if (!l) return;
 
             document.getElementById('libEditDocId').value = l.id;
-            document.getElementById('libData').value = l.data || window.filtroConfig.dataUnica;
+            document.getElementById('libData').value = l.data || '';
+            document.getElementById('libHora').value = l.hora || "00:00";
             document.getElementById('libTurno').value = l.turno || '';
             document.getElementById('libVin').value = l.vin || '';
             document.getElementById('libStatus').value = l.status || '';
@@ -1124,17 +1074,12 @@
             document.getElementById('libFormTitle').innerText = "✅ Registo de Liberação de VIN";
             document.getElementById('btnSalvarLib').innerText = "Salvar Liberação";
             document.getElementById('btnCancelarLib').style.display = "none";
-            setHoje();
-            document.getElementById('libTurno').selectedIndex = 0;
-            document.getElementById('libVin').value = '';
-            document.getElementById('libStatus').selectedIndex = 0;
-            document.getElementById('libTipoTeste').selectedIndex = 0;
-            document.getElementById('libResponsavel').value = '';
+            setHojeInicial();
         };
 
         function atualizarTudoNVH() {
             const registrosFiltrados = obterRegistrosFiltrados();
-            const dadosDia = window.contagemPorData[window.filtroConfig.dataUnica] || { recebidos: 0, deixados: 0 };
+            const dadosDia = window.contagemPorData[window.filtroConfig.tipo === 'intervalo' ? window.filtroConfig.dataFim : window.filtroConfig.dataUnica] || { recebidos: 0, deixados: 0 };
             
             document.getElementById('kpiRecebidos').innerText = dadosDia.recebidos;
             document.getElementById('kpiDeixados').innerText = dadosDia.deixados;
@@ -1149,7 +1094,16 @@
         function atualizarIndicadoresPeriodo() {
             const registrosFiltrados = obterRegistrosFiltrados();
             document.getElementById('kpiPeriodoDia').innerText = registrosFiltrados.length;
-            document.getElementById('subLabelPeriodo').innerText = `Filtro: ${window.filtroConfig.tipo.toUpperCase()} (${window.filtroConfig.horaInicio} às ${window.filtroConfig.horaFim})`;
+            
+            let textoFiltro = "";
+            if (window.filtroConfig.tipo === 'dia') {
+                textoFiltro = `Dia ${formatarDataBR(window.filtroConfig.dataUnica)} (${window.filtroConfig.horaInicioDia} às ${window.filtroConfig.horaFimDia})`;
+            } else if (window.filtroConfig.tipo === 'intervalo') {
+                textoFiltro = `${formatarDataBR(window.filtroConfig.dataInicio)} ${window.filtroConfig.horaInicioInt} até ${formatarDataBR(window.filtroConfig.dataFim)} ${window.filtroConfig.horaFimInt}`;
+            } else {
+                textoFiltro = window.filtroConfig.tipo.toUpperCase();
+            }
+            document.getElementById('subLabelPeriodo').innerText = `Filtro: ${textoFiltro}`;
         }
 
         function filtrarHistoricoNVH() {
@@ -1172,7 +1126,7 @@
                 const chave = `${reg.vin}_${reg.data || ''}`;
                 if (!gruposMap[chave]) {
                     gruposMap[chave] = {
-                        dataHora: reg.dataHora || formatarDataBR(reg.data),
+                        dataHora: `${formatarDataBR(reg.data)} ${reg.hora || ''}`,
                         turno: reg.turno || '-',
                         inspetor: reg.inspetor,
                         vin: reg.vin,
@@ -1294,8 +1248,8 @@
         }
 
         function atualizarKPIsDuvidas() {
-            const dataBaseStr = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
-            const [anoB, mesB, diaB] = dataBaseStr.split('-').map(Number);
+            const dataBaseStr = window.filtroConfig.tipo === 'intervalo' ? window.filtroConfig.dataFim : window.filtroConfig.dataUnica;
+            const [anoB, mesB, diaB] = (dataBaseStr || new Date().toISOString().split('T')[0]).split('-').map(Number);
             const refDate = new Date(anoB, mesB - 1, diaB);
 
             const anoRef = refDate.getFullYear();
@@ -1313,7 +1267,7 @@
                 const [dAno, dMes, dDia] = d.data.split('-').map(Number);
                 const dateObj = new Date(dAno, dMes - 1, dDia);
 
-                if (d.data === dataBaseStr) cntDia++;
+                if (d.data === (window.filtroConfig.dataUnica || '')) cntDia++;
                 if (dateObj >= inicioSemana && dateObj <= fimSemana) cntSemana++;
                 if (dAno === anoRef && (dMes - 1) === mesRef) cntMes++;
             });
@@ -1350,7 +1304,7 @@
                     : `<span class="badge-nao-reproduzido">❌ Não Repr.</span>`;
 
                 tr.innerHTML = `
-                    <td>${formatarDataBR(d.data)}</td>
+                    <td>${formatarDataBR(d.data)} ${d.hora || ''}</td>
                     <td><span class="badge-turno">${d.turno || '-'}</span></td>
                     <td><strong>${d.nome}</strong></td>
                     <td>${d.modelo} <br><small style="color:var(--text-muted);">${d.vin}</small></td>
@@ -1398,15 +1352,10 @@
             }
 
             const statsPessoas = obterEstatisticasPessoas(duvidasPeriodo);
-            statsPessoas.sort((a, b) => {
-                if (b.erros !== a.erros) return b.erros - a.erros;
-                return b.total - a.total;
-            });
+            statsPessoas.sort((a, b) => b.erros - a.erros || b.total - a.total);
 
-            const top5 = statsPessoas.slice(0, 5);
             container.innerHTML = '';
-
-            top5.forEach((p, idx) => {
+            statsPessoas.slice(0, 5).forEach((p, idx) => {
                 const card = document.createElement('div');
                 card.className = 'top3-card';
                 card.innerHTML = `
@@ -1425,8 +1374,8 @@
         }
 
         function copiarRelatorioTreinamento(modo) {
-            const dataBaseStr = window.filtroConfig.dataUnica || new Date().toISOString().split('T')[0];
-            const [anoB, mesB, diaB] = dataBaseStr.split('-').map(Number);
+            const dataBaseStr = window.filtroConfig.tipo === 'intervalo' ? window.filtroConfig.dataFim : window.filtroConfig.dataUnica;
+            const [anoB, mesB, diaB] = (dataBaseStr || new Date().toISOString().split('T')[0]).split('-').map(Number);
             const refDate = new Date(anoB, mesB - 1, diaB);
             const anoRef = refDate.getFullYear();
             const mesRef = refDate.getMonth();
@@ -1470,18 +1419,11 @@
             }
 
             const stats = obterEstatisticasPessoas(listaFiltrada);
-            stats.sort((a, b) => {
-                if (b.erros !== a.erros) return b.erros - a.erros;
-                return b.total - a.total;
-            });
+            stats.sort((a, b) => b.erros - a.erros || b.total - a.total);
 
             txt += `🏆 *TOP 5 PESSOAS PARA TREINAMENTO*\n\n`;
             stats.slice(0, 5).forEach((p, idx) => {
-                txt += `${idx + 1}° *${p.nome}*\n`;
-                txt += `   • Total Dúvidas: ${p.total}\n`;
-                txt += `   • ❌ Não Reproduzido (Erros): ${p.naoReproduzido}\n`;
-                txt += `   • ✅ Reproduzido (Acertos): ${p.reproduzido}\n`;
-                txt += `   • 🎯 Assertividade: ${p.assertividade}%\n\n`;
+                txt += `${idx + 1}° *${p.nome}* | Dúvidas: ${p.total} | ❌ Erros: ${p.naoReproduzido} | 🎯 Assertividade: ${p.assertividade}%\n`;
             });
 
             copiarTextoUniversal(txt.trimEnd());
@@ -1495,7 +1437,7 @@
             listaBase.forEach((reg) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${reg.dataHora || formatarDataBR(reg.data)}</td>
+                    <td>${formatarDataBR(reg.data)} ${reg.hora || ''}</td>
                     <td><span class="badge-turno">${reg.turno || '-'}</span></td>
                     <td><strong>${reg.vin}</strong></td>
                     <td>${reg.status}</td>
@@ -1523,10 +1465,6 @@
         // EXPORTAÇÃO EXCEL
         function abrirModalExcel() { document.getElementById('modalExcel').style.display = 'flex'; }
         function fecharModalExcel() { document.getElementById('modalExcel').style.display = 'none'; }
-        function mudarTipoExcelModal(val) {
-            document.getElementById('excelGroupData').style.display = (val === 'dia') ? 'block' : 'none';
-            document.getElementById('excelGroupIntervalo').style.display = (val === 'intervalo') ? 'block' : 'none';
-        }
 
         window.executarExportacaoExcel = function() {
             const tipoPeriodoExcel = document.getElementById('excelTipoPeriodo').value;
@@ -1545,7 +1483,7 @@
             fecharModalExcel();
 
             const dadosRuidosExcel = regsParaExportar.map(r => ({
-                "Data/Hora": r.dataHora || formatarDataBR(r.data),
+                "Data/Hora": `${formatarDataBR(r.data)} ${r.hora || ''}`,
                 "Turno": r.turno || "",
                 "Inspetor": r.inspetor || "",
                 "VIN": r.vin || "",
@@ -1556,7 +1494,7 @@
             }));
 
             const dadosDuvidasExcel = duvsParaExportar.map(d => ({
-                "Data": formatarDataBR(d.data),
+                "Data/Hora": `${formatarDataBR(d.data)} ${d.hora || ''}`,
                 "Turno": d.turno || "",
                 "Nome": d.nome || "",
                 "Modelo": d.modelo || "",
@@ -1568,7 +1506,7 @@
             }));
 
             const dadosLiberacaoExcel = libsParaExportar.map(l => ({
-                "Data/Hora": l.dataHora || formatarDataBR(l.data),
+                "Data/Hora": `${formatarDataBR(l.data)} ${l.hora || ''}`,
                 "Turno": l.turno || "",
                 "VIN": l.vin || "",
                 "Status": l.status || "",
@@ -1577,33 +1515,34 @@
             }));
 
             const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dadosRuidosExcel), "Ruídos (NVH)");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dadosDuvidasExcel), "Dúvidas e Suporte");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dadosLiberacaoExcel), "Liberação de VIN");
 
-            const wsRuidos = XLSX.utils.json_to_sheet(dadosRuidosExcel);
-            XLSX.utils.book_append_sheet(wb, wsRuidos, "Ruídos (NVH)");
-
-            const wsDuvidas = XLSX.utils.json_to_sheet(dadosDuvidasExcel);
-            XLSX.utils.book_append_sheet(wb, wsDuvidas, "Dúvidas e Suporte");
-
-            const wsLiberacoes = XLSX.utils.json_to_sheet(dadosLiberacaoExcel);
-            XLSX.utils.book_append_sheet(wb, wsLiberacoes, "Liberação de VIN");
-
-            const nomeArquivo = `Relatorio_Qualidade_${nomeSufixo}_${new Date().toISOString().split('T')[0]}.xlsx`;
-            XLSX.writeFile(wb, nomeArquivo);
+            XLSX.writeFile(wb, `Relatorio_Qualidade_${nomeSufixo}.xlsx`);
             alert("📊 Ficheiro Excel gerado com sucesso!");
         };
 
         function copiarRelatorioWhatsApp() {
             const registrosPeriodo = obterRegistrosFiltrados();
-            const descFiltro = window.filtroConfig.tipo.toUpperCase();
-            const descHora = `(Horário: ${window.filtroConfig.horaInicio} às ${window.filtroConfig.horaFim})`;
+            const tipo = window.filtroConfig.tipo;
+            
+            let descPeriodo = "";
+            if (tipo === 'dia') {
+                descPeriodo = `${formatarDataBR(window.filtroConfig.dataUnica)} (${window.filtroConfig.horaInicioDia} às ${window.filtroConfig.horaFimDia})`;
+            } else if (tipo === 'intervalo') {
+                descPeriodo = `${formatarDataBR(window.filtroConfig.dataInicio)} ${window.filtroConfig.horaInicioInt} até ${formatarDataBR(window.filtroConfig.dataFim)} ${window.filtroConfig.horaFimInt}`;
+            } else {
+                descPeriodo = tipo.toUpperCase();
+            }
             
             let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)*\n`;
-            txt += `Período: ${descFiltro} ${descHora}\n`;
+            txt += `📌 Período: ${descPeriodo}\n`;
             txt += `------------------------------------\n\n`;
             txt += `⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n`;
 
             if (registrosPeriodo.length === 0) {
-                txt += `Nenhum lançamento registrado no intervalo de horário selecionado.`;
+                txt += `Nenhum lançamento registrado neste período.`;
                 copiarTextoUniversal(txt);
                 return;
             }
@@ -1619,7 +1558,7 @@
 
             txt += `🏆 *TOP 3 COMPONENTES COM DEFEITO*\n\n`;
             componentesOrdenados.forEach(([comp, listaCarros], index) => {
-                txt += `${index + 1}° ${comp} (${listaCarros.length})\n`;
+                txt += `${index + 1}° ${comp} (${listaCarros.length}x)\n`;
                 listaCarros.forEach(c => {
                     txt += `  • ${c.vin} – ${c.modelo} [${c.turno || 'Sem Turno'}]\n`;
                 });
