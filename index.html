@@ -83,7 +83,7 @@
         .btn-success { background-color: #10b981; color: white; width: 100%; margin-bottom: 14px; }
         .btn-success:hover { background-color: #059669; }
         
-        .kpi-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+        .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
         .kpi-box { background: var(--card-bg); padding: 18px 14px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
         .kpi-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
@@ -426,6 +426,7 @@
             <div class="kpi-box"><div class="kpi-value" id="kpiLibTotal">0</div><div class="kpi-label">Total Liberados</div></div>
             <div class="kpi-box"><div class="kpi-value" id="kpiLibChuva" style="color: #0369a1;">0</div><div class="kpi-label">🌧️ Liberados Chuva</div></div>
             <div class="kpi-box"><div class="kpi-value" id="kpiLibEstrada" style="color: #b45309;">0</div><div class="kpi-label">🚗 Liberados Estrada</div></div>
+            <div class="kpi-box"><div class="kpi-value" id="kpiLibRevalidacao" style="color: #7c3aed;">0</div><div class="kpi-label">🔄 Liberados Revalidação</div></div>
         </div>
 
         <div class="grid-layout">
@@ -1470,9 +1471,12 @@
             const totalLib = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado')).length;
             const libChuva = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado') && l.tipoTeste === 'Chuva').length;
             const libEstrada = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado') && l.tipoTeste === 'Teste de estrada').length;
+            const libRevalidacao = liberacoesPeriodo.filter(l => l.status && l.status.includes('Liberado') && l.tipoTeste === 'Revalidação').length;
+            
             document.getElementById('kpiLibTotal').innerText = totalLib;
             document.getElementById('kpiLibChuva').innerText = libChuva;
             document.getElementById('kpiLibEstrada').innerText = libEstrada;
+            document.getElementById('kpiLibRevalidacao').innerText = libRevalidacao;
         }
 
         // EXPORTAÇÃO EXCEL
