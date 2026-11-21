@@ -53,7 +53,7 @@
         @media (max-width: 960px) { .grid-layout { grid-template-columns: 1fr; } }
         
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 20px; }
-        .card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--primary); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--primary); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px; flex-wrap: wrap; gap: 8px; }
         
         .form-group { margin-bottom: 14px; position: relative; }
         label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -83,19 +83,23 @@
         .btn-success { background-color: #10b981; color: white; width: 100%; margin-bottom: 14px; }
         .btn-success:hover { background-color: #059669; }
         
-        /* KPI COMPACTO E RESPONSIVO */
         .kpi-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
         .kpi-box { background: var(--card-bg); padding: 10px 12px; border-radius: 10px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .kpi-value { font-size: 1.3rem; font-weight: 800; color: var(--accent); line-height: 1.1; }
         .kpi-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px; margin-top: 2px; }
 
         .top3-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .top3-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .top3-card.meta-3-completa { border: 2px solid #16a34a; background: #f0fdf4; }
+        .top3-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
         .top3-title { font-size: 0.95rem; font-weight: 700; color: #1e293b; }
         .count-badge { background: #2563eb; color: #ffffff; font-weight: 800; font-size: 0.8rem; padding: 4px 12px; border-radius: 14px; }
-        .vin-tag-container { display: flex; flex-wrap: wrap; gap: 8px; }
-        .vin-pill { background: #f1f5f9; border: 1px solid #cbd5e1; color: #0f172a; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
-        .vin-pill span { font-weight: 500; color: #475569; }
+        .count-badge.meta-3 { background: #16a34a; color: #ffffff; }
+        .status-meta-pill { font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .vin-tag-container { display: flex; flex-direction: column; gap: 6px; }
+        .vin-pill { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .vin-pill strong { color: #0f172a; font-weight: 800; }
+        .vin-pill .vin-modelo-tag { background: #e0e7ff; color: #1e3a8a; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; }
+        .vin-pill .vin-extra-info { font-size: 0.78rem; color: #475569; font-weight: 500; }
 
         .modelo-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .modelo-group-header .title { font-size: 0.85rem; font-weight: 800; color: #2563eb; text-transform: uppercase; }
@@ -120,7 +124,7 @@
         
         .badge-reproduzido { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
         .badge-nao-reproduzido { background: #fee2e2; color: #b91c1c; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
-        .btn-sm-whatsapp { padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; background-color: var(--whatsapp); color: white; border: none; cursor: pointer; font-weight: 600; }
+        .btn-sm-whatsapp { padding: 5px 10px; font-size: 0.75rem; border-radius: 6px; background-color: var(--whatsapp); color: white; border: none; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
         .btn-sm-whatsapp:hover { background-color: var(--whatsapp-hover); }
     </style>
 </head>
@@ -131,7 +135,6 @@
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
             <div class="sync-status"><span class="sync-dot"></span> Sincronizado com Nuvem</div>
             
-            <!-- SELETOR DE PERÍODO FLEXÍVEL -->
             <div class="filter-container">
                 <label for="filtroTipoPeriodo">PERÍODO:</label>
                 <select id="filtroTipoPeriodo" onchange="mudarTipoFiltroPeriodo(this.value)">
@@ -141,7 +144,6 @@
                     <option value="todos">Todos (Histórico)</option>
                 </select>
 
-                <!-- 1. MODO DIA ESPECÍFICO (Data + Hora Início/Fim) -->
                 <div id="containerDia" style="display: flex; align-items: center; gap: 4px;">
                     <input type="date" id="filtroDataUnica" onchange="atualizarDadosGlobais()">
                     <div style="display: flex; align-items: center; gap: 4px; border-left: 1px solid #475569; padding-left: 6px;">
@@ -152,7 +154,6 @@
                     </div>
                 </div>
 
-                <!-- 2. MODO INTERVALO (De... Até... com Data e Hora completas) -->
                 <div id="containerIntervalo" style="display: none; align-items: center; gap: 4px; flex-wrap: wrap;">
                     <input type="date" id="filtroDataInicio" onchange="atualizarDadosGlobais()">
                     <input type="time" id="filtroHoraInicioInt" value="06:00" onchange="atualizarDadosGlobais()">
@@ -304,6 +305,20 @@
             </div>
 
             <div>
+                <!-- AGRUPAMENTO INDEPENDENTE DO MODELO + SOMATÓRIO CONTÍNUO + ENVIO PARCIAL -->
+                <div class="card" style="border-left: 4px solid #16a34a;">
+                    <h2>
+                        <span>🧩 Agrupamento por Defeito (Todos os Modelos)</span>
+                        <button type="button" class="btn-sm-whatsapp" onclick="copiarEnvioParcialTop3()">📲 Enviar Top 3 (Parcial)</button>
+                    </h2>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">
+                        Somatório contínuo durante o dia em qualquer modelo (EQE, Atto / SC3H, HA2, SA2, SA6...) mostrando <strong>VIN</strong> e <strong>Modelo</strong>. Nunca para de somar — a cada <strong>03 defeitos</strong> você pode enviar o parcial.
+                    </p>
+                    <div id="agrupamentoGeralDefeitosContainer">
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h2>🏆 Top 3 Componentes com Defeito (Período Selecionado)</h2>
                     <div id="topGeralContainer">
@@ -541,6 +556,42 @@
             "Conjunto de caixa de luxo", "Selo da moldura da porta da frente esquerda", "Selo da moldura da porta da frente direita", "Selo da moldura da porta traseira esquerda", "Selo da moldura da porta traseira direita", "Encosto do assento do copiloto", "Pilar B esquerdo", "Pilar B direito", "Montagem do corpo no painel de instrumentos", "Montagem do corpo do painel de instrumentos secundário", "Anel de bloqueio da porta traseira", "Conjunto de proteção porta da frente direita", "Conjunto de proteção porta da frente esquerda", "Conjunto de proteção porta traseira esquerda", "Conjunto de proteção porta traseira direita", "Conjunto de proteção superior do pilar C direito", "Conjunto de proteção superior do pilar C esquerdo", "Conjunto de montagem de spoiler", "Almofada de tapete", "Conjunto de vidro da porta da frente esquerda", "Conjunto de vidro da porta da frente direita", "Conjunto do limitador da porta da frente", "Montagem de teto solar panorâmico", "Capa direita da tampa de ventilação", "Conjunto de tela PAD", "Antena 4G", "Placa externa da tampa superior", "Conjunto de luz traseira combinada esquerda", "Montagem de teto", "Montagem de tapete", "Porta luvas"
         ];
 
+        window.normalizarComponente = function(valor) {
+            if (!valor) return "";
+            const limpo = String(valor).trim().replace(/\s+/g, " ");
+            if (!limpo) return "";
+
+            const chave = limpo.toLowerCase();
+            const existenteNaLista = (window.listaOpcoesLocalizacao || localizacoesPadrao).find(
+                item => item.trim().toLowerCase() === chave
+            );
+            if (existenteNaLista) return existenteNaLista.trim();
+
+            const existenteNosRegistros = (window.registros || []).find(
+                r => r.localizacao && r.localizacao.trim().toLowerCase() === chave
+            );
+            if (existenteNosRegistros) return existenteNosRegistros.localizacao.trim().replace(/\s+/g, " ");
+
+            const minusculas = new Set(["de", "da", "do", "das", "dos", "e", "em", "no", "na", "nos", "nas", "por", "para", "com"]);
+            return limpo.split(" ").map((palavra, idx) => {
+                if (/^(4g|5g|wifi|bt|nvh|vin|abs|eps|led)$/i.test(palavra)) {
+                    return palavra.toUpperCase();
+                }
+                if (/^[a-zA-Z]$/.test(palavra) && palavra.length === 1) {
+                    return palavra.toUpperCase();
+                }
+                const low = palavra.toLowerCase();
+                if (idx > 0 && minusculas.has(low)) {
+                    return low;
+                }
+                return low.charAt(0).toUpperCase() + low.slice(1);
+            }).join(" ");
+        };
+
+        window.chaveComponente = function(valor) {
+            return String(valor || "").trim().replace(/\s+/g, " ").toLowerCase();
+        };
+
         window.filtroConfig = { 
             tipo: "dia", 
             dataUnica: "", 
@@ -594,7 +645,6 @@
 
         setHojeInicial();
 
-        // Listeners Firestore em tempo real
         onSnapshot(collection(db, "ruidos_registros"), (snapshot) => {
             window.registros = [];
             snapshot.forEach((doc) => { window.registros.push({ id: doc.id, ...doc.data() }); });
@@ -622,18 +672,30 @@
             window.atualizarTudoNVH();
         });
 
-        let listaOpcoesLocalizacao = [...localizacoesPadrao];
+        window.listaOpcoesLocalizacao = [...localizacoesPadrao];
         window.atualizarListaLocalizacoes = function() {
-            const locDinamicas = new Set(localizacoesPadrao);
-            window.registros.forEach(r => { if (r.localizacao && r.localizacao.trim() !== "") locDinamicas.add(r.localizacao.trim()); });
-            listaOpcoesLocalizacao = Array.from(locDinamicas).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+            const mapaUnico = new Map();
+            localizacoesPadrao.forEach(item => {
+                const limpo = item.trim().replace(/\s+/g, " ");
+                mapaUnico.set(limpo.toLowerCase(), limpo);
+            });
+            window.registros.forEach(r => {
+                if (r.localizacao && r.localizacao.trim() !== "") {
+                    const limpo = r.localizacao.trim().replace(/\s+/g, " ");
+                    const chave = limpo.toLowerCase();
+                    if (!mapaUnico.has(chave)) {
+                        mapaUnico.set(chave, window.normalizarComponente(limpo));
+                    }
+                }
+            });
+            window.listaOpcoesLocalizacao = Array.from(mapaUnico.values()).sort((a, b) => a.localeCompare(b, 'pt-BR'));
         };
 
         function configurarEventosCombobox(inputEl, optionsEl) {
             function render(filtro = '') {
                 optionsEl.innerHTML = '';
-                const termo = filtro.trim().toLowerCase();
-                const filtradas = listaOpcoesLocalizacao.filter(item => item.toLowerCase().includes(termo));
+                const termo = filtro.trim().replace(/\s+/g, " ").toLowerCase();
+                const filtradas = window.listaOpcoesLocalizacao.filter(item => item.toLowerCase().includes(termo));
 
                 if (filtradas.length > 0) {
                     filtradas.forEach(item => {
@@ -649,13 +711,14 @@
                     });
                 }
 
-                if (termo !== '' && !listaOpcoesLocalizacao.some(item => item.toLowerCase() === termo)) {
+                if (termo !== '' && !window.listaOpcoesLocalizacao.some(item => item.toLowerCase() === termo)) {
+                    const sugestaoPadronizada = window.normalizarComponente(filtro);
                     const divNovo = document.createElement('div');
                     divNovo.className = 'combobox-item novo-item';
-                    divNovo.textContent = `➕ Usar "${filtro.trim()}" (Novo componente)`;
+                    divNovo.textContent = `➕ Usar "${sugestaoPadronizada}" (Novo componente)`;
                     divNovo.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        inputEl.value = filtro.trim();
+                        inputEl.value = sugestaoPadronizada;
                         optionsEl.classList.remove('active');
                     });
                     optionsEl.appendChild(divNovo);
@@ -665,6 +728,11 @@
 
             inputEl.addEventListener('focus', () => render(inputEl.value));
             inputEl.addEventListener('input', () => render(inputEl.value));
+            inputEl.addEventListener('blur', () => {
+                if (inputEl.value.trim() !== "") {
+                    inputEl.value = window.normalizarComponente(inputEl.value);
+                }
+            });
         }
 
         const inputLoc = document.getElementById('localizacao');
@@ -714,7 +782,6 @@
             if (el) el.remove();
         };
 
-        // Submissão do Formulário de Ruído
         document.getElementById('formRuido').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('editDocId').value;
@@ -727,19 +794,21 @@
                 hora: horaVal,
                 turno: document.getElementById('turno').value,
                 inspetor: document.getElementById('inspetor').value.trim(),
-                vin: document.getElementById('vin').value.trim(),
-                modeloBase: document.getElementById('modelo').value.trim(),
+                vin: document.getElementById('vin').value.trim().toUpperCase(),
+                modeloBase: document.getElementById('modelo').value.trim().toUpperCase(),
                 processo: document.getElementById('subModeloProcesso').value,
-                modelo: `${document.getElementById('modelo').value.trim()} - ${document.getElementById('subModeloProcesso').value}`,
+                modelo: `${document.getElementById('modelo').value.trim().toUpperCase()} - ${document.getElementById('subModeloProcesso').value}`,
                 dataHora: dataHoraFormatada,
                 criadoEm: Date.now()
             };
+
+            const locPrincipalPadronizada = window.normalizarComponente(document.getElementById('localizacao').value);
 
             if (editDocId) {
                 await updateDoc(doc(db, "ruidos_registros", editDocId), {
                     ...dadosComuns,
                     tipoDefeito: document.getElementById('tipoDefeito').value,
-                    localizacao: document.getElementById('localizacao').value.trim(),
+                    localizacao: locPrincipalPadronizada,
                     descricao: document.getElementById('descricao').value.trim()
                 });
                 window.cancelarEdicao();
@@ -748,17 +817,18 @@
                 await addDoc(collection(db, "ruidos_registros"), {
                     ...dadosComuns,
                     tipoDefeito: document.getElementById('tipoDefeito').value,
-                    localizacao: document.getElementById('localizacao').value.trim(),
+                    localizacao: locPrincipalPadronizada,
                     descricao: document.getElementById('descricao').value.trim()
                 });
 
                 const blocosExtras = document.querySelectorAll('.defeito-item-bloco');
                 for (let i = 0; i < blocosExtras.length; i++) {
                     const bloco = blocosExtras[i];
+                    const locExtraPadronizada = window.normalizarComponente(bloco.querySelector('.extra-localizacao').value);
                     await addDoc(collection(db, "ruidos_registros"), {
                         ...dadosComuns,
                         tipoDefeito: bloco.querySelector('.extra-tipoDefeito').value,
-                        localizacao: bloco.querySelector('.extra-localizacao').value.trim(),
+                        localizacao: locExtraPadronizada,
                         descricao: bloco.querySelector('.extra-descricao').value.trim(),
                         criadoEm: Date.now() + i + 1
                     });
@@ -772,7 +842,6 @@
             }
         });
 
-        // Submissão do Formulário de Dúvidas
         document.getElementById('formDuvida').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('duvidaEditDocId').value;
@@ -784,8 +853,8 @@
                 hora: horaVal,
                 turno: document.getElementById('duvidaTurno').value,
                 nome: document.getElementById('duvidaNome').value.trim(),
-                modelo: document.getElementById('duvidaModelo').value.trim(),
-                vin: document.getElementById('duvidaVin').value.trim(),
+                modelo: document.getElementById('duvidaModelo').value.trim().toUpperCase(),
+                vin: document.getElementById('duvidaVin').value.trim().toUpperCase(),
                 ruido: document.getElementById('duvidaRuido').value.trim(),
                 pista: document.getElementById('duvidaPista').value.trim(),
                 resultado: document.getElementById('duvidaResultado').value.trim(),
@@ -806,7 +875,6 @@
             }
         });
 
-        // Submissão do Formulário de Liberação
         document.getElementById('formLiberacao').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('libEditDocId').value;
@@ -817,7 +885,7 @@
                 data: dataVal,
                 hora: horaVal,
                 turno: document.getElementById('libTurno').value,
-                vin: document.getElementById('libVin').value.trim(),
+                vin: document.getElementById('libVin').value.trim().toUpperCase(),
                 status: document.getElementById('libStatus').value,
                 tipoTeste: document.getElementById('libTipoTeste').value,
                 responsavel: document.getElementById('libResponsavel').value.trim() || 'Não informado',
@@ -923,7 +991,6 @@
             atualizarKPIsLiberacao();
         }
 
-        // MOTO-CONTROLO DE PERÍODO FLEXÍVEL
         function itemNoPeriodo(itemData, itemHora) {
             if (!itemData) return false;
             let dVal = itemData;
@@ -962,7 +1029,7 @@
                 return rAno === bAno && rMes === bMes;
             }
 
-            return true; // Todos
+            return true;
         }
 
         function carregarContagemDoDia() {
@@ -984,7 +1051,6 @@
             return window.liberacoes.filter(l => itemNoPeriodo(l.data, l.hora)).sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
         }
 
-        // --- FUNÇÕES DE EDIÇÃO DE REGISTOS NVH ---
         window.editarRegistroNVH = function(id) {
             const reg = window.registros.find(r => r.id === id);
             if (!reg) return;
@@ -998,7 +1064,7 @@
             document.getElementById('modelo').value = reg.modeloBase || '';
             document.getElementById('subModeloProcesso').value = reg.processo || '';
             document.getElementById('tipoDefeito').value = reg.tipoDefeito || '';
-            document.getElementById('localizacao').value = reg.localizacao || '';
+            document.getElementById('localizacao').value = window.normalizarComponente(reg.localizacao || '');
             document.getElementById('descricao').value = reg.descricao || '';
 
             document.getElementById('btnAdicionarOutroDefeito').style.display = 'none';
@@ -1019,7 +1085,6 @@
             setHojeInicial();
         };
 
-        // --- FUNÇÕES DE EDIÇÃO DE DÚVIDAS ---
         window.editarDuvida = function(id) {
             const d = window.duvidas.find(item => item.id === id);
             if (!d) return;
@@ -1051,7 +1116,6 @@
             setHojeInicial();
         };
 
-        // --- FUNÇÕES DE EDIÇÃO DE LIBERAÇÃO ---
         window.editarLiberacao = function(id) {
             const l = window.liberacoes.find(item => item.id === id);
             if (!l) return;
@@ -1080,6 +1144,147 @@
             setHojeInicial();
         };
 
+        function obterMapaDefeitosIndependenteModelo(registrosFiltrados) {
+            const mapaComps = {};
+            registrosFiltrados.forEach(r => {
+                const compPadrao = r.localizacao && r.localizacao.trim()
+                    ? window.normalizarComponente(r.localizacao)
+                    : (r.descricao || 'Outros');
+                const chave = window.chaveComponente(compPadrao) || 'outros';
+
+                if (!mapaComps[chave]) {
+                    mapaComps[chave] = { nome: compPadrao, itens: [] };
+                }
+                mapaComps[chave].itens.push({
+                    vin: r.vin || 'Sem VIN',
+                    modelo: r.modelo || 'Sem Modelo',
+                    turno: r.turno || 'Sem Turno',
+                    descricao: r.descricao || '',
+                    hora: r.hora || ''
+                });
+            });
+            return Object.values(mapaComps).sort((a, b) => b.itens.length - a.itens.length);
+        }
+
+        function obterDescricaoPeriodoAtual() {
+            const tipo = window.filtroConfig.tipo;
+            if (tipo === 'dia') {
+                return `${formatarDataBR(window.filtroConfig.dataUnica)} (${window.filtroConfig.horaInicioDia} às ${window.filtroConfig.horaFimDia})`;
+            } else if (tipo === 'intervalo') {
+                return `${formatarDataBR(window.filtroConfig.dataInicio)} ${window.filtroConfig.horaInicioInt} até ${formatarDataBR(window.filtroConfig.dataFim)} ${window.filtroConfig.horaFimInt}`;
+            }
+            return tipo.toUpperCase();
+        }
+
+        window.copiarEnvioParcialComponente = function(chaveEncoded) {
+            const chave = decodeURIComponent(chaveEncoded);
+            const ordenados = obterMapaDefeitosIndependenteModelo(obterRegistrosFiltrados());
+            const grupo = ordenados.find(g => (window.chaveComponente(g.nome) || 'outros') === chave);
+            if (!grupo) return;
+
+            const qtd = grupo.itens.length;
+            const ciclos3 = Math.floor(qtd / 3);
+            const resto3 = qtd % 3;
+
+            let txt = `🚨 *ENVIO PARCIAL - DEFEITO AGRUPADO (TODOS OS MODELOS)*\n`;
+            txt += `📌 Período: ${obterDescricaoPeriodoAtual()}\n`;
+            txt += `------------------------------------\n\n`;
+            txt += `🔧 Componente: *${grupo.nome}*\n`;
+            txt += `📊 Somatório Atual: *${qtd} defeito(s)*${ciclos3 > 0 ? ` (${ciclos3}x bloco de 03${resto3 > 0 ? ` + ${resto3}` : ''})` : ''}\n\n`;
+            grupo.itens.forEach((c, idx) => {
+                txt += `${idx + 1}. VIN: *${c.vin}* | Modelo: *${c.modelo}* [${c.turno}]${c.descricao ? ` – ${c.descricao}` : ''}\n`;
+            });
+            copiarTextoUniversal(txt.trimEnd());
+        };
+
+        window.copiarEnvioParcialTop3 = function() {
+            const top3 = obterMapaDefeitosIndependenteModelo(obterRegistrosFiltrados()).slice(0, 3);
+            let txt = `🧩 *ENVIO PARCIAL TOP 3 - DEFEITOS POR COMPONENTE (TODOS OS MODELOS)*\n`;
+            txt += `📌 Período: ${obterDescricaoPeriodoAtual()}\n`;
+            txt += `------------------------------------\n\n`;
+
+            if (top3.length === 0) {
+                txt += `Nenhum defeito registrado no período.`;
+                copiarTextoUniversal(txt);
+                return;
+            }
+
+            top3.forEach((grupo, idx) => {
+                const qtd = grupo.itens.length;
+                const ciclos3 = Math.floor(qtd / 3);
+                const status3 = ciclos3 > 0 ? ` [${ciclos3}x bloco de 03+]` : '';
+                txt += `${idx + 1}° *${grupo.nome}* (${qtd}x)${status3}\n`;
+                grupo.itens.forEach(c => {
+                    txt += `  • VIN: *${c.vin}* | Modelo: *${c.modelo}* [${c.turno}]\n`;
+                });
+                txt += `\n`;
+            });
+
+            copiarTextoUniversal(txt.trimEnd());
+        };
+
+        function atualizarAgrupamentoGeralDefeitos() {
+            const registrosFiltrados = obterRegistrosFiltrados();
+            const container = document.getElementById('agrupamentoGeralDefeitosContainer');
+            if (!container) return;
+
+            if (registrosFiltrados.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p>';
+                return;
+            }
+
+            const ordenados = obterMapaDefeitosIndependenteModelo(registrosFiltrados);
+            container.innerHTML = '';
+
+            ordenados.forEach((grupo, idx) => {
+                const qtd = grupo.itens.length;
+                const ciclos3 = Math.floor(qtd / 3);
+                const resto3 = qtd % 3;
+                const completouBloco3 = ciclos3 > 0;
+                const chaveEnc = encodeURIComponent(window.chaveComponente(grupo.nome) || 'outros');
+
+                const card = document.createElement('div');
+                card.className = `top3-card ${completouBloco3 ? 'meta-3-completa' : ''}`;
+
+                let itensHtml = '';
+                grupo.itens.forEach((item, itemIdx) => {
+                    const marcaBloco = (itemIdx + 1) % 3 === 0 ? ` <span style="color:#15803d; font-weight:700;">[Fechou ${itemIdx + 1}]</span>` : '';
+                    itensHtml += `
+                        <div class="vin-pill">
+                            <div>
+                                <strong>${itemIdx + 1}. VIN: ${item.vin}</strong>
+                                <span class="vin-modelo-tag">Modelo: ${item.modelo}</span>
+                                ${marcaBloco}
+                            </div>
+                            <span class="vin-extra-info">[${item.turno}]${item.descricao ? ` • ${item.descricao}` : ''}</span>
+                        </div>
+                    `;
+                });
+
+                const badgeTop = idx < 3 ? `TOP ${idx + 1} • ` : '';
+                const statusMetaHtml = completouBloco3
+                    ? `<span class="status-meta-pill">✅ ${ciclos3}x bloco(s) de 03 fechado(s)${resto3 > 0 ? ` (+${resto3} somando)` : ' — Somando próximo'}</span>`
+                    : `<span style="font-size:0.72rem; color:var(--text-muted); font-weight:600;">Faltam ${3 - qtd} p/ fechar 03 (continua somando)</span>`;
+
+                card.innerHTML = `
+                    <div class="top3-header">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <div class="top3-title">${badgeTop}${grupo.nome}</div>
+                            ${statusMetaHtml}
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <span class="count-badge ${completouBloco3 ? 'meta-3' : ''}">${qtd}x</span>
+                            <button type="button" class="btn-sm-whatsapp" onclick="copiarEnvioParcialComponente('${chaveEnc}')">
+                                📲 Enviar Parcial (${qtd}x)
+                            </button>
+                        </div>
+                    </div>
+                    <div class="vin-tag-container">${itensHtml}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         function atualizarTudoNVH() {
             const registrosFiltrados = obterRegistrosFiltrados();
             const dadosDia = window.contagemPorData[window.filtroConfig.tipo === 'intervalo' ? window.filtroConfig.dataFim : window.filtroConfig.dataUnica] || { recebidos: 0, deixados: 0 };
@@ -1089,6 +1294,7 @@
             document.getElementById('kpiTotalRuidos').innerText = registrosFiltrados.length;
             
             filtrarHistoricoNVH(); 
+            atualizarAgrupamentoGeralDefeitos();
             atualizarTopGeral(); 
             atualizarRankingPorModelo();
             atualizarIndicadoresPeriodo();
@@ -1097,16 +1303,7 @@
         function atualizarIndicadoresPeriodo() {
             const registrosFiltrados = obterRegistrosFiltrados();
             document.getElementById('kpiPeriodoDia').innerText = registrosFiltrados.length;
-            
-            let textoFiltro = "";
-            if (window.filtroConfig.tipo === 'dia') {
-                textoFiltro = `Dia ${formatarDataBR(window.filtroConfig.dataUnica)} (${window.filtroConfig.horaInicioDia} às ${window.filtroConfig.horaFimDia})`;
-            } else if (window.filtroConfig.tipo === 'intervalo') {
-                textoFiltro = `${formatarDataBR(window.filtroConfig.dataInicio)} ${window.filtroConfig.horaInicioInt} até ${formatarDataBR(window.filtroConfig.dataFim)} ${window.filtroConfig.horaFimInt}`;
-            } else {
-                textoFiltro = window.filtroConfig.tipo.toUpperCase();
-            }
-            document.getElementById('subLabelPeriodo').innerText = `Filtro: ${textoFiltro}`;
+            document.getElementById('subLabelPeriodo').innerText = `Filtro: ${obterDescricaoPeriodoAtual()}`;
         }
 
         function filtrarHistoricoNVH() {
@@ -1144,9 +1341,10 @@
                 const tr = document.createElement('tr');
                 let listaDefeitosHtml = '';
                 grupo.itens.forEach(item => {
+                    const locExibicao = window.normalizarComponente(item.localizacao) || '-';
                     listaDefeitosHtml += `
                         <div class="defeito-agrupado-linha">
-                            <div><span class="badge-tipo">${item.tipoDefeito || 'N/I'}</span> <strong>${item.localizacao || '-'}</strong>: ${item.descricao}</div>
+                            <div><span class="badge-tipo">${item.tipoDefeito || 'N/I'}</span> <strong>${locExibicao}</strong>: ${item.descricao}</div>
                             <div style="display: flex; gap: 4px;">
                                 <button class="btn-action btn-edit" onclick="editarRegistroNVH('${item.id}')">✏️ Editar</button>
                                 <button class="btn-action btn-delete" onclick="window.excluirRegistro('${item.id}')">🗑️ Excluir</button>
@@ -1172,29 +1370,22 @@
             const container = document.getElementById('topGeralContainer');
             if (registrosFiltrados.length === 0) { container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum lançamento no período.</p>'; return; }
             
-            const mapaComps = {};
-            registrosFiltrados.forEach(r => {
-                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Outros');
-                if (!mapaComps[comp]) mapaComps[comp] = [];
-                mapaComps[comp].push({ vin: r.vin, modelo: r.modelo, turno: r.turno });
-            });
-
-            const ordenados = Object.entries(mapaComps).sort((a,b) => b[1].length - a[1].length).slice(0, 3);
+            const ordenados = obterMapaDefeitosIndependenteModelo(registrosFiltrados).slice(0, 3);
             container.innerHTML = '';
 
-            ordenados.forEach(([comp, listaVins], idx) => {
+            ordenados.forEach((grupo, idx) => {
                 const card = document.createElement('div');
                 card.className = 'top3-card';
 
                 let vinsHtml = '';
-                listaVins.forEach(item => {
-                    vinsHtml += `<div class="vin-pill">${item.vin} <span>(${item.modelo} - ${item.turno || 'N/I'})</span></div>`;
+                grupo.itens.forEach(item => {
+                    vinsHtml += `<div class="vin-pill"><div><strong>VIN: ${item.vin}</strong> <span class="vin-modelo-tag">Modelo: ${item.modelo}</span></div><span class="vin-extra-info">[${item.turno}]</span></div>`;
                 });
 
                 card.innerHTML = `
                     <div class="top3-header">
-                        <div class="top3-title">#${idx + 1} ${comp}</div>
-                        <div class="count-badge">${listaVins.length}x</div>
+                        <div class="top3-title">#${idx + 1} ${grupo.nome}</div>
+                        <div class="count-badge">${grupo.itens.length}x</div>
                     </div>
                     <div class="vin-tag-container">${vinsHtml}</div>
                 `;
@@ -1210,10 +1401,17 @@
             const mapaModelos = {};
             registrosFiltrados.forEach(r => {
                 const modelo = r.modelo || 'OUTROS';
-                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Outros');
+                const compPadrao = r.localizacao && r.localizacao.trim()
+                    ? window.normalizarComponente(r.localizacao)
+                    : (r.descricao || 'Outros');
+                const chaveComp = window.chaveComponente(compPadrao) || 'outros';
+
                 if (!mapaModelos[modelo]) mapaModelos[modelo] = { total: 0, componentes: {} };
                 mapaModelos[modelo].total++;
-                mapaModelos[modelo].componentes[comp] = (mapaModelos[modelo].componentes[comp] || 0) + 1;
+                if (!mapaModelos[modelo].componentes[chaveComp]) {
+                    mapaModelos[modelo].componentes[chaveComp] = { nome: compPadrao, qtd: 0 };
+                }
+                mapaModelos[modelo].componentes[chaveComp].qtd++;
             });
 
             container.innerHTML = '';
@@ -1229,12 +1427,12 @@
                     </div>
                 `;
 
-                const compOrdenados = Object.entries(data.componentes).sort((a,b) => b[1] - a[1]);
-                compOrdenados.forEach(([comp, qtd]) => {
+                const compOrdenados = Object.values(data.componentes).sort((a,b) => b.qtd - a.qtd);
+                compOrdenados.forEach((compObj) => {
                     html += `
                         <div class="comp-item-card">
-                            <span>${comp}</span>
-                            <span class="count-badge">${qtd}x</span>
+                            <span>${compObj.nome}</span>
+                            <span class="count-badge">${compObj.qtd}x</span>
                         </div>
                     `;
                 });
@@ -1432,7 +1630,6 @@
             copiarTextoUniversal(txt.trimEnd());
         }
 
-        // LIBERAÇÃO DE VEÍCULOS
         function filtrarLiberacoes() {
             const termo = document.getElementById('inputBuscaVin') ? document.getElementById('inputBuscaVin').value.trim().toUpperCase() : '';
             const tabelaLib = document.getElementById('tabelaLiberacoes'); 
@@ -1480,7 +1677,6 @@
             document.getElementById('kpiLibRevalidacao').innerText = libRevalidacao;
         }
 
-        // EXPORTAÇÃO EXCEL
         function abrirModalExcel() { document.getElementById('modalExcel').style.display = 'flex'; }
         function fecharModalExcel() { document.getElementById('modalExcel').style.display = 'none'; }
 
@@ -1507,7 +1703,7 @@
                 "VIN": r.vin || "",
                 "Modelo": r.modelo || "",
                 "Origem": r.tipoDefeito || "",
-                "Localização": r.localizacao || "",
+                "Localização": window.normalizarComponente(r.localizacao || ""),
                 "Descrição": r.descricao || ""
             }));
 
@@ -1543,19 +1739,8 @@
 
         function copiarRelatorioWhatsApp() {
             const registrosPeriodo = obterRegistrosFiltrados();
-            const tipo = window.filtroConfig.tipo;
-            
-            let descPeriodo = "";
-            if (tipo === 'dia') {
-                descPeriodo = `${formatarDataBR(window.filtroConfig.dataUnica)} (${window.filtroConfig.horaInicioDia} às ${window.filtroConfig.horaFimDia})`;
-            } else if (tipo === 'intervalo') {
-                descPeriodo = `${formatarDataBR(window.filtroConfig.dataInicio)} ${window.filtroConfig.horaInicioInt} até ${formatarDataBR(window.filtroConfig.dataFim)} ${window.filtroConfig.horaFimInt}`;
-            } else {
-                descPeriodo = tipo.toUpperCase();
-            }
-            
             let txt = `🔊 *RELATÓRIO DE DEFEITOS POR COMPONENTE (NVH)*\n`;
-            txt += `📌 Período: ${descPeriodo}\n`;
+            txt += `📌 Período: ${obterDescricaoPeriodoAtual()}\n`;
             txt += `------------------------------------\n\n`;
             txt += `⚠️ Total Ocorrências: *${registrosPeriodo.length}*\n\n`;
 
@@ -1565,20 +1750,13 @@
                 return;
             }
 
-            const componenteMap = {};
-            registrosPeriodo.forEach(r => { 
-                const comp = (r.localizacao && r.localizacao.trim()) ? r.localizacao.trim() : (r.descricao || 'Não Especificado');
-                if (!componenteMap[comp]) componenteMap[comp] = []; 
-                componenteMap[comp].push({ vin: r.vin, modelo: r.modelo, turno: r.turno }); 
-            });
-            
-            const componentesOrdenados = Object.entries(componenteMap).sort((a, b) => b[1].length - a[1].length).slice(0, 3);
+            const componentesOrdenados = obterMapaDefeitosIndependenteModelo(registrosPeriodo).slice(0, 3);
 
-            txt += `🏆 *TOP 3 COMPONENTES COM DEFEITO*\n\n`;
-            componentesOrdenados.forEach(([comp, listaCarros], index) => {
-                txt += `${index + 1}° ${comp} (${listaCarros.length}x)\n`;
-                listaCarros.forEach(c => {
-                    txt += `  • ${c.vin} – ${c.modelo} [${c.turno || 'Sem Turno'}]\n`;
+            txt += `🏆 *TOP 3 COMPONENTES COM DEFEITO (TODOS OS MODELOS)*\n\n`;
+            componentesOrdenados.forEach((grupo, index) => {
+                txt += `${index + 1}° ${grupo.nome} (${grupo.itens.length}x)\n`;
+                grupo.itens.forEach(c => {
+                    txt += `  • VIN: *${c.vin}* | Modelo: *${c.modelo}* [${c.turno}]\n`;
                 });
                 txt += `\n`;
             });
