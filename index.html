@@ -61,9 +61,16 @@
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
         
         .combobox-container { position: relative; width: 100%; }
-        .combobox-options { display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 220px; overflow-y: auto; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px; }
+        .combobox-options { display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 240px; overflow-y: auto; background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); z-index: 1000; margin-top: 4px; }
         .combobox-options.active { display: block; }
-        .combobox-item { padding: 10px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; color: var(--text-main); }
+        .combobox-item { padding: 8px 12px; font-size: 0.85rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .combobox-item-label { flex: 1; }
+        .combobox-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .combobox-mini-btn { border: none; padding: 4px 7px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+        .combobox-mini-edit { background: #fef3c7; color: #b45309; }
+        .combobox-mini-edit:hover { background: #fde68a; }
+        .combobox-mini-del { background: #fee2e2; color: #dc2626; }
+        .combobox-mini-del:hover { background: #fecaca; }
         .combobox-item:last-child { border-bottom: none; }
         .combobox-item:hover, .combobox-item.selected { background-color: #e2e8f0; color: var(--accent); font-weight: 600; }
         .combobox-item.novo-item { background-color: #eff6ff; color: var(--accent); font-weight: 700; border-top: 1px solid #bfdbfe; }
@@ -532,7 +539,7 @@
     <!-- SCRIPT FIREBASE E LÓGICA PRINCIPAL -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD4VpQ77sUWVqZyF8OD38RgHlzAw7q9BNs",
@@ -552,25 +559,33 @@
         window.duvidas = [];
         window.contagemPorData = {};
 
+        const STORAGE_CUSTOM_LOCS = "nvh_localizacoes_customizadas_v1";
+        const STORAGE_EXCLUDED_LOCS = "nvh_localizacoes_excluidas_v1";
+
         const localizacoesPadrao = [
             "Conjunto de caixa de luxo", "Selo da moldura da porta da frente esquerda", "Selo da moldura da porta da frente direita", "Selo da moldura da porta traseira esquerda", "Selo da moldura da porta traseira direita", "Encosto do assento do copiloto", "Pilar B esquerdo", "Pilar B direito", "Montagem do corpo no painel de instrumentos", "Montagem do corpo do painel de instrumentos secundário", "Anel de bloqueio da porta traseira", "Conjunto de proteção porta da frente direita", "Conjunto de proteção porta da frente esquerda", "Conjunto de proteção porta traseira esquerda", "Conjunto de proteção porta traseira direita", "Conjunto de proteção superior do pilar C direito", "Conjunto de proteção superior do pilar C esquerdo", "Conjunto de montagem de spoiler", "Almofada de tapete", "Conjunto de vidro da porta da frente esquerda", "Conjunto de vidro da porta da frente direita", "Conjunto do limitador da porta da frente", "Montagem de teto solar panorâmico", "Capa direita da tampa de ventilação", "Conjunto de tela PAD", "Antena 4G", "Placa externa da tampa superior", "Conjunto de luz traseira combinada esquerda", "Montagem de teto", "Montagem de tapete", "Porta luvas"
         ];
 
-        window.normalizarComponente = function(valor) {
+        function carregarArrayStorage(chave) {
+            try {
+                const raw = localStorage.getItem(chave);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function salvarArrayStorage(chave, arr) {
+            try {
+                localStorage.setItem(chave, JSON.stringify(arr));
+            } catch {}
+        }
+
+        window.formatarTextoPadrao = function(valor) {
             if (!valor) return "";
             const limpo = String(valor).trim().replace(/\s+/g, " ");
             if (!limpo) return "";
-
-            const chave = limpo.toLowerCase();
-            const existenteNaLista = (window.listaOpcoesLocalizacao || localizacoesPadrao).find(
-                item => item.trim().toLowerCase() === chave
-            );
-            if (existenteNaLista) return existenteNaLista.trim();
-
-            const existenteNosRegistros = (window.registros || []).find(
-                r => r.localizacao && r.localizacao.trim().toLowerCase() === chave
-            );
-            if (existenteNosRegistros) return existenteNosRegistros.localizacao.trim().replace(/\s+/g, " ");
 
             const minusculas = new Set(["de", "da", "do", "das", "dos", "e", "em", "no", "na", "nos", "nas", "por", "para", "com"]);
             return limpo.split(" ").map((palavra, idx) => {
@@ -588,8 +603,111 @@
             }).join(" ");
         };
 
+        window.normalizarComponente = function(valor) {
+            if (!valor) return "";
+            const limpo = String(valor).trim().replace(/\s+/g, " ");
+            if (!limpo) return "";
+
+            const chave = limpo.toLowerCase();
+            const existenteNaLista = (window.listaOpcoesLocalizacao || localizacoesPadrao).find(
+                item => item.trim().toLowerCase() === chave
+            );
+            if (existenteNaLista) return existenteNaLista.trim();
+
+            return window.formatarTextoPadrao(limpo);
+        };
+
         window.chaveComponente = function(valor) {
             return String(valor || "").trim().replace(/\s+/g, " ").toLowerCase();
+        };
+
+        window.isItemCustomizado = function(nomeItem) {
+            const chave = window.chaveComponente(nomeItem);
+            return !localizacoesPadrao.some(p => window.chaveComponente(p) === chave);
+        };
+
+        // Edita o nome de um item criado e salva para os próximos lançamentos / histórico
+        window.editarItemCriadoLocalizacao = async function(nomeAtual, inputEl) {
+            const novoNomeRaw = prompt(`Editar componente criado:\n"${nomeAtual}"\n\nDigite o nome correto para ficar salvo nos próximos lançamentos:`, nomeAtual);
+            if (novoNomeRaw === null) return;
+
+            const novoNome = window.formatarTextoPadrao(novoNomeRaw);
+            if (!novoNome) {
+                alert("Informe um nome válido.");
+                return;
+            }
+
+            const chaveAntiga = window.chaveComponente(nomeAtual);
+            const chaveNova = window.chaveComponente(novoNome);
+
+            let customList = carregarArrayStorage(STORAGE_CUSTOM_LOCS);
+            customList = customList.filter(item => window.chaveComponente(item) !== chaveAntiga);
+            if (!localizacoesPadrao.some(p => window.chaveComponente(p) === chaveNova)) {
+                customList.push(novoNome);
+            }
+            salvarArrayStorage(STORAGE_CUSTOM_LOCS, customList);
+
+            let excluidos = carregarArrayStorage(STORAGE_EXCLUDED_LOCS);
+            excluidos = excluidos.filter(item => item !== chaveNova);
+            salvarArrayStorage(STORAGE_EXCLUDED_LOCS, excluidos);
+
+            const registrosParaAtualizar = window.registros.filter(r => window.chaveComponente(r.localizacao) === chaveAntiga);
+            if (registrosParaAtualizar.length > 0) {
+                const atualizarHistorico = confirm(`Deseja também atualizar ${registrosParaAtualizar.length} lançamento(s) já existentes no histórico de "${nomeAtual}" para "${novoNome}"?`);
+                if (atualizarHistorico) {
+                    const batch = writeBatch(db);
+                    registrosParaAtualizar.forEach(reg => {
+                        batch.update(doc(db, "ruidos_registros", reg.id), { localizacao: novoNome });
+                    });
+                    await batch.commit();
+                }
+            }
+
+            if (inputEl && window.chaveComponente(inputEl.value) === chaveAntiga) {
+                inputEl.value = novoNome;
+            }
+
+            window.atualizarListaLocalizacoes();
+            window.atualizarTudoNVH();
+            alert(`✅ Componente salvo como "${novoNome}" para os próximos lançamentos!`);
+        };
+
+        // Exclui apenas o item criado selecionado
+        window.excluirItemCriadoLocalizacao = async function(nomeItem, inputEl) {
+            const chave = window.chaveComponente(nomeItem);
+            const qtdRegistros = window.registros.filter(r => window.chaveComponente(r.localizacao) === chave).length;
+
+            const apagarRegistrosDoBanco = qtdRegistros > 0
+                ? confirm(`Deseja remover "${nomeItem}" da lista de seleção e TAMBÉM excluir ${qtdRegistros} lançamento(s) dele no banco?\n\n• OK = Remove da lista e exclui os ${qtdRegistros} lançamento(s)\n• Cancelar = Apenas oculta "${nomeItem}" da lista de seleção`)
+                : confirm(`Deseja excluir "${nomeItem}" da lista de seleção?`);
+
+            if (qtdRegistros === 0 && !apagarRegistrosDoBanco) return;
+
+            let customList = carregarArrayStorage(STORAGE_CUSTOM_LOCS);
+            customList = customList.filter(item => window.chaveComponente(item) !== chave);
+            salvarArrayStorage(STORAGE_CUSTOM_LOCS, customList);
+
+            if (apagarRegistrosDoBanco && qtdRegistros > 0) {
+                const batch = writeBatch(db);
+                window.registros
+                    .filter(r => window.chaveComponente(r.localizacao) === chave)
+                    .forEach(reg => batch.delete(doc(db, "ruidos_registros", reg.id)));
+                await batch.commit();
+            } else {
+                const excluidos = carregarArrayStorage(STORAGE_EXCLUDED_LOCS);
+                if (!excluidos.includes(chave)) {
+                    excluidos.push(chave);
+                    salvarArrayStorage(STORAGE_EXCLUDED_LOCS, excluidos);
+                }
+            }
+
+            if (inputEl && window.chaveComponente(inputEl.value) === chave) {
+                inputEl.value = "";
+            }
+
+            window.atualizarListaLocalizacoes();
+            window.atualizarTudoNVH();
+            alert(`🗑️ "${nomeItem}" removido da seleção.`);
         };
 
         window.filtroConfig = { 
@@ -675,21 +793,39 @@
         window.listaOpcoesLocalizacao = [...localizacoesPadrao];
         window.atualizarListaLocalizacoes = function() {
             const mapaUnico = new Map();
+            const excluidos = new Set(carregarArrayStorage(STORAGE_EXCLUDED_LOCS));
+            const customList = carregarArrayStorage(STORAGE_CUSTOM_LOCS);
+
             localizacoesPadrao.forEach(item => {
                 const limpo = item.trim().replace(/\s+/g, " ");
-                mapaUnico.set(limpo.toLowerCase(), limpo);
+                const chave = limpo.toLowerCase();
+                if (!excluidos.has(chave)) {
+                    mapaUnico.set(chave, limpo);
+                }
             });
+
+            customList.forEach(item => {
+                const limpo = window.formatarTextoPadrao(item);
+                const chave = limpo.toLowerCase();
+                if (limpo && !excluidos.has(chave)) {
+                    mapaUnico.set(chave, limpo);
+                }
+            });
+
             window.registros.forEach(r => {
                 if (r.localizacao && r.localizacao.trim() !== "") {
                     const limpo = r.localizacao.trim().replace(/\s+/g, " ");
                     const chave = limpo.toLowerCase();
-                    if (!mapaUnico.has(chave)) {
-                        mapaUnico.set(chave, window.normalizarComponente(limpo));
+                    if (!excluidos.has(chave) && !mapaUnico.has(chave)) {
+                        mapaUnico.set(chave, window.formatarTextoPadrao(limpo));
                     }
                 }
             });
+
             window.listaOpcoesLocalizacao = Array.from(mapaUnico.values()).sort((a, b) => a.localeCompare(b, 'pt-BR'));
         };
+
+        window.atualizarListaLocalizacoes();
 
         function configurarEventosCombobox(inputEl, optionsEl) {
             function render(filtro = '') {
@@ -701,21 +837,58 @@
                     filtradas.forEach(item => {
                         const div = document.createElement('div');
                         div.className = 'combobox-item';
-                        div.textContent = item;
-                        div.addEventListener('click', (e) => {
+
+                        const spanLabel = document.createElement('span');
+                        spanLabel.className = 'combobox-item-label';
+                        spanLabel.textContent = item;
+                        spanLabel.addEventListener('click', (e) => {
                             e.stopPropagation();
                             inputEl.value = item;
                             optionsEl.classList.remove('active');
                         });
+
+                        div.appendChild(spanLabel);
+
+                        if (window.isItemCustomizado(item)) {
+                            const divActions = document.createElement('div');
+                            divActions.className = 'combobox-item-actions';
+
+                            const btnEdit = document.createElement('button');
+                            btnEdit.type = 'button';
+                            btnEdit.className = 'combobox-mini-btn combobox-mini-edit';
+                            btnEdit.title = `Editar "${item}" para os próximos lançamentos`;
+                            btnEdit.textContent = '✏️ Editar';
+                            btnEdit.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                optionsEl.classList.remove('active');
+                                window.editarItemCriadoLocalizacao(item, inputEl);
+                            });
+
+                            const btnDel = document.createElement('button');
+                            btnDel.type = 'button';
+                            btnDel.className = 'combobox-mini-btn combobox-mini-del';
+                            btnDel.title = `Excluir apenas "${item}"`;
+                            btnDel.textContent = '🗑️ Excluir';
+                            btnDel.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                optionsEl.classList.remove('active');
+                                window.excluirItemCriadoLocalizacao(item, inputEl);
+                            });
+
+                            divActions.appendChild(btnEdit);
+                            divActions.appendChild(btnDel);
+                            div.appendChild(divActions);
+                        }
+
                         optionsEl.appendChild(div);
                     });
                 }
 
                 if (termo !== '' && !window.listaOpcoesLocalizacao.some(item => item.toLowerCase() === termo)) {
-                    const sugestaoPadronizada = window.normalizarComponente(filtro);
+                    const sugestaoPadronizada = window.formatarTextoPadrao(filtro);
                     const divNovo = document.createElement('div');
                     divNovo.className = 'combobox-item novo-item';
-                    divNovo.textContent = `➕ Usar "${sugestaoPadronizada}" (Novo componente)`;
+                    divNovo.innerHTML = `<span class="combobox-item-label">➕ Usar "${sugestaoPadronizada}"</span>`;
                     divNovo.addEventListener('click', (e) => {
                         e.stopPropagation();
                         inputEl.value = sugestaoPadronizada;
@@ -728,11 +901,6 @@
 
             inputEl.addEventListener('focus', () => render(inputEl.value));
             inputEl.addEventListener('input', () => render(inputEl.value));
-            inputEl.addEventListener('blur', () => {
-                if (inputEl.value.trim() !== "") {
-                    inputEl.value = window.normalizarComponente(inputEl.value);
-                }
-            });
         }
 
         const inputLoc = document.getElementById('localizacao');
@@ -782,6 +950,22 @@
             if (el) el.remove();
         };
 
+        function registrarLocalizacaoNoHistorico(nomeLoc) {
+            const padronizado = window.formatarTextoPadrao(nomeLoc);
+            if (!padronizado) return "";
+            const chave = padronizado.toLowerCase();
+            if (!localizacoesPadrao.some(p => p.toLowerCase() === chave)) {
+                let customList = carregarArrayStorage(STORAGE_CUSTOM_LOCS);
+                customList = customList.filter(c => c.toLowerCase() !== chave);
+                customList.push(padronizado);
+                salvarArrayStorage(STORAGE_CUSTOM_LOCS, customList);
+            }
+            const excluidos = carregarArrayStorage(STORAGE_EXCLUDED_LOCS).filter(e => e !== chave);
+            salvarArrayStorage(STORAGE_EXCLUDED_LOCS, excluidos);
+            window.atualizarListaLocalizacoes();
+            return padronizado;
+        }
+
         document.getElementById('formRuido').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editDocId = document.getElementById('editDocId').value;
@@ -802,7 +986,7 @@
                 criadoEm: Date.now()
             };
 
-            const locPrincipalPadronizada = window.normalizarComponente(document.getElementById('localizacao').value);
+            const locPrincipalPadronizada = registrarLocalizacaoNoHistorico(document.getElementById('localizacao').value);
 
             if (editDocId) {
                 await updateDoc(doc(db, "ruidos_registros", editDocId), {
@@ -824,7 +1008,7 @@
                 const blocosExtras = document.querySelectorAll('.defeito-item-bloco');
                 for (let i = 0; i < blocosExtras.length; i++) {
                     const bloco = blocosExtras[i];
-                    const locExtraPadronizada = window.normalizarComponente(bloco.querySelector('.extra-localizacao').value);
+                    const locExtraPadronizada = registrarLocalizacaoNoHistorico(bloco.querySelector('.extra-localizacao').value);
                     await addDoc(collection(db, "ruidos_registros"), {
                         ...dadosComuns,
                         tipoDefeito: bloco.querySelector('.extra-tipoDefeito').value,
